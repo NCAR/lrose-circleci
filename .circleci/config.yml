@@ -4,7 +4,9 @@ version: 2.1
 executors:
   my-executor:
     docker:
-      - image: centos  # buildpack-deps:jessie
+      # - image: centos  
+      # - image: circleci/cci-demo-docker-primary:0.0.1
+      - image: leavesntwigs/lrose-build-env:centos-20190301
     working_directory: /tmp
 
 jobs:
@@ -14,34 +16,10 @@ jobs:
       - run: date
       ## - checkout
       - run: echo "A first hello"
-      - run: yum -y install rsync
-      - run: yum -y install gcc 
-      - run: yum -y install gcc-gfortran
-      - run: yum -y install gcc-c++
-      - run: yum -y install make
-      - run: yum -y install wget
-      - run: yum -y install expat-devel
-      - run: yum -y install m4
-      - run: yum -y install jasper-devel
-      - run: yum -y install flex-devel
-      - run: yum -y install zlib-devel
-      - run: yum -y install libpng-devel
-      - run: yum -y install bzip2-devel
-      - run: yum -y install qt5-qtbase-devel
-      - run: yum -y install fftw3-devel
-      - run: yum -y install libtool
-      - run: yum install -y xorg-x11-server-Xorg xorg-x11-xauth xorg-x11-apps
-      - run: yum -y install libX11-devel
-      - run: yum -y install git
-      - run: yum -y install ca-certificates # needed to persist workspace
-      - run: yum -y install epel-release # VITAL for netcdf install!
-      - run: yum -y install netcdf-devel  # needed for remote access; netcdf build
-      - run: echo "after install"
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace
-#       - run: ./workspace/lrose-core/codebase/make_bin/createConfigure.am.py --dir . --baseName configure.base.shared --shared --pkg lrose-blaze --debug
       - run: |
           if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-blaze --prefix /usr/local/lrose` == 0 ]]; then
               echo "It worked"
@@ -107,8 +85,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 22 * * *"
-#          cron: "0 9 * * *"
+          cron: "45 22 * * *"   # for 2:30 am MST 
           filters:
             branches:
               only:
@@ -122,7 +99,10 @@ workflows:
       #    requires:
       #      - one
       #      - two
-            
+          
+  now:
+    jobs:
+      - one  
 
 ######
 #
