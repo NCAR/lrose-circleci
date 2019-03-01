@@ -1,0 +1,250 @@
+version: 2.1
+
+
+executors:
+  my-executor:
+    docker:
+      - image: centos  # buildpack-deps:jessie
+    working_directory: /tmp
+
+jobs:
+  one:
+    executor: my-executor
+    steps:
+      - run: date
+      ## - checkout
+      - run: echo "A first hello"
+      - run: yum -y install rsync
+      - run: yum -y install gcc 
+      - run: yum -y install gcc-gfortran
+      - run: yum -y install gcc-c++
+      - run: yum -y install make
+      - run: yum -y install wget
+      - run: yum -y install expat-devel
+      - run: yum -y install m4
+      - run: yum -y install jasper-devel
+      - run: yum -y install flex-devel
+      - run: yum -y install zlib-devel
+      - run: yum -y install libpng-devel
+      - run: yum -y install bzip2-devel
+      - run: yum -y install qt5-qtbase-devel
+      - run: yum -y install fftw3-devel
+      - run: yum -y install libtool
+      - run: yum install -y xorg-x11-server-Xorg xorg-x11-xauth xorg-x11-apps
+      - run: yum -y install libX11-devel
+      - run: yum -y install git
+      - run: yum -y install ca-certificates # needed to persist workspace
+      - run: yum -y install epel-release # VITAL for netcdf install!
+      - run: yum -y install netcdf-devel  # needed for remote access; netcdf build
+      - run: echo "after install"
+      - run: mkdir -p workspace
+      - run: cd workspace; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace
+#       - run: ./workspace/lrose-core/codebase/make_bin/createConfigure.am.py --dir . --baseName configure.base.shared --shared --pkg lrose-blaze --debug
+      - run: |
+          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-blaze --prefix /usr/local/lrose` == 0 ]]; then
+              echo "It worked"
+          else 
+              tail -n 100 /tmp/lrose_build/logs/*
+          fi
+          
+      #- run: |
+          #if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
+            #echo "It worked!";
+          #else
+            ##echo "Nope!"; exit 1
+          #fi          
+      - run: ls -R /usr/local/lrose
+      - run: /usr/local/lrose/bin/RadxPrint -h
+
+      ### Persist the specified paths into the workspace for use in downstream job. 
+      - persist_to_workspace:
+          # ### Must be an absolute path, or relative path from working_directory. 
+          # ### This is a directory on the container which is 
+          # ### taken to be the root directory of the workspace.
+          root: workspace
+          # ### Must be relative path from root
+          paths:
+            - lrose-core
+ 
+  two:
+    executor: my-executor
+    steps:
+      ## - checkout
+      - attach_workspace:
+          ### Must be absolute path or relative path from working_directory
+          at: /tmp/workspace
+      - run: echo "A familiar hi"
+      # - run: git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls
+      - run: git clone --branch master https://github.com/NCAR/lrose-core
+      - run: echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --verbose --package=lrose-blaze 
+      
+        ### Persist the specified paths into the workspace for use in downstream job. 
+      #- persist_to_workspace:
+          ### Must be an absolute path, or relative path from working_directory. 
+          ### This is a directory on the container which is 
+          ### taken to be the root directory of the workspace.
+       #   root: /usr/local/lrose
+          ### Must be relative path from root
+          #paths:
+          #  - echo-output
+
+  three:
+    executor: my-executor
+    steps: 
+      #- attach_workspace:
+          ### Must be absolute path or relative path from working_directory
+      #    at: /usr/local/lrose
+      - run: RadxPrint -h
+      - run: echo "All done."
+
+workflows:
+  version: 2.1
+  nightly:
+    triggers: 
+      - schedule:
+          #     "mm hh day month dow"  Note: 22 is about 3pm MST
+          cron: "45 22 * * *"
+#          cron: "0 9 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - one
+     # - two:
+     #    requires:
+     #      - one
+      #- three:
+      #    requires:
+      #      - one
+      #      - two
+            
+
+######
+#
+#Custom Docker Images
+#
+# keep Dockerfile in .circleci/images folder, e.g.
+#
+#  .circleci/images/primary/Dockerfile
+# 
+# Q: how to build and then use the image in this script
+#
+# these tools are required for Primary Containers in CircleCI
+#git
+#ssh
+#tar
+#gzip
+#ca-certificates
+# Q: Can I use a circleci container as a starting image?
+# In order to allow CircleCI to use your custom image, store it in a public Docker Registry. 
+#
+#  or can we build the Docker image in CircleCI, then pass it to the downstream jobs?
+#  Actually, this is preferable, since we don't have an external step that someone
+#  has to maintain.
+#
+##########
+
+# Executors and Images 
+
+# Docker
+ #
+#jobs:
+  #build_environment: # name of your job
+    #docker: # executor type
+      ##
+      ## the image is stored in a public Docker repository
+      ## 1. prepare the image for the registry
+      ## $ docker build -t circleci/cci-demo-docker-primary:0.0.1 <path-to-dockerfile>
+      ##
+      ## 2. push the image to the registry
+      ## $ docker login
+      ## $ docker push circleci/cci-demo-docker-primary:0.0.1
+      ##
+      ## 3. use the image from the registry
+      ## - image: circleci/cci-demo-docker-primary:0.0.1
+      #-image: docker:stable-git 
+#
+#
+    #working_directory: ~/
+#
+
+# Machine
+
+#jobs:
+  #build: 
+    #machine: 
+      #image: circleci/classic:201708-01 # VM will run: Ubuntu 14.04 for this release date
+#
+## macOS
+#
+#jobs:
+  #build:
+    #macos:
+      #xcode: "9.0"
+      #
+    #steps:
+      ## Commands will execute in macOS container
+      ## with Xcode 9.0 installed
+      #- run: xcodebuild -version
+#
+#
+#
+#############
+
+# Note that the following stanza uses CircleCI 2.1 to make use of a Reusable Executor
+# This allows defining a docker image to reuse across jobs.
+# visit https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors to learn more.
+#
+#version: 2.1
+#
+#executors:
+  #my-executor:
+    #docker:
+      #- image: centos  # buildpack-deps:jessie
+    #working_directory: /tmp
+#
+#jobs:
+  #flow:
+    #executor: my-executor
+    #steps:
+      #- run: yum -y install ca-certificates
+      #- run: mkdir -p workspace
+      #- run: echo "Hello, world!" > workspace/echo-output
+      #
+      ### Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job. 
+      #- persist_to_workspace:
+          ### Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
+          ### taken to be the root directory of the workspace.
+          #root: workspace
+          ### Must be relative path from root
+          #paths:
+            #- echo-output
+#
+  #downstream:
+    #executor: my-executor
+    #steps:
+      #- attach_workspace:
+          ### Must be absolute path or relative path from working_directory
+          #at: /tmp/workspace
+#
+      #- run: |
+          #if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
+            #echo "It worked!";
+          #else
+            ##echo "Nope!"; exit 1
+          #fi
+#
+#workflows:
+  #version: 2.1
+#
+  #btd:
+    #jobs:
+      #- flow
+      #- downstream:
+          #requires:
+            #- flow
