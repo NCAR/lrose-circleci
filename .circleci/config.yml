@@ -100,9 +100,7 @@ workflows:
               only:
                 - master
     jobs:
-      - buildMacOS
-
-     #  - one
+      - one
  
       
      # - two:
@@ -115,7 +113,8 @@ workflows:
           
   now:
     jobs:
-      - one  
+      # - one  
+      - buildMacOS
 
 ######
 #
