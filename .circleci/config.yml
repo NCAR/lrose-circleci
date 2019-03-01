@@ -79,6 +79,15 @@ jobs:
       - run: RadxPrint -h
       - run: echo "All done."
 
+  buildMacOS:
+    macos:
+      xcode: "10.0.0"
+    steps:
+      - run:
+          name: Hello World
+          command: echo "Hello World from MacOS"
+
+
 workflows:
   version: 2.1
   nightly:
@@ -91,7 +100,11 @@ workflows:
               only:
                 - master
     jobs:
-      - one
+      - buildMacOS
+
+     #  - one
+ 
+      
      # - two:
      #    requires:
      #      - one
