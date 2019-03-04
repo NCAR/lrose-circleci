@@ -15,7 +15,7 @@ jobs:
     steps:
       - run: date
       ## - checkout
-      - run: echo "A first hello"
+      - run: echo "building lrose-blaze ..."
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
       - run: pwd
@@ -45,15 +45,33 @@ jobs:
           # ### Must be relative path from root
           paths:
             - lrose-core
- 
+
   two:
+    executor: my-executor
+    steps:
+      - run: echo "building lrose-core ..."
+      - run: mkdir -p workspace
+      - run: cd workspace; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace
+      - run: |
+          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
+              echo "It worked"
+          else
+              tail -n 100 /tmp/lrose_build/logs/*
+          fi
+      - run: ls -R /usr/local/lrose
+      - run: /usr/local/lrose/bin/RadxPrint -h
+
+ 
+  attached-workspace:
     executor: my-executor
     steps:
       ## - checkout
       - attach_workspace:
           ### Must be absolute path or relative path from working_directory
           at: /tmp/workspace
-      - run: echo "A familiar hi"
+      - run: echo "try with attached workspace ..."
       # - run: git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls
@@ -101,7 +119,7 @@ workflows:
                 - master
     jobs:
       - one
- 
+      - two 
       
      # - two:
      #    requires:
