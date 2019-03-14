@@ -119,6 +119,17 @@ workflows:
                 - master
     jobs:
       - one
+      
+  nightly_full:
+    triggers: 
+      - schedule:
+          #     "mm hh day month dow"  Note: 22 is about 3pm MST
+          cron: "45 7 * * *"   # for 5:30 am MST 
+          filters:
+            branches:
+              only:
+                - master
+    jobs:      
       - two 
       
      # - two:
