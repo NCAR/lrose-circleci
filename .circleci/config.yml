@@ -15,6 +15,7 @@ jobs:
     steps:
       - run: date
       ## - checkout
+      - run: yum install -y qt5-qtdeclarative-devel
       - run: echo "building lrose-blaze ..."
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
@@ -50,6 +51,7 @@ jobs:
     executor: my-executor
     steps:
       - run: echo "building lrose-core ..."
+      - run: yum install -y qt5-qtdeclarative-devel
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
       - run: pwd
