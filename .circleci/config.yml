@@ -138,8 +138,8 @@ workflows:
           
   now:
     jobs:
-      - one  
-      # - buildMacOS
+      # - one  
+      - buildMacOS
 
 ######
 #
