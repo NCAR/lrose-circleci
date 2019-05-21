@@ -100,6 +100,8 @@ jobs:
       - run:
           name: Hello World
           command: echo "Hello World from MacOS"
+      - run: ls -l /usr/local/bin
+      - run: brew help
 
 
 workflows:
