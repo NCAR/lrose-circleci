@@ -100,12 +100,10 @@ jobs:
       - run:
           name: Hello World
           command: echo "Hello World from MacOS"
-      - run: 
-          command: brew install wget
-          command: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20190520/lrose-core.rb
-          command: brew install lrose-blaze.rb
-      - run:
-          command: RadxPrint -h
+      - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20190520/lrose-core.rb
+      - run: brew install lrose-blaze.rb
+      - run: RadxPrint -h
  
 
 
