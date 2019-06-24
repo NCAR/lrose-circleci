@@ -101,6 +101,7 @@ jobs:
       - run:
           name: Hello World
           command: echo "Hello World from MacOS"
+      - run: brew install clang-omp
       - run: brew install wget
       # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20190520/lrose-core.rb
       - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20190621/lrose-blaze.rb
