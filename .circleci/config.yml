@@ -93,16 +93,21 @@ jobs:
       - run: RadxPrint -h
       - run: echo "All done."
 
+# testing the dependencies of the brew formulae
   buildMacOS:
     macos:
-      xcode: "10.0.0"
+      xcode: "10.1.0"
     steps:
       - run:
           name: Hello World
           command: echo "Hello World from MacOS"
       - run: brew install wget
-      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20190520/lrose-core.rb
-      - run: brew install lrose-core.rb
+      - run: brew install cmake
+      - run: cmake --help
+      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20190520/lrose-core.rb
+      - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20190621/lrose-blaze.rb
+      - run: brew info lrose-blaze.rb
+      - run: brew install lrose-blaze.rb
       - run: RadxPrint -h
  
 
