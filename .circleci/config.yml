@@ -119,6 +119,7 @@ jobs:
           name: Hello World
           command: echo "Hello World from MacOS-Cyclone"
       - run: brew install wget
+      - run: brew cask install xquartz 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
       - run: RadxPrint -h
