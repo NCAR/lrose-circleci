@@ -106,6 +106,22 @@ jobs:
       - run: RadxPrint -h
  
 
+  buildMacOS-Cyclone:
+    macos:
+      xcode: "10.0.0"
+    steps:
+      - run:
+          name: Hello World
+          command: echo "Hello World from MacOS-Cyclone"
+      - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/tag/testing/lrose-cyclone.rb
+      - run: brew install lrose-cyclone.rb
+      - run: RadxPrint -h
+      - run: vortrac  -h
+      - run: samurai -h
+      - run: fractl -h
+ 
+
 
 workflows:
   version: 2.1
@@ -144,7 +160,7 @@ workflows:
   now:
     jobs:
       # - one  
-      - buildMacOS
+      - buildMacOS-Cyclone
 
 ######
 #
