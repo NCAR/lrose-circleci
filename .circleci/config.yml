@@ -134,7 +134,7 @@ jobs:
       ## - checkout
       - run: yum install -y qt5-qtdeclarative-devel
       - run: yum install -y armadillo-devel
-      - run: yum install -y cmake
+      - run: yum install -y cmake3
       - run: echo "building lrose-cyclone ..."
       - run: mkdir -p workspace
       - run: cd workspace; wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone-20190910-vortrac-build-changes.tgz
