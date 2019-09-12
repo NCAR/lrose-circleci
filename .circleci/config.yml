@@ -127,6 +127,40 @@ jobs:
       - run: samurai -h
       - run: fractl -h
  
+  buildCentos-Cyclone-vortrac-build-changes:
+    executor: my-executor
+    steps:
+      - run: date
+      ## - checkout
+      - run: yum install -y qt5-qtdeclarative-devel
+      - run: yum install -y armadillo-devel
+      - run: echo "building lrose-cyclone ..."
+      - run: mkdir -p workspace
+      - run: cd workspace; wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone-20190910-vortrac-build-changes.tgz
+      - run: cd workspace; tar zxf lrose-cyclone-20190910-vortrac-build-changes.tgz
+      - run: cd workspace/lrose-cyclone-20190801.src/codebase
+      - run: pwd
+      - run: ls workspace
+      ## build lrose-core
+      - run: cd workspace/lrose-cyclone-20190801.src/codebase; configure --disable-dependency-tracking --prefix /usr/local/lrose
+      - run: cd workspace/lrose-cyclone-20190801.src/codebase; make install
+      - run: rsync -av workspace/lrose-cyclone-20190801.src/share /usr/local/lrose                
+      ## build fractl
+      - run: cd workspace/lrose-cyclone-20190801.src/fractl; cmake .
+      - run: cd workspace/lrose-cyclone-20190801.src/fractl; make
+
+      ## build samurai
+      - run: cd workspace/lrose-cyclone-20190801.src/samurai; cmake .
+      - run: cd workspace/lrose-cyclone-20190801.src/samurai; make
+      ## maybe move the libs, executable, and includes into place?
+
+      ## build vortrac 
+      - run: cd workspace/lrose-cyclone-20190801.src/vortrac; qmake .
+      - run: cd workspace/lrose-cyclone-20190801.src/vortrac; make
+
+
+      - run: ls -R /usr/local/lrose
+      - run: /usr/local/lrose/bin/RadxPrint -h
 
 
 workflows:
@@ -165,8 +199,8 @@ workflows:
           
   now:
     jobs:
-      # - one  
-      - buildMacOS-Cyclone
+      - buildCentos-Cyclone-vortrac-build-changes  
+      # - buildMacOS-Cyclone
 
 ######
 #
