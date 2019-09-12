@@ -153,7 +153,7 @@ jobs:
 
       ## build vortrac 
       - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src; /usr/bin/qmake-qt5 .
-      - run: cd workspace/lrose-cyclone-20190801.src/vortrac; make
+      - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src; make
 
 
       ## build fractl
