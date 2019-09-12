@@ -142,7 +142,7 @@ jobs:
       - run: pwd
       - run: ls workspace
       ## build lrose-core
-      - run: cd workspace/lrose-cyclone-20190801.src/codebase; configure --disable-dependency-tracking --prefix /usr/local/lrose
+      - run: cd workspace/lrose-cyclone-20190801.src/codebase; ./configure --disable-dependency-tracking --prefix /usr/local/lrose
       - run: cd workspace/lrose-cyclone-20190801.src/codebase; make install
       - run: rsync -av workspace/lrose-cyclone-20190801.src/share /usr/local/lrose                
       ## build fractl
@@ -161,6 +161,9 @@ jobs:
 
       - run: ls -R /usr/local/lrose
       - run: /usr/local/lrose/bin/RadxPrint -h
+      - run: /usr/local/lrose/bin/samurai -h
+      - run: /usr/local/lrose/bin/fractl -h
+      - run: /usr/local/lrose/bin/vortrac -h
 
 
 workflows:
