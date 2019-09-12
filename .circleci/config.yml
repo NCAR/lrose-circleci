@@ -149,8 +149,10 @@ jobs:
       - run: cd workspace/lrose-cyclone-20190801.src/codebase; make install
       - run: rsync -av workspace/lrose-cyclone-20190801.src/share /usr/local/lrose                
 
+      - run: export LROSE_ROOT_DIR=/usr/local/lrose
+
       ## build vortrac 
-      - run: cd workspace/lrose-cyclone-20190801.src/vortrac; /usr/bin/qmake-qt5 .
+      - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src; /usr/bin/qmake-qt5 .
       - run: cd workspace/lrose-cyclone-20190801.src/vortrac; make
 
 
