@@ -136,6 +136,7 @@ jobs:
       - run: yum install -y armadillo-devel
       - run: yum install -y cmake
       - run: yum install -y cmake3
+      - run: which qmake
       - run: yum install -y qmake
       - run: echo "building lrose-cyclone ..."
       - run: mkdir -p workspace
