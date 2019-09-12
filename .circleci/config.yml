@@ -154,14 +154,17 @@ jobs:
       ## build vortrac 
       - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src; /usr/bin/qmake-qt5 .
       - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src; make
+      - run: cd workspace/lrose-cyclone-20190801.src/vortrac/src/vortrac.app/Contents/MacOS/vortrac -h
 
       ## build fractl
       - run: cd workspace/lrose-cyclone-20190801.src/fractl; /usr/bin/cmake3 .
       - run: cd workspace/lrose-cyclone-20190801.src/fractl; make
+      - run: cd workspace/lrose-cyclone-20190801.src/fractl/build/release/bin/fractl -h
 
       ## build samurai
       - run: cd workspace/lrose-cyclone-20190801.src/samurai; /usr/bin/cmake3 .
       - run: cd workspace/lrose-cyclone-20190801.src/samurai; make
+      - run: cd workspace/lrose-cyclone-20190801.src/samurai/build/release/bin/samurai -h
       ## maybe move the libs, executable, and includes into place?
 
 
