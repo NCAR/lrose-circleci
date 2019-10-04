@@ -21,12 +21,11 @@ RUN \
        m4 \
        libpng-dev \
        libbz2-dev \
-       libqtdeclarative5-dev \
+       qtdeclarative5-dev \
        libqt5webview5-dev \
        libfftw3-dev \
        libtool \
        git \
-       ca-certificates \ 
        libgeographic-dev \
        libeigen3-dev \
        libzip-dev \
@@ -39,6 +38,7 @@ RUN \
        # jasper-devel \
        # zlib-devel \ --> libzip-dev 
 
+      #  ca-certificates \ 
        #  ca-certificates  needed to persist workspace
        # epel-release  VITAL for netcdf install! (may not be needed for ubuntu)
        # netcdf-devel  needed for remote access; netcdf build
