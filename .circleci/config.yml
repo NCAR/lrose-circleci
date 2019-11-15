@@ -135,7 +135,8 @@ jobs:
       # other options: --logDir ...
       #                --releaseDir .. 
       - run: alias qmake-qt5='qmake'
-          if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx` == 0 ]]; then
+      - run: |
+         if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx` == 0 ]]; then
               echo "It worked"
           else
               tail -n 100 /tmp/create_src_release/logs/*
