@@ -115,28 +115,27 @@ jobs:
       - run: brew install lrose-blaze.rb
       - run: RadxPrint -h
 
-  build-macos:
-    macos:
-      xcode: "10.1.0"
+
+  # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
+  #       build it on a linux platform using automake and libtool
+  #
+  build-macos-tgz:
+    executor: my-executor
     working_directory: /tmp
     steps:
       - run:
-          name: build MacOS
-          command: echo "build MacOS"
-      # - run: brew install cmake
+          name: build MacOS tgz
+          command: echo "build MacOS source tgz"
       - run: echo "building lrose-core ..."
       - run: mkdir -p workspace_macos
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos
-      - run: export HOST_OS="OSX_LROSE"
-      - run: |
-          if [[ `echo "y" | ./workspace_macos/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
-              echo "It worked"
-          else
-              tail -n 100 /tmp/lrose_build/logs/*
-          fi
-      - run: ls -R /usr/local/lrose
+      # - run: export HOST_OS="OSX_LROSE"
+      # other options: --logDir ...
+      #                --releaseDir .. 
+      - run: ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx --prefix /usr/local/lrose
+      - run: ls -R /lrose-core/<date>/osx
       # is this next step correct? how do we generate a .tgz file?
       - run: cd /tmp/lrose_build; tar -czf lrose-cyclone.src.mac_osx.tgz lrose-core
       - run: mv /tmp/lrose_build/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/lrose
@@ -314,7 +313,7 @@ workflows:
           
   now:
     jobs:
-      - build-macos
+      - build-macos-tgz
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
       # - buildMacOS-Cyclone
