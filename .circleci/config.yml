@@ -123,7 +123,7 @@ jobs:
       - run:
           name: build MacOS
           command: echo "build MacOS"
-      - run: brew install cmake
+      # - run: brew install cmake
       - run: echo "building lrose-core ..."
       - run: mkdir -p workspace_macos
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
