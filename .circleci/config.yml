@@ -134,7 +134,7 @@ jobs:
       # - run: export HOST_OS="OSX_LROSE"
       # other options: --logDir ...
       #                --releaseDir .. 
-      - run: alias qmake='qmake-qt5'
+      - run: alias qmake-qt5='qmake'
       - run: ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx 
       - run: ls -R /lrose-core/*/osx
       # is this next step correct? how do we generate a .tgz file?
