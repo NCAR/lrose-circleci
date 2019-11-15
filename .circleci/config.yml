@@ -143,9 +143,9 @@ jobs:
               tail -n 100 /tmp/create_src_release/logs/*
           fi
 
-      # - run: ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx 
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --package=lrose-core --osx --releaseDir=workspace_macos/releases 
       # - run: tail -n 100 /tmp/create_src_release/logs/create-qt-moc-files.log
-      - run: ls -R workspace_macos/releases
+      # - run: ls -R workspace_macos/releases
       # is this next step correct? how do we generate a .tgz file?
       # - run: cd /tmp/lrose_build; tar -czf lrose-cyclone.src.mac_osx.tgz lrose-core
       # - run: mv /tmp/lrose_build/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/lrose
@@ -155,7 +155,8 @@ jobs:
             - lrose-core
             - releases
       - store_artifacts:
-          path: /tmp/workspace_macos/releases/lrose-cyclone.src.mac_osx.tgz
+          path: /tmp/workspace_macos/releases/lrose-core/
+# lrose-cyclone.src.mac_osx.tgz
           destination: lrose-cyclone.src.mac_osx.tgz
  
  
