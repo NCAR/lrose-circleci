@@ -9,6 +9,11 @@ executors:
       - image: leavesntwigs/lrose-build-env:centos-20190301
     working_directory: /tmp
 
+  ubuntu-executor:
+    docker:
+      - image: leavesntwigs/lrose-build-env-ubuntu:20191004
+    working_directory: /tmp
+
 jobs:
   one:
     executor: my-executor
@@ -109,19 +114,93 @@ jobs:
       - run: brew info lrose-blaze.rb
       - run: brew install lrose-blaze.rb
       - run: RadxPrint -h
- 
 
-  buildMacOS-Cyclone:
+  build-macos:
+    macos:
+      xcode: "10.1.0"
+    working_directory: /tmp
+    steps:
+      - run:
+          name: build MacOS
+          command: echo "build MacOS"
+      - run: brew install cmake
+      - run: echo "building lrose-core ..."
+      - run: mkdir -p workspace_macos
+      - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace_macos
+      - run: export HOST_OS="OSX_LROSE"
+      - run: |
+          if [[ `echo "y" | ./workspace_macos/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /tmp/workspace_macos/lrose` == 0 ]]; then
+              echo "It worked"
+          else
+              tail -n 100 /tmp/lrose_build/logs/*
+          fi
+      - run: ls -R /tmp/workspace_macos/lrose
+      # is this next step correct? how do we generate a .tgz file?
+      - run: cd /tmp/workspace_macos/lrose; tar -czf lrose-cyclone.src.mac_osx.tgz lrose
+      # - run: mv /tmp/workspace_macos/lrose/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - lrose
+      - store_artifacts:
+          path: /tmp/workspace_macos/lrose/lrose-cyclone.src.mac_osx.tgz
+          destination: lrose-cyclone.src.mac_osx.tgz
+ 
+ 
+  build-docker-image-lrose-cyclone:
+    macos:
+      xcode: "10.1.0"
+    working_directory: /tmp
+    steps:
+      - run:
+      - store_artifacts:
+          path: /tmp/docker-image
+          destination: lrose-cyclone-docker.x
+
+
+  build-brew-formula-lrose-cyclone:
+    macos:
+      xcode: "10.1.0"
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run:
+          name: build brew formula lrose-cyclone.rb 
+          command: echo "building brew formula for MacOS-Cyclone"
+      - run: brew install wget
+      - run: brew cask install xquartz 
+        # should this be from a workspace? 
+      # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
+      # - run: brew install lrose-cyclone.rb
+      - run: git clone ... release-tools
+      # NOTE: depends on xxxx.src.mac_osx.tgz <======
+      - run: release-tools/cyclone/homebrew-scripts/make-lrose-cyclone.sh
+      - persist_to_workspace:
+          root: workspace
+          paths: 
+            - output
+      - store_artifacts:
+          path: /tmp/brew-formula
+          destination: lrose-cyclone.rb
+ 
+  test-brew-install-lrose-cyclone:
     macos:
       xcode: "10.1.0"
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
+          # files will be in /tmp/workspace/output
       - run:
-          name: Hello World
-          command: echo "Hello World from MacOS-Cyclone"
-      - run: brew install wget
+          name: brew install lrose-cyclone.rb 
+          command: echo "testing brew install MacOS-Cyclone"
+      # - run: brew install wget
       - run: brew cask install xquartz 
-      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
-      - run: brew install lrose-cyclone.rb
+        # should this be from a workspace? 
+      # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
+      - run: brew install /tmp/workspace/output/lrose-cyclone.rb
       - run: RadxPrint -h
       - run: vortrac  -h
       - run: samurai -h
@@ -175,6 +254,29 @@ jobs:
       - run: /usr/local/lrose/bin/fractl -h
       - run: /usr/local/lrose/bin/vortrac -h
 
+  build-cyclone-docker:
+    ## TODO: just use a generic ubuntu. The Dockerfile installs the dependent packages.
+    executor: ubuntu-executor
+    steps:
+      - run: date
+      ## - checkout
+      - run: echo "building lrose-cyclone docker image ..."
+      - run: mkdir -p workspace
+      - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
+      - run: pwd
+      - run: ls workspace
+      - run: cd workspace/git/release-tools/cyclone/lrose-docker-scripts; ./build.sh --releaseDate lrose-cyclone-20190801
+      - run: |
+          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-blaze --prefix /usr/local/lrose` == 0 ]]; then
+              echo "It worked"
+          else 
+              tail -n 100 /tmp/lrose_build/logs/*
+          fi
+               
+      - run: ls -R /usr/local/lrose
+      - run: /usr/local/lrose/bin/RadxPrint -h
+
+
 
 workflows:
   version: 2.1
@@ -212,7 +314,8 @@ workflows:
           
   now:
     jobs:
-      - buildCentos-Cyclone-vortrac-build-changes  
+      # - build-cyclone-docker
+      # - buildCentos-Cyclone-vortrac-build-changes  
       # - buildMacOS-Cyclone
 
 ######
