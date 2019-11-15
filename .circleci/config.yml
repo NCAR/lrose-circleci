@@ -127,6 +127,7 @@ jobs:
           name: build MacOS tgz
           command: echo "build MacOS source tgz"
       - run: echo "building lrose-core ..."
+      - run: yum install -y qt5-qtdeclarative-devel
       - run: mkdir -p workspace_macos
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
