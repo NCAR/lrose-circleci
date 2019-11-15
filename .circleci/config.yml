@@ -143,9 +143,9 @@ jobs:
 #               tail -n 100 /tmp/create_src_release/logs/*
 #           fi
 
-         - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
 
-         - run: ls /tmp/workspace_macos/releases/lrose-core/osx
+      - run: ls /tmp/workspace_macos/releases/lrose-core/osx
 # 
 # Running create_src_tar.py:
 #   package:  lrose-core
