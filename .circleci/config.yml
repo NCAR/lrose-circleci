@@ -131,15 +131,15 @@ jobs:
       - run: ls workspace_macos
       - run: export HOST_OS="OSX_LROSE"
       - run: |
-          if [[ `echo "y" | ./workspace_macos/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /tmp/workspace_macos/lrose` == 0 ]]; then
+          if [[ `echo "y" | ./workspace_macos/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
               echo "It worked"
           else
               tail -n 100 /tmp/lrose_build/logs/*
           fi
-      - run: ls -R /tmp/workspace_macos/lrose
+      - run: ls -R /usr/local/lrose
       # is this next step correct? how do we generate a .tgz file?
-      - run: cd /tmp/workspace_macos/lrose; tar -czf lrose-cyclone.src.mac_osx.tgz lrose
-      # - run: mv /tmp/workspace_macos/lrose/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/
+      - run: cd /tmp/lrose_build; tar -czf lrose-cyclone.src.mac_osx.tgz lrose-core
+      - run: mv /tmp/lrose_build/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/lrose
       - persist_to_workspace:
           root: workspace_macos
           paths: 
@@ -154,10 +154,10 @@ jobs:
       xcode: "10.1.0"
     working_directory: /tmp
     steps:
-      - run:
-      - store_artifacts:
-          path: /tmp/docker-image
-          destination: lrose-cyclone-docker.x
+      # - run:
+      # - store_artifacts:
+      #     path: /tmp/docker-image
+      #     destination: lrose-cyclone-docker.x
 
 
   build-brew-formula-lrose-cyclone:
@@ -314,6 +314,7 @@ workflows:
           
   now:
     jobs:
+      - build-macos
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
       # - buildMacOS-Cyclone
