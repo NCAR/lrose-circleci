@@ -137,7 +137,7 @@ jobs:
       #                --releaseDir .. 
       - run: alias qmake-qt5='qmake'
       - run: |
-         if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx` == 0 ]]; then
+         if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_release.py --force --releaseDir=workspace_macos/releases --package=lrose-core --osx` == 0 ]]; then
               echo "It worked"
           else
               tail -n 100 /tmp/create_src_release/logs/*
@@ -145,16 +145,17 @@ jobs:
 
       # - run: ./workspace_macos/lrose-core/build/create_src_release.py --force --package=lrose-core --osx 
       # - run: tail -n 100 /tmp/create_src_release/logs/create-qt-moc-files.log
-      - run: ls -R /lrose-core/*/osx
+      - run: ls -R workspace_macos/releases
       # is this next step correct? how do we generate a .tgz file?
       # - run: cd /tmp/lrose_build; tar -czf lrose-cyclone.src.mac_osx.tgz lrose-core
       # - run: mv /tmp/lrose_build/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/lrose
       - persist_to_workspace:
           root: workspace_macos
           paths: 
-            - lrose
+            - lrose-core
+            - releases
       - store_artifacts:
-          path: /tmp/workspace_macos/lrose/lrose-cyclone.src.mac_osx.tgz
+          path: /tmp/workspace_macos/releases/lrose-cyclone.src.mac_osx.tgz
           destination: lrose-cyclone.src.mac_osx.tgz
  
  
