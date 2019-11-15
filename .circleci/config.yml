@@ -136,12 +136,31 @@ jobs:
       # other options: --logDir ...
       #                --releaseDir .. 
       - run: alias qmake-qt5='qmake'
-      - run: |
-         if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx` == 0 ]]; then
-              echo "It worked"
-          else
-              tail -n 100 /tmp/create_src_release/logs/*
-          fi
+#       - run: |
+#          if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx` == 0 ]]; then
+#               echo "It worked"
+#           else
+#               tail -n 100 /tmp/create_src_release/logs/*
+#           fi
+
+         - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
+
+         - run: ls /tmp/workspace_macos/releases/lrose-core/osx
+# 
+# Running create_src_tar.py:
+#   package:  lrose-core
+#   osx:  True
+#   releaseTopDir:  /tmp/workspace_macos/releases
+#   releaseDir:     /tmp/workspace_macos/releases/lrose-core/osx
+#   tmpDir:         /tmp/workspace_macos/releases/lrose-core/osx/tmp
+#   force:  True
+#   static:  False
+#   versionStr:  20191115
+#   releaseName:  lrose-core-20191115.mac_osx
+#   tarName:  lrose-core-20191115.mac_osx.tgz
+# 
+# running cmd: tar cvfzh lrose-core-20191115.mac_osx.tgz lrose-core-20191115.mac_osx  .....
+# .... done
 
       # - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --package=lrose-core --osx --releaseDir=workspace_macos/releases 
       # - run: tail -n 100 /tmp/create_src_release/logs/create-qt-moc-files.log
@@ -154,10 +173,10 @@ jobs:
           # paths: 
             # - lrose-core
             # - releases
-      # - store_artifacts:
-     #      path: /tmp/workspace_macos/releases/lrose-core/
+#        - store_artifacts:
+#            path: /tmp/workspace_macos/releases/lrose-core/osx
 # lrose-cyclone.src.mac_osx.tgz
-      #     destination: lrose-cyclone.src.mac_osx.tgz
+#            destination: lrose-cyclone.src.mac_osx.tgz
  
  
 #  build-docker-image-lrose-cyclone:
