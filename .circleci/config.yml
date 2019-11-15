@@ -149,11 +149,11 @@ jobs:
           destination: lrose-cyclone.src.mac_osx.tgz
  
  
-  build-docker-image-lrose-cyclone:
-    macos:
-      xcode: "10.1.0"
-    working_directory: /tmp
-    steps:
+#  build-docker-image-lrose-cyclone:
+#    macos:
+#      xcode: "10.1.0"
+#    working_directory: /tmp
+#    steps:
       # - run:
       # - store_artifacts:
       #     path: /tmp/docker-image
