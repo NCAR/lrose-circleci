@@ -162,21 +162,15 @@ jobs:
 # running cmd: tar cvfzh lrose-core-20191115.mac_osx.tgz lrose-core-20191115.mac_osx  .....
 # .... done
 
-      # - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --package=lrose-core --osx --releaseDir=workspace_macos/releases 
-      # - run: tail -n 100 /tmp/create_src_release/logs/create-qt-moc-files.log
-      # - run: ls -R workspace_macos/releases
-      # is this next step correct? how do we generate a .tgz file?
-      # - run: cd /tmp/lrose_build; tar -czf lrose-cyclone.src.mac_osx.tgz lrose-core
-      # - run: mv /tmp/lrose_build/lrose-cyclone.src.mac_osx.tgz /tmp/workspace_macos/lrose
       # - persist_to_workspace:
           # root: workspace_macos
           # paths: 
             # - lrose-core
             # - releases
-#        - store_artifacts:
-#            path: /tmp/workspace_macos/releases/lrose-core/osx
-# lrose-cyclone.src.mac_osx.tgz
-#            destination: lrose-cyclone.src.mac_osx.tgz
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-core/osx
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.osx.tgz?
  
  
 #  build-docker-image-lrose-cyclone:
