@@ -440,8 +440,8 @@ workflows:
     jobs:
 #       - package-lrose-core-tgz
       - package-lrose-cyclone-tgz:
-          requires:
-            - package-lrose-core-tgz
+         #  requires:
+         #   - package-lrose-core-tgz
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
