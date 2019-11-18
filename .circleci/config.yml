@@ -119,7 +119,7 @@ jobs:
   # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
   #       build it on a linux platform using automake and libtool
   #
-  build-macos-tgz:
+  package-lrose-core-tgz:
     executor: my-executor
     working_directory: /tmp
     steps:
@@ -143,9 +143,15 @@ jobs:
 #               tail -n 100 /tmp/create_src_release/logs/*
 #           fi
 
+        # package for macos
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
 
       - run: ls /tmp/workspace_macos/releases/lrose-core/osx
+        
+        # package for linux 
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
+
+      - run: ls /tmp/workspace_linux/releases/lrose-core
 # 
 # Running create_src_tar.py:
 #   package:  lrose-core
@@ -162,15 +168,50 @@ jobs:
 # running cmd: tar cvfzh lrose-core-20191115.mac_osx.tgz lrose-core-20191115.mac_osx  .....
 # .... done
 
-      # - persist_to_workspace:
-          # root: workspace_macos
-          # paths: 
-            # - lrose-core
-            # - releases
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases
+      - persist_to_workspace:
+          root: workspace_linux
+          paths: 
+            - releases
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-core/osx
           # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
           # Ah, but don't we want lrose-core.src.osx.tgz?
+
+
+
+  package-lrose-cyclone:
+    macos:
+      xcode: "10.1.0"
+    working_directory: /tmp
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run:
+          name: package lrose-cyclone packages (.rb, .tgz, .app, docker)
+          command: echo "package lrose-cyclone software"
+      - run: echo "package lrose-cyclone .rb ..."
+      - run: ls -R
+#       - run: brew install ??? -y qt5-qtdeclarative-devel
+      # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
+      - run: pwd
+      #- run: ls workspace_macos
+      #- run: cd release-tools/cyclone
+
+
+#      - persist_to_workspace:
+#          root: workspace_macos
+#          paths: 
+#            - releases
+#      - store_artifacts:
+#          path: /tmp/workspace_macos/releases/lrose-core/osx
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.osx.tgz?
+
  
  
 #  build-docker-image-lrose-cyclone:
@@ -338,7 +379,11 @@ workflows:
           
   now:
     jobs:
-      - build-macos-tgz
+      - package-lrose-core-tgz
+      - package-lrose-cyclone:
+          requires:
+            - package-lrose-core-tgz
+
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
       # - buildMacOS-Cyclone
