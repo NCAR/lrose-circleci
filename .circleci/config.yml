@@ -147,7 +147,7 @@ jobs:
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
 
       - run: ls /tmp/workspace_macos/releases/lrose-core/osx
-        
+      - run: cd /tmp/workspace_macos/releases/lrose-core/osx; mv lrose-core-*.mac_osx.tgz lrose-core-*.src.mac_osx.tgz
         # package for linux 
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
 
@@ -178,8 +178,66 @@ jobs:
             - releases
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-core/osx
+      - store_artifacts:   
+          path: /tmp/workspace_linux/releases/lrose-core
           # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
-          # Ah, but don't we want lrose-core.src.osx.tgz?
+          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+
+
+
+  package-lrose-cyclone-tgz:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run:
+          name: package lrose-cyclone packages (.rb, .tgz, docker)
+          command: echo "package lrose-cyclone software"
+      - run: echo "package lrose-cyclone .rb ..."
+      - run: ls -R
+#       - run: brew install ??? -y qt5-qtdeclarative-devel
+      # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
+      - run: pwd   # /private/tmp
+      - run: export RELEASE_DIR="workpace_macos/releases/lrose-core/osx"
+      - run: export LROSE_CORE_RELEASE_DATE="20191118"
+      - run: mkdir sandbox
+      - run: cd sandbox; tar zxf $RELEASE_DIR/lrose-core-*.src.mac_osx.tgz
+
+# Grab addons from mmbell
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
+      
+#    git clone "https://github.com/mmbell/${tool}.git"
+#    cd $tool
+      - run: export TAG="lrose-cyclone-20190726"
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; git checkout -q $TAG
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; rm -rf .git
+
+#    if [ ! -z "$tag" ]; then
+#        git checkout -q "$tag"
+#    fi
+#      rm -rf .git
+#    cd ..
+#done
+
+# cd ..
+      - run: export TARGET="lrose-cyclone-20191118.src.mac_osx"
+      - run: cd sandbox; tar zcf $TARGET lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx
+      - run: cd sandbox; mv $TARGET.tgz $RELEASE_DIR
+
+
+      #- run: ls workspace_macos
+      #- run: cd release-tools/cyclone
+
+
+#      - persist_to_workspace:
+#          root: workspace_macos
+#          paths: 
+#            - releases
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone
+          # should store  lrose-cyclone-YYYYMMDD.mac_osx.tgz and lrose-cyclone.rb
+          # Ah, but don't we want lrose-cyclone.src.osx.tgz?
 
 
 
@@ -192,13 +250,14 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
       - run:
-          name: package lrose-cyclone packages (.rb, .tgz, .app, docker)
-          command: echo "package lrose-cyclone software"
-      - run: echo "package lrose-cyclone .rb ..."
-      - run: ls -R
+          name: package lrose-cyclone mac specific apps ( .app )
+          command: echo "building HawkEye.app"
+      - run: echo "building HawkEye.app"
+
+#      - run: ls -R
 #       - run: brew install ??? -y qt5-qtdeclarative-devel
       # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
-      - run: pwd
+#      - run: pwd   # /private/tmp
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
 
@@ -379,8 +438,8 @@ workflows:
           
   now:
     jobs:
-      - package-lrose-core-tgz
-      - package-lrose-cyclone:
+#       - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
           requires:
             - package-lrose-core-tgz
 
