@@ -204,17 +204,24 @@ jobs:
 #       - run: brew install ??? -y qt5-qtdeclarative-devel
       # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
       - run: pwd   # /private/tmp
-      - run: export RELEASE_DIR="workpace_macos/releases/lrose-core/osx"
-      - run: export LROSE_CORE_RELEASE_DATE="20191118"
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=20191118" >> $BASH_ENV
+            echo "export RELEASE_DIR=workpace_macos/releases/lrose-cyclone/osx" >> $BASH_ENV
+            echo "export LROSE_CORE_RELEASE_DATE=20191118" >> $BASH_ENV
+            echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
+            echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
+
+      - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
       - run: mkdir sandbox
-      - run: cd sandbox; tar zxf $RELEASE_DIR/lrose-core-*.src.mac_osx.tgz
+      - run: cd sandbox; tar zxf $RELEASE_DIR/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
 
 # Grab addons from mmbell
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
       
 #    git clone "https://github.com/mmbell/${tool}.git"
 #    cd $tool
-      - run: export TAG="lrose-cyclone-20190726"
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; git checkout -q $TAG
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; rm -rf .git
 
@@ -226,10 +233,8 @@ jobs:
 #done
 
 # cd ..
-      - run: export TARGET="lrose-cyclone-20191118.src.mac_osx"
       - run: cd sandbox; tar zcf $TARGET lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx
       - run: cd sandbox; mv $TARGET.tgz $RELEASE_DIR
-
 
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
