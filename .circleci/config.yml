@@ -208,7 +208,7 @@ jobs:
           name: Setup Environment Variables
           command: |
             echo "export RELEASE_DATE=20191118" >> $BASH_ENV
-            echo "export RELEASE_DIR=workpace_macos/releases" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_macos/releases" >> $BASH_ENV
             echo "export LROSE_CORE_RELEASE_DATE=20191118" >> $BASH_ENV
             echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
             echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
