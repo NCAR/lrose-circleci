@@ -142,7 +142,11 @@ jobs:
 #           else
 #               tail -n 100 /tmp/create_src_release/logs/*
 #           fi
-      - run: export RELEASE_DATE="20191118"
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=20191118" >> $BASH_ENV
+
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
         # package for macos
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
