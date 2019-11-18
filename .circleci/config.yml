@@ -208,14 +208,14 @@ jobs:
           name: Setup Environment Variables
           command: |
             echo "export RELEASE_DATE=20191118" >> $BASH_ENV
-            echo "export RELEASE_DIR=workpace_macos/releases/lrose-cyclone/osx" >> $BASH_ENV
+            echo "export RELEASE_DIR=workpace_macos/releases" >> $BASH_ENV
             echo "export LROSE_CORE_RELEASE_DATE=20191118" >> $BASH_ENV
             echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
             echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
 
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
       - run: mkdir sandbox
-      - run: cd sandbox; tar zxf $RELEASE_DIR/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
+      - run: cd sandbox; tar zxf $RELEASE_DIR/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
 
 # Grab addons from mmbell
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
@@ -224,6 +224,14 @@ jobs:
 #    cd $tool
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; git checkout -q $TAG
       - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; rm -rf .git
+
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/fractl.git" 
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/fractl; git checkout -q $TAG
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/fractl; rm -rf .git
+
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/vortrac.git" 
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/vortrac; git checkout -q $TAG
+      - run: cd sandbox/lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/vortrac; rm -rf .git
 
 #    if [ ! -z "$tag" ]; then
 #        git checkout -q "$tag"
@@ -234,7 +242,8 @@ jobs:
 
 # cd ..
       - run: cd sandbox; tar zcf $TARGET lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx
-      - run: cd sandbox; mv $TARGET.tgz $RELEASE_DIR
+      - run: mkdir $RELEASE_DIR/lrose-cyclone/osx
+      - run: cd sandbox; mv $TARGET.tgz $RELEASE_DIR/lrose-cyclone/osx
 
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
