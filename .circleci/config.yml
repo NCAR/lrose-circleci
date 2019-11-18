@@ -142,12 +142,13 @@ jobs:
 #           else
 #               tail -n 100 /tmp/create_src_release/logs/*
 #           fi
+      - run: export RELEASE_DATE="20191118"
 
         # package for macos
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
 
       - run: ls /tmp/workspace_macos/releases/lrose-core/osx
-      - run: cd /tmp/workspace_macos/releases/lrose-core/osx; mv lrose-core-*.mac_osx.tgz lrose-core-*.src.mac_osx.tgz
+      - run: cd /tmp/workspace_macos/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$RELEASE_DATE.src.mac_osx.tgz
         # package for linux 
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
 
