@@ -145,8 +145,7 @@ jobs:
       - run: 
           name: Setup Environment Variables
           command: |
-            echo "export RELEASE_DATE=20191118" >> $BASH_ENV
-
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
         # package for macos
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
@@ -209,7 +208,7 @@ jobs:
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export RELEASE_DIR=workpace_macos/releases" >> $BASH_ENV
-            echo "export LROSE_CORE_RELEASE_DATE=20191118" >> $BASH_ENV
+            echo "export LROSE_CORE_RELEASE_DATE=$RELEASE_DATE" >> $BASH_ENV
             echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
             echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
 
@@ -248,6 +247,18 @@ jobs:
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
 
+#  just call the script to build the brew formula
+#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
+
+# begin script ...
+#       - run: git clone ...release-tools
+#- run: set environment variables for script
+# TARGET
+# URL
+# RELEASE_DATE
+# DEST
+# - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
+#    - run: mv $DEST/lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone
 
 #      - persist_to_workspace:
 #          root: workspace_macos
@@ -257,6 +268,7 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-cyclone
           # should store  lrose-cyclone-YYYYMMDD.mac_osx.tgz and lrose-cyclone.rb
           # Ah, but don't we want lrose-cyclone.src.osx.tgz?
+
 
 
 
