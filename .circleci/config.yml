@@ -211,6 +211,7 @@ jobs:
             echo "export LROSE_CORE_RELEASE_DATE=$RELEASE_DATE" >> $BASH_ENV
             echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
             echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
+      - run: ls -R /tmp/workspace_macos
       - run: ls -R $RELEASE_DIR
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
 #      - run: mkdir sandbox
