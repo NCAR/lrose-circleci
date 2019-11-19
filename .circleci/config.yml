@@ -176,6 +176,8 @@ jobs:
           root: workspace_macos
           paths: 
             - releases
+            - releases/lrose-core
+            - releases/lrose-core/osx
       - persist_to_workspace:
           root: workspace_linux
           paths: 
