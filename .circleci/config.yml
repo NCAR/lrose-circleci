@@ -240,7 +240,7 @@ jobs:
           at: /tmp/workspace_macos
       - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
   
-      - run: git clone ... get the release tools <====
+#       - run: git clone ... get the release tools <====
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
 
@@ -267,17 +267,17 @@ jobs:
             echo "export checksum=cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum" >> $BASH_ENV
 
 
-       - run: echo $checksum
-       - run: echo $URL
-       - run: echo $TARFILE
-       - run: echo $RELEASE_DATE
+      - run: echo $checksum
+      - run: echo $URL
+      - run: echo $TARFILE
+      - run: echo $RELEASE_DATE
 
-       - run: git clone https://github.com/nsf-lrose/release-tools
+      - run: git clone https://github.com/nsf-lrose/release-tools
 
-       - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
-       - run: mv lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
+      - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
+      - run: mv lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
 
-       - persist_to_workspace:
+      - persist_to_workspace:
           root: workspace_macos
           paths: 
             - releases/lrose-cyclone/osx
