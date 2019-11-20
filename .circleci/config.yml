@@ -291,7 +291,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
-      - run: echo /tmp/workspace_macos/releases/lrose-core/osx/somejunk
+      - run: cat /tmp/workspace_macos/releases/lrose-core/osx/somejunk
 
 
   package-lrose-cyclone:
