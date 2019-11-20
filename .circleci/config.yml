@@ -200,7 +200,7 @@ jobs:
           command: echo "package lrose-cyclone software"
       - run: echo "package lrose-cyclone .rb ..."
       - run: ls -R
-#       - run: brew install ??? -y qt5-qtdeclarative-devel
+      #       - run: brew install ??? -y qt5-qtdeclarative-devel
       # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
       - run: pwd   # /private/tmp
       - run: 
@@ -215,18 +215,14 @@ jobs:
           name: Add to Environment Variables
           command: |        
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+
       - run: ls -R /tmp/workspace_macos
-      # - run: ls -R $RELEASE_DIR
       - run: echo "RELEASE_DATE = " $RELEASE_DATE
       - run: echo "TARGET = " $TARGET
-#      - run: mkdir sandbox
       - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
       - run: ls
 # Grab addons from mmbell
       - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
-      
-#    git clone "https://github.com/mmbell/${tool}.git"
-#    cd $tool
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
 
@@ -258,8 +254,6 @@ jobs:
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
-          # should store  lrose-cyclone-YYYYMMDD.mac_osx.tgz and lrose-cyclone.rb
-          # Ah, but don't we want lrose-cyclone.src.osx.tgz?
 
 
   package-osx-brew-formula:
