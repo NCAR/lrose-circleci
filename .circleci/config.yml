@@ -132,16 +132,7 @@ jobs:
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos
-      # - run: export HOST_OS="OSX_LROSE"
-      # other options: --logDir ...
-      #                --releaseDir .. 
       - run: alias qmake-qt5='qmake'
-#       - run: |
-#          if [[ `echo "y" | ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx` == 0 ]]; then
-#               echo "It worked"
-#           else
-#               tail -n 100 /tmp/create_src_release/logs/*
-#           fi
       - run: 
           name: Setup Environment Variables
           command: |
@@ -156,21 +147,6 @@ jobs:
       - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
 
       - run: ls /tmp/workspace_linux/releases/lrose-core
-# 
-# Running create_src_tar.py:
-#   package:  lrose-core
-#   osx:  True
-#   releaseTopDir:  /tmp/workspace_macos/releases
-#   releaseDir:     /tmp/workspace_macos/releases/lrose-core/osx
-#   tmpDir:         /tmp/workspace_macos/releases/lrose-core/osx/tmp
-#   force:  True
-#   static:  False
-#   versionStr:  20191115
-#   releaseName:  lrose-core-20191115.mac_osx
-#   tarName:  lrose-core-20191115.mac_osx.tgz
-# 
-# running cmd: tar cvfzh lrose-core-20191115.mac_osx.tgz lrose-core-20191115.mac_osx  .....
-# .... done
 
       - persist_to_workspace:
           root: workspace_macos
