@@ -212,18 +212,18 @@ jobs:
             echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
             echo "export TARGET=lrose-cyclone-20191118.src.mac_osx" >> $BASH_ENV
       - run: ls -R /tmp/workspace_macos
-      - run: ls -R $RELEASE_DIR
+      # - run: ls -R $RELEASE_DIR
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
 #      - run: mkdir sandbox
       - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
       - run: ls
 # Grab addons from mmbell
-      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
+      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
       
 #    git clone "https://github.com/mmbell/${tool}.git"
 #    cd $tool
-      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; git checkout -q $TAG
-      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/samurai; rm -rf .git
+      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.mac_osx/samurai; git checkout -q $TAG
+      - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.mac_osx/samurai; rm -rf .git
 
       - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/fractl.git" 
       - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx/fractl; git checkout -q $TAG
