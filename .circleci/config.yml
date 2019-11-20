@@ -223,7 +223,7 @@ jobs:
         # move the tar file into the persisted workspace 
       - run: mv $TARGET.tgz /tmp/workspace_macos/releases/lrose-cyclone/osx
 
-       - persist_to_workspace:
+      - persist_to_workspace:
           root: workspace_macos
           paths: 
             - releases/lrose-cyclone/osx
