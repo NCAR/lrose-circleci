@@ -252,12 +252,13 @@ jobs:
 
 #      - run: checksum=`sha256sum $TARGET | awk '{ print $1; }'` > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
 
+      - run: mkdir -p /tmp/workspace_macos/releases/lrose-cyclone/osx
+
         # generate a checksum for the brew formula; add it to the persisted workspace
       - run: sha256sum $TARGET.tgz > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
       - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
 
         # move the tar file into the persisted workspace 
-      - run: mkdir -p /tmp/workspace_macos/releases/lrose-cyclone/osx
       - run: mv $TARGET.tgz /tmp/workspace_macos/releases/lrose-cyclone/osx
 
       #- run: ls workspace_macos
