@@ -247,10 +247,12 @@ jobs:
 
 # cd ..
       - run: tar zcf $TARGET lrose-core-$RELEASE_DATE.mac_osx
+      - run: ls 
       - run: mkdir -p /tmp/workspace_macos/releases/lrose-cyclone/osx
       - run: mv $TARGET.tgz /tmp/workspace_macos/releases/lrose-cyclone/osx
 
-      - run: checksum=`sha256sum $TARGET | awk '{ print $1; }'` > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
+#      - run: checksum=`sha256sum $TARGET | awk '{ print $1; }'` > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
+      - run: sha256sum $TARGET > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
       - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
       #- run: ls workspace_macos
       #- run: cd release-tools/cyclone
