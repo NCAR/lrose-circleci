@@ -273,6 +273,25 @@ jobs:
           # Ah, but don't we want lrose-cyclone.src.osx.tgz?
 
 
+  workspace-producer:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - run: mkdir -p workspace_macos/lrose-core/osx
+      - run: echo "this is really annoying" > workspace_macos/lrose-core/osx/somejunk
+      - persist_to_workspace:
+          root: workspace_macos
+          paths:
+            - releases/*
+            - releases/lrose-core/osx
+
+  workspace-consumer:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run: echo /tmp/workspace_macos/releases/lrose-core/osx/somejunk
 
 
   package-lrose-cyclone:
@@ -472,10 +491,16 @@ workflows:
           
   now:
     jobs:
-      - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
+      - workspace-producer
+      - workspace-consumer:
           requires:
-           - package-lrose-core-tgz
+           - workspace-producer
+
+
+#      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-core-tgz
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
