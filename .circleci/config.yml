@@ -282,7 +282,7 @@ jobs:
       - persist_to_workspace:
           root: workspace_macos
           paths:
-            - releases/*
+#            - releases/*
             - releases/lrose-core/osx
 
   workspace-consumer:
