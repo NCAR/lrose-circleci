@@ -175,8 +175,6 @@ jobs:
       - persist_to_workspace:
           root: workspace_macos
           paths: 
-            - releases
-            - releases/lrose-core
             - releases/lrose-core/osx
       - persist_to_workspace:
           root: workspace_linux
@@ -217,7 +215,7 @@ jobs:
       - run: ls -R $RELEASE_DIR
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
 #      - run: mkdir sandbox
-      - run: tar zxf $RELEASE_DIR/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
+      - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
       - run: ls
 # Grab addons from mmbell
       - run: cd lrose-core-$LROSE_CORE_RELEASE_DATE.src.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
@@ -491,16 +489,16 @@ workflows:
           
   now:
     jobs:
-      - workspace-producer
-      - workspace-consumer:
-          requires:
-           - workspace-producer
-
-
-#      - package-lrose-core-tgz
-#      - package-lrose-cyclone-tgz:
+#      - workspace-producer
+#      - workspace-consumer:
 #          requires:
-#           - package-lrose-core-tgz
+#           - workspace-producer
+
+
+      - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
+          requires:
+           - package-lrose-core-tgz
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
