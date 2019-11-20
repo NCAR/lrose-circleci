@@ -238,19 +238,9 @@ jobs:
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; rm -rf .git
 
-#    if [ ! -z "$tag" ]; then
-#        git checkout -q "$tag"
-#    fi
-#      rm -rf .git
-#    cd ..
-#done
-
-# cd ..
         # make the cyclone tar file 
       - run: tar zcf $TARGET.tgz lrose-core-$RELEASE_DATE.mac_osx
       - run: ls 
-
-#      - run: checksum=`sha256sum $TARGET | awk '{ print $1; }'` > /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
 
       - run: mkdir -p /tmp/workspace_macos/releases/lrose-cyclone/osx
 
@@ -261,27 +251,10 @@ jobs:
         # move the tar file into the persisted workspace 
       - run: mv $TARGET.tgz /tmp/workspace_macos/releases/lrose-cyclone/osx
 
-      #- run: ls workspace_macos
-      #- run: cd release-tools/cyclone
-
-#  just call the script to build the brew formula
-#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
-
-# begin script ...
-#       - run: git clone ...release-tools
-#- run: set environment variables for script
-# TARGET
-# URL
-# RELEASE_DATE
-# DEST
-# - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
-#    - run: mv $DEST/lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone
- 
-      - persist_to_workspace:
+       - persist_to_workspace:
           root: workspace_macos
           paths: 
             - releases/lrose-cyclone/osx
-
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
@@ -295,8 +268,54 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
-      - run: cat /tmp/workspace_macos/releases/lrose-core/osx/checksum
+      - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
   
+      - run: git clone ... get the release tools <====
+      #- run: ls workspace_macos
+      #- run: cd release-tools/cyclone
+
+#  just call the script to build the brew formula
+#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
+
+# begin script ...
+#       - run: git clone ...release-tools
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export TARFILE=lrose-cyclone-$RELEASE_DATE.src.mac_osx.tgz" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/testing/$TARFILE" >> $BASH_ENV
+            echo "export checksum=cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum" >> $BASH_ENV
+
+
+       - run: echo $checksum
+       - run: echo $URL
+       - run: echo $TARFILE
+       - run: echo $RELEASE_DATE
+
+       - run: git clone https://github.com/nsf-lrose/release-tools
+
+       - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
+       - run: mv lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+       - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-cyclone/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+
   workspace-producer:
     executor: my-executor
     working_directory: /tmp
@@ -376,7 +395,7 @@ jobs:
         # should this be from a workspace? 
       # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
       # - run: brew install lrose-cyclone.rb
-      - run: git clone ... release-tools
+      - run: git clone https://github.com/nsf-lrose/release-tools
       # NOTE: depends on xxxx.src.mac_osx.tgz <======
       - run: release-tools/cyclone/homebrew-scripts/make-lrose-cyclone.sh
       - persist_to_workspace:
@@ -532,6 +551,22 @@ workflows:
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
       # - buildMacOS-Cyclone
+
+#  main:
+#    jobs:
+#      - build:
+#          filters:
+#            tags:
+#              only: /^\d+\.\d+\.\d+$/
+#      - publish-github-release:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^\d+\.\d+\.\d+$/
+
 
 ######
 #
