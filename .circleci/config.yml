@@ -289,7 +289,7 @@ jobs:
   test-brew-install-lrose-cyclone:
     macos:
       xcode: "10.1.0"
-    working_directory: /tmp
+#     working_directory: /tmp
     steps:
       - run:
           name: brew install lrose-cyclone.rb 
