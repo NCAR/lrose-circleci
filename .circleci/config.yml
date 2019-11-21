@@ -308,8 +308,8 @@ jobs:
       - run: 
           name: Add to Environment Variables
           command: |
-            echo "export CHECKSUM32='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
-            echo "export checksum='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+            echo "export CHECKSUM32=`cat /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`" >> $BASH_ENV
+            echo "export checksum=`cat /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`'" >> $BASH_ENV
       - run: echo $checksum
       - run: echo $CHECKSUM32
 
@@ -516,15 +516,13 @@ workflows:
            - workspace-producer
 
 
-  later:
-    jobs:
-      - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
-          requires:
-           - package-lrose-core-tgz
-      - package-osx-brew-formula:
-          requires:
-           - package-lrose-cyclone-tgz
+#      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-core-tgz
+#      - package-osx-brew-formula:
+#          requires:
+#           - package-lrose-cyclone-tgz
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
