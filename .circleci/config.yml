@@ -263,7 +263,7 @@ jobs:
       - run: 
           name: Add to Environment Variables
           command: |
-            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/testing/$TARFILE" >> $BASH_ENV
+            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/$RELEASE_DATE/$TARFILE" >> $BASH_ENV
             echo "export checksum2='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
             echo "export checksum=`sha256sum /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARFILE`" >> $BASH_ENV
 
@@ -284,6 +284,30 @@ jobs:
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+
+  test-brew-install-lrose-cyclone:
+    macos:
+      xcode: "10.1.0"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+      - run:
+          name: brew install lrose-cyclone.rb 
+          command: echo "testing brew install MacOS-Cyclone"
+      - run: brew cask install xquartz 
+        # should this be from a workspace? 
+      # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
+      - run: brew install /tmp/workspace_macos/releases/lrose-cyclone/osx/lrose-cyclone.rb
+      - run: RadxPrint -h
+      - run: vortrac  -h
+      - run: samurai -h
+      - run: fractl -h
+
+
 
 
   workspace-producer:
@@ -383,25 +407,6 @@ jobs:
           path: /tmp/brew-formula
           destination: lrose-cyclone.rb
  
-  test-brew-install-lrose-cyclone:
-    macos:
-      xcode: "10.1.0"
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-          # files will be in /tmp/workspace/output
-      - run:
-          name: brew install lrose-cyclone.rb 
-          command: echo "testing brew install MacOS-Cyclone"
-      # - run: brew install wget
-      - run: brew cask install xquartz 
-        # should this be from a workspace? 
-      # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
-      - run: brew install /tmp/workspace/output/lrose-cyclone.rb
-      - run: RadxPrint -h
-      - run: vortrac  -h
-      - run: samurai -h
-      - run: fractl -h
  
   buildCentos-Cyclone-vortrac-build-changes:
     executor: my-executor
@@ -524,6 +529,9 @@ workflows:
       - package-osx-brew-formula:
           requires:
            - package-lrose-cyclone-tgz
+      - test-brew-install-lrose-cyclone:
+          requires:
+           - package-osx-brew-formula
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
