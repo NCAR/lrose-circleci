@@ -291,7 +291,7 @@ jobs:
     working_directory: /tmp
     steps:
       - run: mkdir -p workspace_macos/releases/lrose-core/osx
-      - run: echo "annoying" > workspace_macos/releases/lrose-core/osx/somejunk
+      - run: echo "this is really annoying" > workspace_macos/releases/lrose-core/osx/somejunk
       - persist_to_workspace:
           root: workspace_macos
           paths:
@@ -308,7 +308,7 @@ jobs:
       - run: 
           name: Add to Environment Variables
           command: |
-            echo "export CHECKSUM32=`cat /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`" >> $BASH_ENV
+            echo "export CHECKSUM32=`awk '{print $1}' /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`" >> $BASH_ENV
             echo "export checksum=`cat /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`'" >> $BASH_ENV
       - run: echo $checksum
       - run: echo $CHECKSUM32
