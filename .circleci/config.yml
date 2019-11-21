@@ -264,8 +264,8 @@ jobs:
           name: Add to Environment Variables
           command: |
             echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/testing/$TARFILE" >> $BASH_ENV
-            echo "export checksum='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
-
+            echo "export checksum2='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+            echo "export checksum='sha256sum /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARFILE'" >> $BASH_ENV
 
       - run: echo $checksum
       - run: echo $URL
