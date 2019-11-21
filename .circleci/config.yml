@@ -302,7 +302,8 @@ jobs:
       - run: brew update
 #      - run: brew install wget
       - run: brew install cmake
-#      - run: brew cask install xquartz 
+        # xquartz is needed! Don't even think about removing this line.
+      - run: brew cask install xquartz 
         # should this be from a workspace? 
       # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
       - run: brew install /tmp/workspace_macos/releases/lrose-cyclone/osx/lrose-cyclone.rb
