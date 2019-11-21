@@ -298,7 +298,11 @@ jobs:
       - run:
           name: brew install lrose-cyclone.rb 
           command: echo "testing brew install MacOS-Cyclone"
-      - run: brew cask install xquartz 
+ 
+      - run: brew update
+#      - run: brew install wget
+      - run: brew install cmake
+#      - run: brew cask install xquartz 
         # should this be from a workspace? 
       # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
       - run: brew install /tmp/workspace_macos/releases/lrose-cyclone/osx/lrose-cyclone.rb
@@ -522,16 +526,16 @@ workflows:
 #           - workspace-producer
 
 
-      - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
-          requires:
-           - package-lrose-core-tgz
-      - package-osx-brew-formula:
-          requires:
-           - package-lrose-cyclone-tgz
-      - test-brew-install-lrose-cyclone:
-          requires:
-           - package-osx-brew-formula
+#      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-core-tgz
+#      - package-osx-brew-formula:
+#          requires:
+#           - package-lrose-cyclone-tgz
+#      - test-brew-install-lrose-cyclone:
+#          requires:
+#           - package-osx-brew-formula
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
