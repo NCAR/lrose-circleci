@@ -509,7 +509,9 @@ jobs:
   # build from the head of lrose-core
   build-cyclone-docker:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
-    executor: ubuntu-executor
+    # executor: ubuntu-executor
+    machine:
+      docker_layer_caching: true
     steps:
       - run: date
       ## - checkout
