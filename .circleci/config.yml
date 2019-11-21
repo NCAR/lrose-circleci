@@ -542,6 +542,9 @@ workflows:
           
   now:
     jobs:
+      - test-brew-install-lrose-cyclone
+
+
 #      - workspace-producer
 #      - workspace-consumer:
 #          requires:
@@ -559,7 +562,6 @@ workflows:
 #          requires:
 #           - package-osx-brew-formula
 
-      - test-brew-install-lrose-cyclone:
 
 
       # - build-cyclone-docker
