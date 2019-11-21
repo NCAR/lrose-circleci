@@ -291,7 +291,7 @@ jobs:
     working_directory: /tmp
     steps:
       - run: mkdir -p workspace_macos/releases/lrose-core/osx
-      - run: echo "this is really annoying" > workspace_macos/releases/lrose-core/osx/somejunk
+      - run: echo "annoying" > workspace_macos/releases/lrose-core/osx/somejunk
       - persist_to_workspace:
           root: workspace_macos
           paths:
