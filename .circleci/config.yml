@@ -526,16 +526,16 @@ workflows:
 #           - workspace-producer
 
 
-#      - package-lrose-core-tgz
-#      - package-lrose-cyclone-tgz:
-#          requires:
-#           - package-lrose-core-tgz
-#      - package-osx-brew-formula:
-#          requires:
-#           - package-lrose-cyclone-tgz
-#      - test-brew-install-lrose-cyclone:
-#          requires:
-#           - package-osx-brew-formula
+      - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
+          requires:
+           - package-lrose-core-tgz
+      - package-osx-brew-formula:
+          requires:
+           - package-lrose-cyclone-tgz
+      - test-brew-install-lrose-cyclone:
+          requires:
+           - package-osx-brew-formula
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
