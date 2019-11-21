@@ -511,19 +511,19 @@ workflows:
           
   now:
     jobs:
-      - workspace-producer
-      - workspace-consumer:
+#      - workspace-producer
+#      - workspace-consumer:
+#          requires:
+#           - workspace-producer
+
+
+      - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
           requires:
-           - workspace-producer
-
-
-#      - package-lrose-core-tgz
-#      - package-lrose-cyclone-tgz:
-#          requires:
-#           - package-lrose-core-tgz
-#      - package-osx-brew-formula:
-#          requires:
-#           - package-lrose-cyclone-tgz
+           - package-lrose-core-tgz
+      - package-osx-brew-formula:
+          requires:
+           - package-lrose-cyclone-tgz
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
