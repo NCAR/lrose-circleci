@@ -520,7 +520,7 @@ jobs:
       - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
       - run: pwd
       - run: ls workspace
-      - run: cd workspace/release-tools/cyclone/lrose-docker-scripts; build.sh
+      - run: cd workspace/release-tools/cyclone/lrose-docker-scripts; ./build.sh
       - run: ls -R
 #      - persist_to_workspace:
 #          root: workspace
