@@ -290,6 +290,26 @@ jobs:
     macos:
       xcode: "10.1.0"
 
+      - run:
+          name: brew install lrose-cyclone.rb 
+          command: echo "testing brew install MacOS-Cyclone"
+ 
+      - run: brew update
+      - run: brew install wget
+      - run: brew install cmake
+        # xquartz is needed! Don't even think about removing this line.
+      - run: brew cask install xquartz 
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191121/lrose-cyclone.rb
+      - run: brew install lrose-cyclone.rb
+      - run: RadxPrint -h
+      - run: vortrac  -h
+      - run: samurai -h
+      - run: fractl -h
+
+  test-brew-install-lrose-cyclone-from-workspace:
+    macos:
+      xcode: "10.1.0"
+
     working_directory: /tmp
     steps:
       - attach_workspace:
@@ -300,7 +320,7 @@ jobs:
           command: echo "testing brew install MacOS-Cyclone"
  
       - run: brew update
-#      - run: brew install wget
+      # - run: brew install wget
       - run: brew install cmake
         # xquartz is needed! Don't even think about removing this line.
       - run: brew cask install xquartz 
@@ -527,16 +547,19 @@ workflows:
 #           - workspace-producer
 
 
-      - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
-          requires:
-           - package-lrose-core-tgz
-      - package-osx-brew-formula:
-          requires:
-           - package-lrose-cyclone-tgz
+#      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-core-tgz
+#      - package-osx-brew-formula:
+#          requires:
+#           - package-lrose-cyclone-tgz
+#      - test-brew-install-lrose-cyclone-from-workspace:
+#          requires:
+#           - package-osx-brew-formula
+
       - test-brew-install-lrose-cyclone:
-          requires:
-           - package-osx-brew-formula
+
 
       # - build-cyclone-docker
       # - buildCentos-Cyclone-vortrac-build-changes  
