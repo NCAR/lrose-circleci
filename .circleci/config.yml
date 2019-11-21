@@ -305,10 +305,11 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
       - run: cat /tmp/workspace_macos/releases/lrose-core/osx/somejunk
+      - run: awk '{print $1;}' /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk
       - run: 
           name: Add to Environment Variables
           command: |
-            echo "export CHECKSUM32=`awk '{print $1}' /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`" >> $BASH_ENV
+            echo "export CHECKSUM32=`awk '{print $1;}' /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`" >> $BASH_ENV
             echo "export checksum=`cat /tmp/workspace_macos/releases/lrose-cyclone/osx/somejunk`'" >> $BASH_ENV
       - run: echo $checksum
       - run: echo $CHECKSUM32
