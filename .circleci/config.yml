@@ -264,7 +264,7 @@ jobs:
           name: Add to Environment Variables
           command: |
             echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/testing/$TARFILE" >> $BASH_ENV
-            echo "export checksum=cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum" >> $BASH_ENV
+            echo "export checksum='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
 
 
       - run: echo $checksum
@@ -305,7 +305,13 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
       - run: cat /tmp/workspace_macos/releases/lrose-core/osx/somejunk
-
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export CHECKSUM32='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+            echo "export checksum='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+      - run: echo $checksum
+      - run: echo $CHECKSUM32
 
   package-lrose-cyclone:
     macos:
@@ -504,12 +510,14 @@ workflows:
           
   now:
     jobs:
-#      - workspace-producer
-#      - workspace-consumer:
-#          requires:
-#           - workspace-producer
+      - workspace-producer
+      - workspace-consumer:
+          requires:
+           - workspace-producer
 
 
+  later:
+    jobs:
       - package-lrose-core-tgz
       - package-lrose-cyclone-tgz:
           requires:
