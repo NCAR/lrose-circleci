@@ -298,9 +298,9 @@ jobs:
  
       - run: brew update
       - run: brew install wget
-      - run: brew install cmake
+      # - run: brew install cmake
         # xquartz is needed! Don't even think about removing this line.
-      - run: brew cask install xquartz 
+      - run: brew install xquartz 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191121/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
       - run: RadxPrint -h
@@ -483,6 +483,34 @@ jobs:
       - run: /usr/local/lrose/bin/fractl -h
       - run: /usr/local/lrose/bin/vortrac -h
 
+
+#  working here ...
+#  buildntest-osx-lrose-cyclone-tgz:
+#    macos:
+#  ...
+#    attach_workspace:
+#           - package-lrose-cyclone-tgz
+#
+#    - run: tar xvf lrose-cyclone-xxxxxx.mac_osx.tgz
+#    - run: build libs
+#    - run: build apps
+#    - persist_workspace:
+#        - path: entire_build and install area
+
+#  package-osx-lrose-cyclone-apps:
+#    macos:
+ #...
+#    attach_workspace:
+#    - path: entire_build and install area
+#           - buildntest-osx-lrose-cyclone-tgz
+#    - run: cd codebase/apps/radar/src/HawkEye; make hawkeye_app_nosign
+#    - run: cd vortrac; make app?
+#    - persist_artifacts:
+#      - path: HawkEye.app
+#    - persist_artifacts:
+#      - path: Vortrac.app
+
+
   # build from a tagged version of lrose-core
   build-cyclone-docker-tagged-version:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
@@ -578,8 +606,8 @@ workflows:
           
   now:
     jobs:
-#       - test-brew-install-lrose-cyclone
-      - build-cyclone-docker
+       - test-brew-install-lrose-cyclone
+#       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
 #      - workspace-producer
 #      - workspace-consumer:
@@ -594,6 +622,22 @@ workflows:
 #      - package-osx-brew-formula:
 #          requires:
 #           - package-lrose-cyclone-tgz
+
+#      - buildntest-osx-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-cyclone-tgz
+
+#      - package-osx-lrose-cyclone-apps:
+#          requires:
+#           - buildntest-osx-lrose-cyclone-tgz
+
+
+#      - buildntest-linux-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-cyclone-tgz
+
+
+# not functional until pushing artifacts to git repo ...
 #      - test-brew-install-lrose-cyclone-from-workspace:
 #          requires:
 #           - package-osx-brew-formula
