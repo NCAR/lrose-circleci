@@ -198,21 +198,29 @@ jobs:
       - run: echo "TARGET = " $TARGET
       - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
       - run: ls
+
+# Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE.mac_osx/share 
+#      - run: cd lrose-core-$RELEASE_DATE.mac_osx/lrose-displays/color_scales; git checkout -q $TAG
+#      - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
+
 # Grab addons from mmbell
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone "https://github.com/mmbell/samurai.git" 
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/samurai.git 
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone "https://github.com/mmbell/fractl.git" 
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/fractl.git 
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/fractl; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/fractl; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone "https://github.com/mmbell/vortrac.git" 
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/vortrac.git 
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; rm -rf .git
 
         # make the cyclone tar file 
-      - run: tar zcf $TARGET.tgz lrose-core-$RELEASE_DATE.mac_osx
+      - run: mv lrose-core-$RELEASE_DATE.mac_osx lrose-cyclone-$RELEASE_DATE.mac_osx
+      - run: tar zcf $TARGET.tgz lrose-cyclone-$RELEASE_DATE.mac_osx
       - run: ls 
 
       - run: mkdir -p /tmp/workspace_macos/releases/lrose-cyclone/osx
@@ -608,7 +616,7 @@ workflows:
           
   now:
     jobs:
-       - test-brew-install-lrose-cyclone
+#       - test-brew-install-lrose-cyclone
 #       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
 #      - workspace-producer
@@ -617,13 +625,13 @@ workflows:
 #           - workspace-producer
 
 
-#      - package-lrose-core-tgz
-#      - package-lrose-cyclone-tgz:
-#          requires:
-#           - package-lrose-core-tgz
-#      - package-osx-brew-formula:
-#          requires:
-#           - package-lrose-cyclone-tgz
+      - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
+          requires:
+           - package-lrose-core-tgz
+      - package-osx-brew-formula:
+          requires:
+           - package-lrose-cyclone-tgz
 
 #      - buildntest-osx-lrose-cyclone-tgz:
 #          requires:
