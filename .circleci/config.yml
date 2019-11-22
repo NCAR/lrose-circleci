@@ -302,11 +302,11 @@ jobs:
         # xquartz is needed! Don't even think about removing this line.
       # - run: brew install homebrew/cask-cask/brew-cask
         # Error: caskroom/cask was moved. Tap homebrew/cask-cask instead.
-      - run: brew cask install xquartz 
+      # - run: brew cask install xquartz 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191121/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
       - run: RadxPrint -h
-      - run: vortrac  -h
+      # - run: vortrac  -h
       - run: samurai -h
       - run: fractl -h
 
