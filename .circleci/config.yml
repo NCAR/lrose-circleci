@@ -300,7 +300,8 @@ jobs:
       - run: brew install wget
       # - run: brew install cmake
         # xquartz is needed! Don't even think about removing this line.
-      # - run: brew install xquartz 
+      - run: brew install caskroom/cask/brew-cask
+      - run: brew cask install xquartz 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191121/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
       - run: RadxPrint -h
