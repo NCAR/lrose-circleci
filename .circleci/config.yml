@@ -411,8 +411,9 @@ jobs:
           name: Build/install samurai  
           command: |
             echo "building samurai"
-            cd workarea/$TARGET/samurai; cmake .
-            cd workarea/$TARGET/samurai; make VERBOSE=1
+            cd workarea/$TARGET/samurai
+            cmake .
+            make VERBOSE=1
 
                                                                                        
     # Build/install vortrac                                                            
@@ -426,11 +427,40 @@ jobs:
     #Dir.chdir("..")                                                                   
     #system "rsync", "-av", "Resources", "#{prefix}"                                   
     #Dir.chdir("..")                
-      
+
+      - run:
+          name: Build/install vortrac  
+          command: |
+            echo "building vortrac"
+            cd workarea/$TARGET/vortrac
+            qmake .
+            make
+            rsync -av Resources $LROSE_INSTALL_DIR
+            
+      # TODO: create the DMG then, save as an artifact
+      - run:
+          name: Build HawkEye DMG
+          command: |
+            cd workarea/$TARGET/codebase/apps/radar/src/HawkEye
+            make from_qmake
+            mkdir -p HawkEye.app/Contents/Frameworks
+            cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
+            mkdir -p HawkEye.app/Contents/MacOS/../share
+            cp -r ~/git/lrose-displays/color_scales HawkEye.app/Contents/MacOS/../share/.
+            macdeployqt HawkEye.app -dmg -always-overwrite
+            hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
+
       - run: RadxPrint -h
       - run: vortrac  -h
       - run: samurai -h
       - run: fractl -h
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone
 
 
   package-linux-lrose-cyclone-tgz:
@@ -512,6 +542,7 @@ jobs:
       - run: yum install -y qt5-qtdeclarative-devel
         # needed for fractl, etc.
       - run: yum install -y cmake
+      - run: yum install -y cmake3
 
       - run: 
           name: Setup Environment Variables
