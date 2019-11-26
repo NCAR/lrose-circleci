@@ -519,7 +519,9 @@ jobs:
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
-
+    #ENV['LROSE_ROOT_DIR'] = prefix                                                    
+            echo "export NETCDF_INCLUDE=/usr/local/lrose/include" >> $BASH_ENV 
+            echo "export NETCDF_LIB=/usr/local/lrose/lib" >> $BASH_ENV  #ENV['NETCDF_LIB'] = "#{prefix}/lib"                                               
       - run:
           name: extract lrose-cyclone tgz 
           command: |
@@ -534,7 +536,7 @@ jobs:
           command: |
             echo "building lrose-cyclone from tgz"
             cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-            cd workarea; cd $TARGET; make install
+            make install
    
       - run: rsync -av share $LROSE_INSTALL_DIR                                        
                                        
@@ -543,7 +545,7 @@ jobs:
           command: |
             echo "building fractl"
             cd workarea/$TARGET/fractl; cmake .
-            cd workarea/$TARGET/fractl; make
+            make
 
    #   - run: cd fractl                                                                
    # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
@@ -568,7 +570,15 @@ jobs:
           command: |
             echo "building samurai"
             cd workarea/$TARGET/samurai; cmake .
-            cd workarea/$TARGET/samurai; make VERBOSE=1
+            make VERBOSE=1
+
+      - run:
+          name: Build/install vortrac  
+          command: |
+            echo "building vortrac"
+            cd workarea/$TARGET/vortrac; qmake .
+            make
+            rsync -av Resources $LROSE_INSTALL_DIR
 
                                                                                        
     # Build/install vortrac                                                            
