@@ -345,9 +345,160 @@ jobs:
       - run: fractl -h
 
 
-#  test-macos-lrose-cyclone-tgz:
-#    macos:
-#      xcode: "10.1.0"
+  test-macos-lrose-cyclone-tgz:
+    macos:
+      xcode: "10.1.0"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+
+      - run:
+          name: extract lrose-cyclone tgz 
+          command: |
+            echo "extracting lrose-cyclone from tgz"
+            mkdir workarea
+            cd workarea; tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+      - run:
+          name: build lrose-cyclone 
+          command: |
+            echo "building lrose-cyclone from tgz"
+            cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+            cd workarea/$TARGET; make install
+   
+      - run: rsync -av share $LROSE_INSTALL_DIR                                        
+                                       
+      - run:
+          name: Build/install fractl  
+          command: |
+            echo "building fractl"
+            cd workarea/$TARGET/fractl; cmake .
+            cd workarea/$TARGET/fractl; make
+
+   #   - run: cd fractl                                                                
+   # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
+   # system "cmake", "."                                                                
+   # system "make"                                                                      
+   # bin.install 'build/release/bin/fractl'                                             
+   # Dir.chdir("..")                                                                    
+                                                                                       
+    # Build/install samurai                                                            
+#    Dir.chdir("samurai")                                                               
+#    ENV['LROSE_ROOT_DIR'] = prefix                                                     
+#    system "cmake", "."                                                                
+#    system "make", "VERBOSE=1"                                                         
+#    bin.install 'build/release/bin/samurai'                                            
+#    lib.install 'build/release/lib/libsamurai.a'                                       
+#    lib.install 'build/release/lib/libsamurai.dylib'                                   
+#    include.install 'src/samurai.h'                                                    
+#    Dir.chdir("..")                                                                    
+
+      - run:
+          name: Build/install samurai  
+          command: |
+            echo "building samurai"
+            cd workarea/$TARGET/samurai; cmake .
+            cd workarea/$TARGET/samurai; make VERBOSE=1
+
+                                                                                       
+    # Build/install vortrac                                                            
+    #Dir.chdir("vortrac/src")                                                          
+    #ENV['LROSE_ROOT_DIR'] = prefix                                                    
+    #ENV['NETCDF_INCLUDE'] = "#{prefix}/include"                                       
+    #ENV['NETCDF_LIB'] = "#{prefix}/lib"                                               
+    #system "qmake", "."                                                               
+    #system "make"                                                                     
+    #bin.install 'vortrac.app/Contents/MacOS/vortrac'                                  
+    #Dir.chdir("..")                                                                   
+    #system "rsync", "-av", "Resources", "#{prefix}"                                   
+    #Dir.chdir("..")                
+      
+      - run: RadxPrint -h
+      - run: vortrac  -h
+      - run: samurai -h
+      - run: fractl -h
+
+
+  package-linux-lrose-cyclone-tgz:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_linux
+      - run:
+          name: package lrose-cyclone packages ( .tgz )
+          command: echo "package lrose-cyclone software"
+      - run: echo "package lrose-cyclone .tgz ..."
+      - run: ls -R
+      - run: pwd   # /private/tmp
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_linux/releases" >> $BASH_ENV
+            #echo "export LROSE_CORE_RELEASE_DATE=$RELEASE_DATE" >> $BASH_ENV
+            echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |        
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src" >> $BASH_ENV
+
+      - run: ls -R /tmp/workspace_linux
+      - run: echo "RELEASE_DATE = " $RELEASE_DATE
+      - run: echo "TARGET = " $TARGET
+      - run: tar zxf /tmp/workspace_linux/releases/lrose-core/lrose-core-$RELEASE_DATE.src.tgz
+      - run: ls
+
+# Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE/share 
+
+# Grab addons from mmbell
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/samurai.git 
+      - run: cd lrose-core-$RELEASE_DATE/samurai; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/samurai; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/fractl.git 
+      - run: cd lrose-core-$RELEASE_DATE/fractl; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/fractl; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/vortrac.git 
+      - run: cd lrose-core-$RELEASE_DATE/vortrac; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/vortrac; rm -rf .git
+
+        # make the cyclone tar file 
+      - run: mv lrose-core-$RELEASE_DATE lrose-cyclone-$RELEASE_DATE
+      - run: tar zcf $TARGET.tgz lrose-cyclone-$RELEASE_DATE
+      - run: ls 
+
+      - run: mkdir -p /tmp/workspace_linux/releases/lrose-cyclone
+
+        # move the tar file into the persisted workspace 
+      - run: mv $TARGET.tgz /tmp/workspace_linux/releases/lrose-cyclone
+
+      - persist_to_workspace:
+          root: workspace_linux
+          paths: 
+            - releases/lrose-cyclone
+
+      - store_artifacts:
+          path: /tmp/workspace_linux/releases/lrose-cyclone
+
+
   test-linux-lrose-cyclone-tgz:
     executor: my-executor
 
@@ -714,14 +865,17 @@ workflows:
 #           - workspace-producer
 
 
-      - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
+#      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
+#          requires:
+#           - package-lrose-core-tgz
+
+      - package-linux-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-
       - test-linux-lrose-cyclone-tgz:
           requires:
-           - package-lrose-cyclone-tgz
+           - package-linux-lrose-cyclone-tgz
           
 #      - package-osx-brew-formula:
 #          requires:
