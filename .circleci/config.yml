@@ -364,7 +364,7 @@ jobs:
       - run:
           name: Add to Environment Variables
           command: |
-            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
