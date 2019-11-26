@@ -362,7 +362,7 @@ jobs:
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
       - run:
-          name: Add to Evironment Variables
+          name: Add to Environment Variables
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
@@ -370,22 +370,25 @@ jobs:
 
       - run:
           name: extract lrose-cyclone tgz 
-          command: echo "extracting lrose-cyclone from tgz"
-          command: mkdir workarea
-          command: cd workarea; tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+          command: |
+            echo "extracting lrose-cyclone from tgz"
+            mkdir workarea
+            cd workarea; tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
       - run:
           name: build lrose-cyclone 
-          command: echo "building lrose-cyclone from tgz"
-          command: cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-          command: cd workarea/$TARGET; make install
+          command: |
+            echo "building lrose-cyclone from tgz"
+            cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+            cd workarea/$TARGET; make install
    
       - run: rsync -av share $LROSE_INSTALL_DIR                                        
                                        
       - run:
           name: Build/install fractl  
-          command: echo "building fractl"
-          command: cd workarea/$TARGET/fractl; cmake .
-          command: cd workarea/$TARGET/fractl; make
+          command: |
+            echo "building fractl"
+            cd workarea/$TARGET/fractl; cmake .
+            cd workarea/$TARGET/fractl; make
 
    #   - run: cd fractl                                                                
    # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
@@ -407,9 +410,10 @@ jobs:
 
       - run:
           name: Build/install samurai  
-          command: echo "building samurai"
-          command: cd workarea/$TARGET/samurai; cmake .
-          command: cd workarea/$TARGET/samurai; make VERBOSE=1
+          command: |
+            echo "building samurai"
+            cd workarea/$TARGET/samurai; cmake .
+            cd workarea/$TARGET/samurai; make VERBOSE=1
 
                                                                                        
     # Build/install vortrac                                                            
