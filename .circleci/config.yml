@@ -508,7 +508,10 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_linux
 
+        # needed for QJSEngine
       - run: yum install -y qt5-qtdeclarative-devel
+        # needed for fractl, etc.
+      - run: yum install -y cmake
 
       - run: 
           name: Setup Environment Variables
