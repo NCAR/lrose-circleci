@@ -354,7 +354,7 @@ jobs:
     working_directory: /tmp
     steps:
       - attach_workspace:
-          at: /tmp/workspace_macos
+          at: /tmp/workspace_linux
 
       - run: 
           name: Setup Environment Variables
@@ -373,7 +373,8 @@ jobs:
           command: |
             echo "extracting lrose-cyclone from tgz"
             mkdir workarea
-            cd workarea; tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+            # HERE
+            cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.tgz
       - run:
           name: build lrose-cyclone 
           command: |
@@ -427,8 +428,6 @@ jobs:
     #Dir.chdir("..")                                                                   
     #system "rsync", "-av", "Resources", "#{prefix}"                                   
     #Dir.chdir("..")                
-
-
       
       - run: RadxPrint -h
       - run: vortrac  -h
