@@ -585,7 +585,9 @@ jobs:
       # sending incremental file list
       # rsync: link_stat "/tmp/share" failed: No such file or directory (2)
       # Q: Are the color scales included in the tar file?
-                    
+            
+      - run: yum install -y libzip-devel
+      - run: yum install -y GeographicLib-devel        
       - run:
           name: Build/install fractl  
           command: |
