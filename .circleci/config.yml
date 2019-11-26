@@ -516,7 +516,7 @@ jobs:
       - run:
           name: Add to Environment Variables
           command: |
-            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src" >> $BASH_ENV
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
@@ -526,7 +526,7 @@ jobs:
             echo "extracting lrose-cyclone from tgz"
             mkdir workarea
             # HERE
-            cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.tgz
+            cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.src.tgz
       - run:
           name: build lrose-cyclone 
           command: |
