@@ -588,7 +588,9 @@ jobs:
             
       - run: yum install -y libzip-devel
       - run: yum install -y GeographicLib-devel        
-      - run:
+      - run: yum install -y eigen3-devel
+      - run: yum install -y armadillo
+
           name: Build/install fractl  
           command: |
             echo "building fractl"
