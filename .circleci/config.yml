@@ -367,6 +367,12 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
+        # needed for QJSEngine
+      - run: brew install qt5-qtdeclarative-devel
+      # needed for fractl, etc.                                                                               
+      - run: brew install cmake
+      - run: brew install cmake3
+
       - run:
           name: extract lrose-cyclone tgz 
           command: |
@@ -584,7 +590,7 @@ jobs:
           name: Build/install fractl  
           command: |
             echo "building fractl"
-            cd workarea/$TARGET/fractl; cmake .
+            cd workarea/$TARGET/fractl; /usr/bin/cmake3 .
             make
 
    #   - run: cd fractl                                                                
@@ -609,7 +615,7 @@ jobs:
           name: Build/install samurai  
           command: |
             echo "building samurai"
-            cd workarea/$TARGET/samurai; cmake .
+            cd workarea/$TARGET/samurai; /usr/bin/cmake3 .
             make VERBOSE=1
 
       - run:
