@@ -870,6 +870,7 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
+      - package-lrose-core-tgz
       - package-linux-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
