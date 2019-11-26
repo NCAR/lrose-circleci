@@ -508,6 +508,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_linux
 
+      - run: yum install -y qt5-qtdeclarative-devel
+
       - run: 
           name: Setup Environment Variables
           command: |
