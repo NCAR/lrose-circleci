@@ -527,7 +527,8 @@ jobs:
             mkdir workarea
             # HERE
             cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.src.tgz
-            ls workarea
+            pwd
+            ls
       - run:
           name: build lrose-cyclone 
           command: |
