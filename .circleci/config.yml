@@ -527,12 +527,13 @@ jobs:
             mkdir workarea
             # HERE
             cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.src.tgz
+            ls workarea
       - run:
           name: build lrose-cyclone 
           command: |
             echo "building lrose-cyclone from tgz"
             cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-            cd workarea/$TARGET; make install
+            cd workarea; cd $TARGET; make install
    
       - run: rsync -av share $LROSE_INSTALL_DIR                                        
                                        
