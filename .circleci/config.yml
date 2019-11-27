@@ -591,6 +591,9 @@ jobs:
       - run: yum install -y eigen3-devel
       - run: yum install -y armadillo
 
+      - run: ls -R /usr/local/lrose/include
+      - run: echo $NETCDF_INCLUDES
+
       - run:
           name: Build/install fractl  
           command: |
