@@ -562,8 +562,8 @@ jobs:
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
-            #echo "export NETCDF_INCLUDES=/usr/local/lrose/include" >> $BASH_ENV 
-            #echo "export NETCDF_LIBRARIES=/usr/local/lrose/lib" >> $BASH_ENV 
+            echo "export NETCDF_INCLUDES=/usr/local/include" >> $BASH_ENV 
+            echo "export NETCDF_LIBRARIES=/usr/local/lib" >> $BASH_ENV 
 
       - run:
           name: extract lrose-cyclone tgz 
