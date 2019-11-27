@@ -549,6 +549,7 @@ jobs:
         # needed for fractl, etc.
       - run: yum install -y cmake
       - run: yum install -y cmake3
+      - run: yum install -y netcdf-devel
 
       - run: 
           name: Setup Environment Variables
@@ -561,8 +562,8 @@ jobs:
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export NETCDF_INCLUDES=/usr/local/lrose/include" >> $BASH_ENV 
-            echo "export NETCDF_LIBRARIES=/usr/local/lrose/lib" >> $BASH_ENV 
+            #echo "export NETCDF_INCLUDES=/usr/local/lrose/include" >> $BASH_ENV 
+            #echo "export NETCDF_LIBRARIES=/usr/local/lrose/lib" >> $BASH_ENV 
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -591,8 +592,8 @@ jobs:
       - run: yum install -y eigen3-devel
       - run: yum install -y armadillo
 
-      - run: ls -R /usr/local/lrose/include
-      - run: echo $NETCDF_INCLUDES
+      #- run: ls -R /usr/local/lrose/include
+      # - run: echo $NETCDF_INCLUDES
 
       - run:
           name: Build/install fractl  
