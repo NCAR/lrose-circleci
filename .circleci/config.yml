@@ -587,8 +587,6 @@ jobs:
           name: extract lrose-cyclone tgz 
           command: |
             echo "extracting lrose-cyclone from tgz"
-            mkdir workarea
-            # HERE
             cd workarea; tar xf /tmp/workspace_linux/releases/lrose-cyclone/$TARGET.src.tgz
             pwd
             ls
