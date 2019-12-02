@@ -7,7 +7,16 @@ executors:
     docker:
       # - image: centos  
       # - image: circleci/cci-demo-docker-primary:0.0.1
+      # this is CentOS Linux release 7.6.1810 (Core) TODO: move this to centos 7.7
       - image: leavesntwigs/lrose-build-env:centos-20190301
+    working_directory: /tmp
+
+  centos7-executor:
+    docker:
+      # - image: centos
+      # cat /etc/redhat-release
+      # this is CentOS Linux release 7.7.1908 (Core)  
+      - image: leavesntwigs/lrose-build-env-centos7:20191202
     working_directory: /tmp
 
   ubuntu-executor:
@@ -121,14 +130,14 @@ jobs:
   #       build it on a linux platform using automake and libtool
   #
   package-lrose-core-tgz:
-    executor: my-executor
+    executor: centos7-executor
     working_directory: /tmp
     steps:
       - run:
           name: build MacOS tgz
           command: echo "build MacOS source tgz"
       - run: echo "building lrose-core ..."
-      - run: yum install -y qt5-qtdeclarative-devel
+      # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
       - run: mkdir -p workspace_macos
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
@@ -470,7 +479,7 @@ jobs:
 
 
   package-linux-lrose-cyclone-tgz:
-    executor: my-executor
+    executor: centos7-executor
     working_directory: /tmp
     steps:
       - attach_workspace:
@@ -537,29 +546,30 @@ jobs:
 
 
   test-linux-lrose-cyclone-tgz:
-    executor: my-executor
+    executor: centos7-executor
 
     working_directory: /tmp
     steps:
       - attach_workspace:
           at: /tmp/workspace_linux
 
+      # done in centos7-executor container
         # needed for QJSEngine
-      - run: yum install -y qt5-qtdeclarative-devel
+      # - run: yum install -y qt5-qtdeclarative-devel
         # needed for fractl, etc.
-      - run: yum install -y cmake
-      - run: yum install -y cmake3
+      #- run: yum install -y cmake
+      #- run: yum install -y cmake3
 
       - run: mkdir workarea
 
-      - run:
-          name: Install lrose-netcdf (provides netcdfcpp.h needed by fractl)
-          command: |
-            cd workarea
-            git clone https://github.com/NCAR/lrose-netcdf
-            cd lrose-netcdf
-            ./build_and_install_netcdf -x /usr/local/lrose
-            ls /usr/local/lrose/include/net*
+      #- run:
+      #    name: Install lrose-netcdf (provides netcdfcpp.h needed by fractl)
+      #    command: |
+      #      cd workarea
+      #      git clone https://github.com/NCAR/lrose-netcdf
+      #      cd lrose-netcdf
+      #      ./build_and_install_netcdf -x /usr/local/lrose
+      #      ls /usr/local/lrose/include/net*
       # - run: yum install -y netcdf-devel
 
 
@@ -568,14 +578,15 @@ jobs:
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
       - run:
           name: Add to Environment Variables
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export NETCDF_INCLUDES=/usr/local/lrose/include" >> $BASH_ENV 
-            echo "export NETCDF_LIBRARIES=/usr/local/lrose/lib" >> $BASH_ENV 
+            echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
+            echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
             
 
 # TODO: may need these ...
@@ -596,19 +607,24 @@ jobs:
             echo "building lrose-cyclone from tgz"
             cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
             make install
+
+      - run:
+          name: install locate tool
+          command: |
+            update db
+            locate hdf5
    
       # TODO:
       # - run: rsync -av share $LROSE_INSTALL_DIR                                        
       # sending incremental file list
       # rsync: link_stat "/tmp/share" failed: No such file or directory (2)
       # Q: Are the color scales included in the tar file?
-            
-      - run: yum install -y libzip-devel
-      - run: yum install -y GeographicLib-devel        
-      - run: yum install -y eigen3-devel
-      - run: yum install -y armadillo
-
-
+        
+      # done in cento7-executor container    
+      # - run: yum install -y libzip-devel
+      # - run: yum install -y GeographicLib-devel        
+      # - run: yum install -y eigen3-devel
+      # - run: yum install -y armadillo
 
       #- run: ls -R /usr/local/lrose/include
       # - run: echo $NETCDF_INCLUDES
