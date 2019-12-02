@@ -608,12 +608,12 @@ jobs:
             cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
             make install
 
-      - run:
-          name: install locate tool
-          command: |
-            update db
-            locate hdf5
-   
+      #- run:
+      #    name: install locate tool
+      #    command: |
+      #
+      #      locate hdf5
+    
       # TODO:
       # - run: rsync -av share $LROSE_INSTALL_DIR                                        
       # sending incremental file list
