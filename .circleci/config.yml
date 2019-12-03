@@ -518,8 +518,8 @@ jobs:
       - run: cd lrose-core-$RELEASE_DATE/samurai; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE/samurai; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/fractl.git 
-      - run: cd lrose-core-$RELEASE_DATE/fractl; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/fractl 
+      # - run: cd lrose-core-$RELEASE_DATE/fractl; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE/fractl; rm -rf .git
 
       - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/vortrac.git 
