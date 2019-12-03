@@ -34,7 +34,8 @@ RUN \
        libzip-devel \
        GeographicLib-devel \
        eigen3-devel \
-       armadillo
+       armadillo-devel \
+       openmpi-devel
 
        #  ca-certificates  needed to persist workspace
        # epel-release  VITAL for netcdf install!

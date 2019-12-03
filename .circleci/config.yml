@@ -19,6 +19,14 @@ executors:
       - image: leavesntwigs/lrose-build-env-centos7:20191202
     working_directory: /tmp
 
+  centos8-executor:
+    docker:
+      # - image: centos
+      # cat /etc/redhat-release
+      # this is CentOS Linux release 8.? (Core)  
+      - image: leavesntwigs/lrose-build-env-centos8:20191203
+    working_directory: /tmp
+
   ubuntu-executor:
     docker:
       - image: leavesntwigs/lrose-build-env-ubuntu:20191004
@@ -623,8 +631,8 @@ jobs:
       # - run: yum install -y libzip-devel
       # - run: yum install -y GeographicLib-devel        
       # - run: yum install -y eigen3-devel
-      - run: yum install -y armadillo-devel
-      - run: yum install -y openmpi-devel
+      # - run: yum install -y armadillo-devel
+      # - run: yum install -y openmpi-devel
 
 
       #- run: ls -R /usr/local/lrose/include
@@ -721,8 +729,12 @@ jobs:
       
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
       - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
-      - run: $LROSE_INSTALL_DIR/bin/fractl -h
       - run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      # annoying ... returns error: Exited with code exit status 1 
+      # which causes a failure, but it works.  So, we need to fix this ...
+      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
       - run: workarea/$TARGET/vortrac/src/vortrac -h
 
 #       - run: fractl -h
