@@ -514,8 +514,8 @@ jobs:
       - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE/share 
 
 # Grab addons from mmbell
-      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/samurai.git 
-      - run: cd lrose-core-$RELEASE_DATE/samurai; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/samurai
+      # - run: cd lrose-core-$RELEASE_DATE/samurai; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE/samurai; rm -rf .git
 
       - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/fractl 
@@ -624,6 +624,8 @@ jobs:
       # - run: yum install -y GeographicLib-devel        
       # - run: yum install -y eigen3-devel
       - run: yum install -y armadillo-devel
+      - run: yum install -y openmpi-devel
+
 
       #- run: ls -R /usr/local/lrose/include
       # - run: echo $NETCDF_INCLUDES
@@ -679,7 +681,9 @@ jobs:
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
             echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
-           #  echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV  
+       # LD_LIBRARY_PATH needed by vortrac
+       # /usr/local/lrose/bin/vortrac: error while loading shared libraries: libRadx.so.0: cannot open shared object file: No such file or directory
 
       
       #- run:
