@@ -655,13 +655,15 @@ jobs:
 #    include.install 'src/samurai.h'                                                    
 #    Dir.chdir("..")                                                                    
 
-      #- run:
-      #    name: Build/install samurai  
-      #    command: |
-      #      echo "building samurai"
-      #      cd workarea/$TARGET/samurai; /usr/bin/cmake3 .
-      #      make VERBOSE=1
-
+      - run:
+          name: Build/install samurai  
+          command: |
+            echo "building samurai"
+            cd workarea/$TARGET/samurai
+            /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make   # VERBOSE=1
+            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
+          
 
       # INCLUDEPATH += $$(RADX_INCLUDE) $$(NETCDF_INCLUDE) $$(ARMADILLO_INCLUDE) /usr/local/include
       #         QMAKE_LIBDIR += $$(RADX_LIB) $$(NETCDF_LIB) $$(ARMADILLO_LIB)
@@ -713,15 +715,13 @@ jobs:
     #system "rsync", "-av", "Resources", "#{prefix}"                                   
     #Dir.chdir("..")                
       
-      - run: workarea/$TARGET/vortrac/vortrac -h
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
       - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
       - run: $LROSE_INSTALL_DIR/bin/fractl -h
+      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+      - run: workarea/$TARGET/vortrac/src/vortrac -h
 
-      - run: fractl -h
-
-      #- run: $LROSE_INSTALL_DIR/bin/samurai -h
-
+#       - run: fractl -h
       #- run: RadxPrint -h
 
 
