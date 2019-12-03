@@ -587,7 +587,6 @@ jobs:
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
             echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
-            
 
 # TODO: may need these ...
 #   81  export LROSE_LIBRARIES=/usr/local/lrose/lib
@@ -624,17 +623,17 @@ jobs:
       # - run: yum install -y libzip-devel
       # - run: yum install -y GeographicLib-devel        
       # - run: yum install -y eigen3-devel
-      # - run: yum install -y armadillo
+      - run: yum install -y armadillo-devel
 
       #- run: ls -R /usr/local/lrose/include
       # - run: echo $NETCDF_INCLUDES
 
-      - run:
-          name: Build/install fractl  
-          command: |
-            echo "building fractl"
-            cd workarea/$TARGET/fractl; /usr/bin/cmake3 .
-            make
+      #- run:
+      #    name: Build/install fractl  
+      #    command: |
+      #      echo "building fractl"
+      #      cd workarea/$TARGET/fractl; /usr/bin/cmake3 .
+      #      make
 
    #   - run: cd fractl                                                                
    # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
@@ -654,21 +653,50 @@ jobs:
 #    include.install 'src/samurai.h'                                                    
 #    Dir.chdir("..")                                                                    
 
+      #- run:
+      #    name: Build/install samurai  
+      #    command: |
+      #      echo "building samurai"
+      #      cd workarea/$TARGET/samurai; /usr/bin/cmake3 .
+      #      make VERBOSE=1
+
+
+      # INCLUDEPATH += $$(RADX_INCLUDE) $$(NETCDF_INCLUDE) $$(ARMADILLO_INCLUDE) /usr/local/include
+      #         QMAKE_LIBDIR += $$(RADX_LIB) $$(NETCDF_LIB) $$(ARMADILLO_LIB)
+      # QMAKE_LFLAGS += -Wl,-rpath,$$(NETCDF_LIB)
+      #
       - run:
-          name: Build/install samurai  
+          name: Add to Environment Variables for vortrac
           command: |
-            echo "building samurai"
-            cd workarea/$TARGET/samurai; /usr/bin/cmake3 .
-            make VERBOSE=1
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
+
+      
+      - run:
+          name: fetch build_changes branch of vortrac  
+          command: |
+            echo "cloning branch"
+            cd workarea/$TARGET
+            mv vortrac vortrac_master_branch
+            mkdir vortrac
+            cd ..
+            git clone https://github.com/mmbell/vortrac --branch build_changes --single-branch
 
       - run:
           name: Build/install vortrac  
           command: |
             echo "building vortrac"
-            cd workarea/$TARGET/vortrac; qmake .
+            cd workarea/$TARGET/vortrac/src
+            $QT5_BIN/qmake .
             make
             rsync -av Resources $LROSE_INSTALL_DIR
-
+     
                                                                                        
     # Build/install vortrac                                                            
     #Dir.chdir("vortrac/src")                                                          
@@ -682,6 +710,8 @@ jobs:
     #system "rsync", "-av", "Resources", "#{prefix}"                                   
     #Dir.chdir("..")                
       
+      - run: workarea/$TARGET/vortrac/vortrac -h
+
       - run: $LROSE_INSTALL_DIR/RadxPrint -h
       - run: $LROSE_INSTALL_DIR/vortrac  -h
       - run: $LROSE_INSTALL_DIR/samurai -h
