@@ -522,8 +522,8 @@ jobs:
       # - run: cd lrose-core-$RELEASE_DATE/fractl; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE/fractl; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/vortrac.git 
-      - run: cd lrose-core-$RELEASE_DATE/vortrac; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/vortrac 
+      #- run: cd lrose-core-$RELEASE_DATE/vortrac; git checkout -q $TAG
       - run: cd lrose-core-$RELEASE_DATE/vortrac; rm -rf .git
 
         # make the cyclone tar file 
@@ -633,9 +633,9 @@ jobs:
           command: |
             echo "building fractl"
             cd workarea/$TARGET/fractl
-            cmake .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
             make
-            make install   # installs in /usr/local/bin/fractl
+            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
 
    #   - run: cd fractl                                                                
    # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
@@ -677,17 +677,17 @@ jobs:
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
             echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
-            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
+           #  echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
 
       
-      - run:
-          name: fetch build_changes branch of vortrac  
-          command: |
-            echo "cloning branch"
-            cd workarea/$TARGET
-            mv vortrac vortrac_master_branch
-            git clone https://github.com/mmbell/vortrac --branch build_changes --single-branch
-            ls -R vortrac
+      #- run:
+      #    name: fetch build_changes branch of vortrac  
+      #    command: |
+      #      echo "cloning branch"
+      #      cd workarea/$TARGET
+      #      mv vortrac vortrac_master_branch
+      #      git clone https://github.com/mmbell/vortrac --branch build_changes --single-branch
+      #      ls -R vortrac
 
       - run:
           name: Build/install vortrac  
@@ -696,8 +696,10 @@ jobs:
             cd workarea/$TARGET/vortrac/src
             $QT5_BIN/qmake .
             make
+            cp vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
-     
+                
                                                                                        
     # Build/install vortrac                                                            
     #Dir.chdir("vortrac/src")                                                          
@@ -712,12 +714,15 @@ jobs:
     #Dir.chdir("..")                
       
       - run: workarea/$TARGET/vortrac/vortrac -h
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
+      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
       - run: fractl -h
-      - run: $LROSE_INSTALL_DIR/RadxPrint -h
-      - run: $LROSE_INSTALL_DIR/vortrac  -h
-      - run: $LROSE_INSTALL_DIR/samurai -h
-      - run: $LROSE_INSTALL_DIR/fractl -h
-      - run: RadxPrint -h
+
+      #- run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      #- run: RadxPrint -h
 
 
   workspace-producer:
