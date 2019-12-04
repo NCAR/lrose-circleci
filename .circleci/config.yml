@@ -183,19 +183,69 @@ jobs:
           # Ah, but don't we want lrose-core.src.mac_osx.tgz?
 
 
+  # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
+  #       build it on a linux platform using automake and libtool
+  #    
+  # latest = centos8 + python3
+  package-lrose-core-tgz_latest:
+    executor: centos8-executor
+    working_directory: /tmp
+    steps:
+      - run:
+          name: build MacOS tgz
+          command: echo "build MacOS source tgz"
+      - run: echo "building lrose-core ..."
+      # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
+      - run: mkdir -p workspace_macos
+      - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace_macos
+      - run: alias qmake-qt5='qmake'
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+      - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
+        # package for macos
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
 
-  package-lrose-cyclone-tgz:
-    executor: my-executor
+      - run: ls /tmp/workspace_macos/releases/lrose-core/osx
+      - run: cd /tmp/workspace_macos/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$RELEASE_DATE.src.mac_osx.tgz
+        # package for linux 
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
+      - run: cd /tmp/workspace_linux/releases/lrose-core; mv lrose-core-$RELEASE_DATE.tgz lrose-core-$RELEASE_DATE.src.tgz
+
+      - run: ls /tmp/workspace_linux/releases/lrose-core
+
+# TODO: are the workspaces unique to the job?  or do I need to give them a unique name?
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-core/osx
+      - persist_to_workspace:
+          root: workspace_linux
+          paths: 
+            - releases/lrose-core
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-core/osx
+      - store_artifacts:   
+          path: /tmp/workspace_linux/releases/lrose-core
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+
+
+  # we are just packaging the tgz file; no building, so we don't need macos machine
+  package-macos-lrose-cyclone-tgz:
+    executor: centos7-executor
     working_directory: /tmp
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
       - run:
-          name: package lrose-cyclone packages (.rb, .tgz, docker)
+          name: package lrose-cyclone packages (.tgz)
           command: echo "package lrose-cyclone software"
-      - run: echo "package lrose-cyclone .rb ..."
       - run: ls -R
-      #       - run: brew install ??? -y qt5-qtdeclarative-devel
+
       # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
       - run: pwd   # /private/tmp
       - run: 
@@ -203,8 +253,6 @@ jobs:
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export RELEASE_DIR=/tmp/workpace_macos/releases" >> $BASH_ENV
-            #echo "export LROSE_CORE_RELEASE_DATE=$RELEASE_DATE" >> $BASH_ENV
-            echo "export TAG=lrose-cyclone-20190726" >> $BASH_ENV
 
       - run:
           name: Add to Environment Variables
@@ -217,23 +265,18 @@ jobs:
       - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
       - run: ls
 
-# Grab the color scales
+      # Grab the color scales
       - run: git clone https://github.com/ncar/lrose-displays
       - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE.mac_osx/share 
-#      - run: cd lrose-core-$RELEASE_DATE.mac_osx/lrose-displays/color_scales; git checkout -q $TAG
-#      - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
 
-# Grab addons from mmbell
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/samurai.git 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; git checkout -q $TAG
+      # Grab addons from mmbell
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/samurai
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/fractl.git 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx/fractl; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/fractl
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/fractl; rm -rf .git
 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/vortrac.git 
-      - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/vortrac
       - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; rm -rf .git
 
         # make the cyclone tar file 
@@ -1025,12 +1068,21 @@ workflows:
 #           - package-lrose-core-tgz
 
       - package-lrose-core-tgz
-      - package-linux-lrose-cyclone-tgz: 
+
+# this works; turn on later
+#      - package-linux-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-linux-lrose-cyclone-tgz:
+#          requires:
+#           - package-linux-lrose-cyclone-tgz
+
+      - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-linux-lrose-cyclone-tgz:
-          requires:
-           - package-linux-lrose-cyclone-tgz
+#      - test-macos-lrose-cyclone-tgz:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
           
 #      - package-osx-brew-formula:
 #          requires:
