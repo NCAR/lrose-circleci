@@ -421,7 +421,7 @@ jobs:
           command: |
             brew install cmake
             brew install eigen
-            brew install fftw flex
+            brew install fftw flex x11
             brew install qt5 netcdf
             brew install szip pkg-config                                                            
             brew install geographiclib                                                     
