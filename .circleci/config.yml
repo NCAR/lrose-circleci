@@ -408,7 +408,7 @@ jobs:
 
   test-macos-lrose-cyclone-tgz:
     macos:
-      xcode: "10.1.0"
+      xcode: "11"
 
     working_directory: /tmp
     steps:
