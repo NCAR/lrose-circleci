@@ -434,13 +434,21 @@ jobs:
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      # mkdir: /usr/local/lrose: Permission denied
+      # mkdir: /usr/local/lrose: No such file or directory
       - run:
           name: Add to Environment Variables
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
 
       - run:
@@ -490,7 +498,7 @@ jobs:
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
             echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
-            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
                                                               
       - run:
           name: Build/install vortrac  
