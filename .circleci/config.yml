@@ -420,7 +420,6 @@ jobs:
           name: Install needed packages
           command: |
             brew install cmake
-            brew install cmake3
             brew install eigen
             brew install fftw flex
             brew install qt5
