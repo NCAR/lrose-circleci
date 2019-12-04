@@ -419,14 +419,15 @@ jobs:
       - run:
           name: Install needed packages
           command: |
-            brew install qt5-qtdeclarative-devel
             brew install cmake
             brew install cmake3
-            brew install libzip-devel                                                            
-            brew install GeographicLib-devel                                                     
-            brew install eigen3-devel                                                            
-            brew install armadillo-devel                                                         
-            brew install openmpi-devel
+            brew install eigen
+            brew install fftw flex
+            brew install qt5
+            brew install szip pkg-config                                                            
+            brew install geographiclib                                                     
+            brew install armadillo                                                         
+            brew install libomp
             brew install rsync
 
       - run: 
