@@ -455,7 +455,7 @@ jobs:
       #    name: build lrose-cyclone 
       #    command: |
       #      echo "building lrose-cyclone from tgz"
-      - run: cd workarea/ls -R
+      - run: cd workarea; ls
 
       - run: cd workarea/$SOURCE_DIR; pwd
 
