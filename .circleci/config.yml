@@ -415,6 +415,20 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
 
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install qt5-qtdeclarative-devel
+            brew install cmake
+            brew install cmake3
+            brew install libzip-devel                                                            
+            brew install GeographicLib-devel                                                     
+            brew install eigen3-devel                                                            
+            brew install armadillo-devel                                                         
+            brew install openmpi-devel
+            brew install rsync
+
       - run: 
           name: Setup Environment Variables
           command: |
@@ -427,81 +441,76 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
-        # needed for QJSEngine
-      - run: brew install qt5-qtdeclarative-devel
-      # needed for fractl, etc.                                                                               
-      - run: brew install cmake
-      - run: brew install cmake3
 
       - run:
           name: extract lrose-cyclone tgz 
           command: |
             echo "extracting lrose-cyclone from tgz"
             mkdir workarea
-            cd workarea; tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+            cd workarea
+            tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+
       - run:
           name: build lrose-cyclone 
           command: |
             echo "building lrose-cyclone from tgz"
-            cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-            cd workarea/$TARGET; make install
-   
-      - run: rsync -av share $LROSE_INSTALL_DIR                                        
+            cd workarea
+            cd $TARGET
+            pwd
+            ls
+            rsync -av share $LROSE_INSTALL_DIR                                        
+            ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+            make install
                                        
       - run:
           name: Build/install fractl  
           command: |
             echo "building fractl"
-            cd workarea/$TARGET/fractl; cmake .
-            cd workarea/$TARGET/fractl; make
-
-   #   - run: cd fractl                                                                
-   # # ENV['LROSE_ROOT_DIR'] = prefix                                                     
-   # system "cmake", "."                                                                
-   # system "make"                                                                      
-   # bin.install 'build/release/bin/fractl'                                             
-   # Dir.chdir("..")                                                                    
-                                                                                       
-    # Build/install samurai                                                            
-#    Dir.chdir("samurai")                                                               
-#    ENV['LROSE_ROOT_DIR'] = prefix                                                     
-#    system "cmake", "."                                                                
-#    system "make", "VERBOSE=1"                                                         
-#    bin.install 'build/release/bin/samurai'                                            
-#    lib.install 'build/release/lib/libsamurai.a'                                       
-#    lib.install 'build/release/lib/libsamurai.dylib'                                   
-#    include.install 'src/samurai.h'                                                    
-#    Dir.chdir("..")                                                                    
+            cd workarea/$TARGET/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install 
 
       - run:
           name: Build/install samurai  
           command: |
             echo "building samurai"
             cd workarea/$TARGET/samurai
-            cmake .
-            make VERBOSE=1
-
-                                                                                       
-    # Build/install vortrac                                                            
-    #Dir.chdir("vortrac/src")                                                          
-    #ENV['LROSE_ROOT_DIR'] = prefix                                                    
-    #ENV['NETCDF_INCLUDE'] = "#{prefix}/include"                                       
-    #ENV['NETCDF_LIB'] = "#{prefix}/lib"                                               
-    #system "qmake", "."                                                               
-    #system "make"                                                                     
-    #bin.install 'vortrac.app/Contents/MacOS/vortrac'                                  
-    #Dir.chdir("..")                                                                   
-    #system "rsync", "-av", "Resources", "#{prefix}"                                   
-    #Dir.chdir("..")                
-
+            /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make 
+            make install
+                        
+      - run:
+          name: Add to Environment Variables for vortrac
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV
+                                                              
       - run:
           name: Build/install vortrac  
           command: |
             echo "building vortrac"
-            cd workarea/$TARGET/vortrac
-            qmake .
+            cd workarea/$TARGET/vortrac/src
+            $QT5_BIN/qmake .
             make
+            cp vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
+
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
+      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      # annoying ... returns error: Exited with code exit status 1                                  
+      # which causes a failure, but it works.  So, we need to fix this ... 
+#      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
             
       # TODO: create the DMG then, save as an artifact
       - run:
@@ -515,15 +524,10 @@ jobs:
             cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
             mkdir -p HawkEye.app/Contents/MacOS/../share
-            cp -r ~/git/lrose-displays/color_scales HawkEye.app/Contents/MacOS/../share/.
+ ==>           cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
             macdeployqt HawkEye.app -dmg -always-overwrite
             hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
             cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
-
-      - run: RadxPrint -h
-      - run: vortrac  -h
-      - run: samurai -h
-      - run: fractl -h
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
@@ -1080,9 +1084,9 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - test-macos-lrose-cyclone-tgz:
+          requires:
+           - package-macos-lrose-cyclone-tgz
           
 #      - package-osx-brew-formula:
 #          requires:
