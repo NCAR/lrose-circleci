@@ -421,13 +421,15 @@ jobs:
           command: |
             brew install cmake
             brew install eigen
-            brew install fftw flex x11
+            brew install fftw flex
             brew install qt5 netcdf
             brew install szip pkg-config                                                            
             brew install geographiclib                                                     
             brew install armadillo                                                         
             brew install libomp
             brew install rsync
+
+      - run: brew cask install xquartz 
 
       - run: 
           name: Setup Environment Variables
