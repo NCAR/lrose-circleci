@@ -459,11 +459,9 @@ jobs:
 
       - run: cd workarea/$SOURCE_DIR; pwd
 
-           
-      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                        
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
-                                       
+
       - run:
           name: Build/install fractl  
           command: |
@@ -509,6 +507,7 @@ jobs:
       - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
       - run: $LROSE_INSTALL_DIR/bin/samurai -h
 
+      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
       # annoying ... returns error: Exited with code exit status 1                                  
       # which causes a failure, but it works.  So, we need to fix this ... 
 #      - run: $LROSE_INSTALL_DIR/bin/fractl -h
