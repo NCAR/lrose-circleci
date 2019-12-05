@@ -499,7 +499,7 @@ jobs:
       - run:
           name: Build HawkEye DMG
           command: |
-            cd workarea/$SOURCE_DIR/codebase/apps/radar/src/HawkEye
+            cd workarea/$SOURCE_DIR/apps/radar/src/HawkEye
             make from_qmake
             mkdir -p HawkEye.app/Contents/Frameworks
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
@@ -1087,6 +1087,36 @@ workflows:
       #    requires:
       #      - one
       #      - two
+
+
+# --------
+
+  nightly_lrose_cyclone:
+    triggers: 
+      - schedule:
+          #     "mm hh day month dow"  Note: 22 is about 3pm MST
+          cron: "45 2 * * *"   # for 7:30 pm MST 
+          filters:
+            branches:
+              only:
+                - master
+    jobs:      
+      - package-lrose-core-tgz
+      - package-linux-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-linux-lrose-cyclone-tgz:
+          requires:
+           - package-linux-lrose-cyclone-tgz
+
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz:
+          requires:
+           - package-macos-lrose-cyclone-tgz
+
+# --------
           
   now:
     jobs:
