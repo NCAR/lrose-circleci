@@ -437,7 +437,7 @@ jobs:
       - save_cache:
           key: macos-full-of-packages-cache
           paths:
-            - /usr
+            - /usr/local
 
       - run: 
           name: Setup Environment Variables
@@ -485,7 +485,7 @@ jobs:
       - save_cache:
           key: macos-with-lrose-core-installed-cache
           paths:
-            - /usr
+            - /usr/local
             - workarea
             - $LROSE_INSTALL_DIR
 
