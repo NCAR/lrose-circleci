@@ -356,7 +356,7 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-cyclone/osx
 
 
-  test-brew-install-lrose-cyclone:
+  test-macos-lrose-cyclone-rb:
     macos:
       xcode: "10.1.0"
 #     working_directory: /tmp
@@ -415,6 +415,9 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
 
+      - restore_cache:
+          key: macos-full-of-packages-cache
+
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
           name: Install needed packages
@@ -426,10 +429,15 @@ jobs:
             brew install szip pkg-config                                                            
             brew install geographiclib                                                     
             brew install armadillo                                                         
-            brew install libomp
+            brew install libomp libzip
             brew install rsync
 
       - run: brew cask install xquartz 
+
+      - save_cache:
+          key: macos-full-of-packages-cache
+          paths:
+            - /usr
 
       - run: 
           name: Setup Environment Variables
@@ -452,6 +460,8 @@ jobs:
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
+      - restore_cache:
+          key: macos-with-lrose-core-installed-cache
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -471,6 +481,13 @@ jobs:
 
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
+
+      - save_cache:
+          key: macos-with-lrose-core-installed-cache
+          paths:
+            - /usr
+            - workarea
+            - $LROSE_INSTALL_DIR
 
       - run:
           name: Build/install fractl  
