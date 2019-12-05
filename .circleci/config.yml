@@ -416,7 +416,7 @@ jobs:
           at: /tmp/workspace_macos
 
       - restore_cache:
-          key: macos-full-of-packages-cache
+          key: macos-full-of-packages-cache1
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -435,7 +435,7 @@ jobs:
       - run: brew cask install xquartz 
 
       - save_cache:
-          key: macos-full-of-packages-cache
+          key: macos-full-of-packages-cache1
           paths:
             - /usr/local
 
@@ -461,7 +461,7 @@ jobs:
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
       - restore_cache:
-          key: macos-with-lrose-core-installed-cache
+          key: macos-with-lrose-core-installed-cache1
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -483,7 +483,7 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; make install
 
       - save_cache:
-          key: macos-with-lrose-core-installed-cache
+          key: macos-with-lrose-core-installed-cache1
           paths:
             - /usr/local
             - workarea
