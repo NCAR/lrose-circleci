@@ -460,8 +460,8 @@ jobs:
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
-      - restore_cache:
-          key: v1-macos-with-lrose-core-installed-cache
+     # - restore_cache:
+     #     key: v1-macos-with-lrose-core-installed-cache
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -482,11 +482,11 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
 
-      - save_cache:
-          key: v1-macos-with-lrose-core-installed-cache
-          paths:
-            - workarea
-            - $LROSE_INSTALL_DIR
+     # - save_cache:
+     #     key: v1-macos-with-lrose-core-installed-cache
+     #     paths:
+     #       - workarea
+     #       - $LROSE_INSTALL_DIR
 
 
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
