@@ -490,25 +490,6 @@ jobs:
 
 
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
-      # annoying ... returns error: Exited with code exit status 1                                  
-      # which causes a failure, but it works.  So, we need to fix this ... 
-#      - run: $LROSE_INSTALL_DIR/bin/fractl -h
-
-            
-
-
-      # create soft link for geographiclib since brew install didn't 
-      - run: ln -s ../Cellar/geographiclib /usr/local/include/geographiclib
-      - run: ls -l /usr/local/include/geographiclib
-
-      - run:
-          name: Build/install fractl  
-          command: |
-            echo "building fractl"
-            cd workarea/$SOURCE_DIR/fractl
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
-            make
-            make install 
 
       - run:
           name: Build/install samurai  
@@ -546,6 +527,26 @@ jobs:
           name: Build Vortrac DMG
           command: |
             cd workarea/$SOURCE_DIR/vortrac
+            mkdir -p deploy
+            cd src
+            # /usr/local/opt/qt/bin/qmake .
+            # make
+
+#
+# this creates vortrac.app and vortrac.dmg files/directories in src dir
+#
+#        /usr/local/opt/qt/bin/macdeployqt vortrac.app -dmg -always-overwrite
+
+#
+# TODO: install setfileicon 
+#
+# 
+# ./deploy/setfileicon ./src/images/vortrac.icns vortrac.app
+# vortrac/Resources contains *.xml
+# cp *.xml vortrac.app/Contents/Resources/
+# rm -rf deploy/mac/vortrac.app/
+# cp -R vortrac.app deploy/mac/
+# cp VORTRAC_Users_Guide_v1.pdf deploy/mac/ 
 
 
 
@@ -554,7 +555,6 @@ jobs:
           name: Build HawkEye DMG
           command: |
             cd workarea/$SOURCE_DIR/apps/radar/src/HawkEye
-            make from_qmake
             mkdir -p HawkEye.app/Contents/Frameworks
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
@@ -565,6 +565,26 @@ jobs:
             macdeployqt HawkEye.app -dmg -always-overwrite
             hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
             cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
+
+
+      # annoying ... returns error: Exited with code exit status 1                                  
+      # which causes a failure, but it works.  So, we need to fix this ... 
+#      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
+      # create soft link for geographiclib since brew install didn't 
+      - run: ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
+      - run: ls -l /usr/local/include/geographiclib
+      - run: ls -R /usr/local/include/GeographicLib
+
+      - run:
+          name: Build/install fractl  
+          command: |
+            echo "building fractl"
+            cd workarea/$SOURCE_DIR/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install 
+
 
 
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
