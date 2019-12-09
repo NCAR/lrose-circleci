@@ -1728,16 +1728,16 @@ workflows:
       - test-macos-lrose-cyclone-tgz-latest:
           requires:
            - package-macos-lrose-cyclone-tgz
-      - test-macos-lrose-cyclone-tgz-samurai-latest:
+      - test-macos-lrose-cyclone-tgz-build-samurai-latest:
           requires:
            - test-macos-lrose-cyclone-tgz-latest
-      - test-macos-lrose-cyclone-tgz-fractl-latest:
+      - test-macos-lrose-cyclone-tgz-build-fractl-latest:
           requires:
            - test-macos-lrose-cyclone-tgz-latest
-      - test-macos-lrose-cyclone-tgz-hawkeye-latest:
+      - test-macos-lrose-cyclone-tgz-build-hawkeye-latest:
           requires:
            - test-macos-lrose-cyclone-tgz-latest
-      - test-macos-lrose-cyclone-tgz-vortrac-latest:
+      - test-macos-lrose-cyclone-tgz-build-vortrac-latest:
           requires:
            - test-macos-lrose-cyclone-tgz-latest
           
