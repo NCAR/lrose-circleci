@@ -1736,15 +1736,16 @@ workflows:
       - test-macos-cyclone-tgz-build-samurai-latest:
           requires:
            - test-macos-cyclone-tgz-build-core-latest
-      - test-macos-cyclone-tgz-build-fractl-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
-      - test-macos-cyclone-tgz-build-hawkeye-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
-      - test-macos-cyclone-tgz-build-vortrac-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+
+#      - test-macos-cyclone-tgz-build-fractl-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
+#      - test-macos-cyclone-tgz-build-hawkeye-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
+#      - test-macos-cyclone-tgz-build-vortrac-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
           
 #      - package-osx-brew-formula:
 #          requires:
