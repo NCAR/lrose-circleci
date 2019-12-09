@@ -406,9 +406,198 @@ jobs:
       - run: fractl -h
 
 
-  test-macos-lrose-cyclone-tgz:
+  test-macos-lrose-cyclone-tgz-latest:
     macos:
       xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+#      - restore_cache:
+#          key: macos-full-of-packages-cache1
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config                                                            
+            brew install geographiclib                                                     
+            brew install armadillo                                                         
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew cask install xquartz 
+
+#      - save_cache:
+#          key: macos-full-of-packages-cache1
+#          paths:
+#            - /usr/local
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      # mkdir: /usr/local/lrose: Permission denied
+      # mkdir: /usr/local/lrose: No such file or directory
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+
+     # - restore_cache:
+     #     key: v1-macos-with-lrose-core-installed-cache
+
+      - run:
+          name: extract lrose-cyclone tgz 
+          command: |
+            echo "extracting lrose-cyclone from tgz"
+            mkdir workarea
+            cd workarea
+            tar xf /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARGET.tgz
+
+      #- run:
+      #    name: build lrose-cyclone 
+      #    command: |
+      #      echo "building lrose-cyclone from tgz"
+      - run: cd workarea; ls
+
+      - run: cd workarea/$SOURCE_DIR; pwd
+
+      - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+      - run: cd workarea/$SOURCE_DIR; make install
+
+     # - save_cache:
+     #     key: v1-macos-with-lrose-core-installed-cache
+     #     paths:
+     #       - workarea
+     #       - $LROSE_INSTALL_DIR
+
+
+      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
+
+      - run:
+          name: Build/install samurai  
+          command: |
+            echo "building samurai"
+            cd workarea/$SOURCE_DIR/samurai
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make 
+            make install
+                        
+      - run:
+          name: Add to Environment Variables for vortrac
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+                                                              
+      - run:
+          name: Build/install vortrac  
+          command: |
+            echo "building vortrac"
+            cd workarea/$SOURCE_DIR/vortrac/src
+            $QT5_BIN/qmake .
+            make
+            cp vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
+            rsync -av Resources $LROSE_INSTALL_DIR
+
+      - run:
+          name: Build Vortrac DMG
+          command: |
+            cd workarea/$SOURCE_DIR/vortrac
+            mkdir -p deploy
+            cd src
+            # /usr/local/opt/qt/bin/qmake .
+            # make
+
+#
+# this creates vortrac.app and vortrac.dmg files/directories in src dir
+#
+#        /usr/local/opt/qt/bin/macdeployqt vortrac.app -dmg -always-overwrite
+
+#
+# TODO: install setfileicon 
+#
+# 
+# ./deploy/setfileicon ./src/images/vortrac.icns vortrac.app
+# vortrac/Resources contains *.xml
+# cp *.xml vortrac.app/Contents/Resources/
+# rm -rf deploy/mac/vortrac.app/
+# cp -R vortrac.app deploy/mac/
+# cp VORTRAC_Users_Guide_v1.pdf deploy/mac/ 
+
+
+
+      # TODO: create the DMG then, save as an artifact
+      - run:
+          name: Build HawkEye DMG
+          command: |
+            cd workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            mkdir -p HawkEye.app/Contents/Frameworks
+            cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
+            mkdir -p HawkEye.app/Contents/MacOS/../share
+            cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
+            macdeployqt HawkEye.app -dmg -always-overwrite
+            hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
+
+
+      # annoying ... returns error: Exited with code exit status 1                                  
+      # which causes a failure, but it works.  So, we need to fix this ... 
+#      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
+      # create soft link for geographiclib since brew install didn't 
+      - run: ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
+      - run: ls -l /usr/local/include/geographiclib
+      - run: ls -R /usr/local/include/GeographicLib
+
+      - run:
+          name: Build/install fractl  
+          command: |
+            echo "building fractl"
+            cd workarea/$SOURCE_DIR/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install 
+
+
+
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
+      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone
+
+
+  test-macos-lrose-cyclone-tgz-previous:
+    macos:
+      xcode: "10.3.0"
 
     working_directory: /tmp
     steps:
@@ -1141,7 +1330,10 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz:
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
+      - test-macos-lrose-cyclone-tgz-previous:
           requires:
            - package-macos-lrose-cyclone-tgz
 
@@ -1176,7 +1368,10 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz:
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+      - test-macos-lrose-cyclone-tgz-previous:
           requires:
            - package-macos-lrose-cyclone-tgz
           
