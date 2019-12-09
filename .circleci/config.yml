@@ -649,11 +649,11 @@ jobs:
       - run: $LROSE_INSTALL_DIR/RadxPrint -h
 
       - persist_to_workspace:
-          root: workspace_macos
+          root: /tmp/workspace_macos
       - persist_to_workspace:
-          root: workarea
+          root: /tmp/workarea
       - persist_to_workspace:
-          root: $LROSE_INSTALL_DIR
+          root: $HOME/lrose
       
 
   test-macos-lrose-cyclone-tgz-build-samurai-latest:
