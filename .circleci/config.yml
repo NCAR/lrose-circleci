@@ -651,8 +651,8 @@ jobs:
       #- persist_to_workspace:
       #    root: workspace_macos
 
-      - persist_to_workspace:
-          root: workarea
+      #- persist_to_workspace:
+      #    root: workarea
       
 
   test-macos-cyclone-tgz-build-samurai-latest:
