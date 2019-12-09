@@ -630,8 +630,8 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -651,11 +651,8 @@ jobs:
       - persist_to_workspace:
           root: workspace_macos
 
-#      - persist_to_workspace:
-#          root: workarea
-
       - persist_to_workspace:
-          root: $HOME/lrose
+          root: workarea
       
 
   test-macos-cyclone-tgz-build-samurai-latest:
@@ -667,8 +664,6 @@ jobs:
           at: /tmp/workspace_macos
       - attach_workspace:
           at: /tmp/workarea
-      - attach_workspace:
-          at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -702,8 +697,8 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
       - run:
           name: Build/install samurai  
