@@ -663,7 +663,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
+      - attach_workspace:
           at: /tmp/workarea
+      - attach_workspace:
           at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -718,7 +720,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
+      - attach_workspace:
           at: /tmp/workarea
+      - attach_workspace:
           at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -817,7 +821,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
+      - attach_workspace:
           at: /tmp/workarea
+      - attach_workspace:
           at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -881,7 +887,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace_macos
+      - attach_workspace:
           at: /tmp/workarea
+      - attach_workspace:
           at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
