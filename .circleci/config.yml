@@ -594,7 +594,7 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
-  test-macos-lrose-cyclone-tgz-build-core-latest:
+  test-macos-cyclone-tgz-build-core-latest:
     macos:
       xcode: "11.2.1"
 
@@ -649,14 +649,15 @@ jobs:
       - run: $LROSE_INSTALL_DIR/RadxPrint -h
 
       - persist_to_workspace:
-          root: /tmp/workspace_macos
+          root: workspace_macos
       - persist_to_workspace:
-          root: /tmp/workarea
+          root: workarea
       - persist_to_workspace:
-          root: $HOME/lrose
+          root: $HOME
+            path: lrose
       
 
-  test-macos-lrose-cyclone-tgz-build-samurai-latest:
+  test-macos-cyclone-tgz-build-samurai-latest:
     macos:
       xcode: "11.2.1"
     working_directory: /tmp
@@ -715,7 +716,7 @@ jobs:
       - run: $LROSE_INSTALL_DIR/bin/samurai -h
 
 
-  test-macos-lrose-cyclone-tgz-build-vortrac-latest:
+  test-macos-cyclone-tgz-build-vortrac-latest:
     macos:
       xcode: "11.2.1"
 
@@ -816,7 +817,7 @@ jobs:
 
 
 
-  test-macos-lrose-cyclone-tgz-build-hawkeye-latest:
+  test-macos-cyclone-tgz-build-hawkeye-latest:
     macos:
       xcode: "11.2.1"
 
@@ -882,7 +883,7 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
-  test-macos-lrose-cyclone-tgz-build-fractl-latest:
+  test-macos-cyclone-tgz-build-fractl-latest:
     macos:
       xcode: "11.2.1"
 
@@ -1722,27 +1723,29 @@ workflows:
 #          requires:
 #           - package-linux-lrose-cyclone-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
 #      - test-macos-lrose-cyclone-tgz-previous:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
-      - test-macos-lrose-cyclone-tgz-build-core-latest:
+
+
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-cyclone-tgz-build-core-latest:
           requires:
            - package-macos-lrose-cyclone-tgz
-      - test-macos-lrose-cyclone-tgz-build-samurai-latest:
+      - test-macos-cyclone-tgz-build-samurai-latest:
           requires:
-           - test-macos-lrose-cyclone-tgz-build-core-latest
-      - test-macos-lrose-cyclone-tgz-build-fractl-latest:
+           - test-macos-cyclone-tgz-build-core-latest
+      - test-macos-cyclone-tgz-build-fractl-latest:
           requires:
-           - test-macos-lrose-cyclone-tgz-build-core-latest
-      - test-macos-lrose-cyclone-tgz-build-hawkeye-latest:
+           - test-macos-cyclone-tgz-build-core-latest
+      - test-macos-cyclone-tgz-build-hawkeye-latest:
           requires:
-           - test-macos-lrose-cyclone-tgz-build-core-latest
-      - test-macos-lrose-cyclone-tgz-build-vortrac-latest:
+           - test-macos-cyclone-tgz-build-core-latest
+      - test-macos-cyclone-tgz-build-vortrac-latest:
           requires:
-           - test-macos-lrose-cyclone-tgz-build-core-latest
+           - test-macos-cyclone-tgz-build-core-latest
           
 #      - package-osx-brew-formula:
 #          requires:
