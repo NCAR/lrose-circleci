@@ -649,7 +649,7 @@ jobs:
       - run: $LROSE_INSTALL_DIR/RadxPrint -h
 
       - persist_to_workspace:
-          root: workarea
+          root: /tmp/workarea
 
       #- persist_to_workspace:
       #    root: workarea
