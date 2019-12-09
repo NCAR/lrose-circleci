@@ -651,11 +651,11 @@ jobs:
       - persist_to_workspace:
           root: workspace_macos
 
-      - persist_to_workspace:
-          root: workarea
-
 #      - persist_to_workspace:
-#          root: $HOME/lrose
+#          root: workarea
+
+      - persist_to_workspace:
+          root: $HOME/lrose
       
 
   test-macos-cyclone-tgz-build-samurai-latest:
