@@ -675,11 +675,14 @@ jobs:
             brew install cmake
             brew install eigen
             brew install fftw
-            brew install qt5 netcdf
+            brew install qt netcdf
             brew install szip pkg-config                                                          
             brew install libomp libzip
             brew install rsync
 
+#            brew install qtbase5-dev
+#            brew install qtdeclarative5-dev
+ 
       - run: brew cask install xquartz 
 
       - run: 
@@ -1722,10 +1725,10 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
+#      - test-macos-lrose-cyclone-tgz-previous:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
+      - test-macos-lrose-cyclone-tgz-build-core-latest:
           requires:
            - package-macos-lrose-cyclone-tgz
       - test-macos-lrose-cyclone-tgz-build-samurai-latest:
