@@ -355,6 +355,59 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone/osx
 
+  package-linux-brew-formula-fractl:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
+  
+#       - run: git clone ... get the release tools <====
+      #- run: ls workspace_macos
+      #- run: cd release-tools/cyclone
+
+#  just call the script to build the brew formula
+#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
+
+# begin script ...
+#       - run: git clone ...release-tools
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export TARFILE=lrose-cyclone-$RELEASE_DATE.src.mac_osx.tgz" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/$RELEASE_DATE/$TARFILE" >> $BASH_ENV
+            echo "export checksum2='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+            echo "export checksum=`sha256sum /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARFILE`" >> $BASH_ENV
+
+      - run: echo $checksum
+      - run: echo $URL
+      - run: echo $TARFILE
+      - run: echo $RELEASE_DATE
+
+      - run: git clone https://github.com/nsf-lrose/release-tools
+
+      - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-fractl-brew-formula.sh 
+      - run: mv lrose-fractl.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-cyclone/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone/osx
+
 
   test-macos-lrose-cyclone-rb:
     macos:
@@ -664,6 +717,8 @@ jobs:
           at: /tmp/workspace_macos
       - attach_workspace:
           at: /tmp/workarea
+
+      - run: ls -R workarea
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -1721,20 +1776,10 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
+      - package-linux-brew-formula-fractl
+
+
       - package-lrose-core-tgz
-
-# this works; turn on later
-#      - package-linux-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-linux-lrose-cyclone-tgz:
-#          requires:
-#           - package-linux-lrose-cyclone-tgz
-
-#      - test-macos-lrose-cyclone-tgz-previous:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
-
 
       - package-macos-lrose-cyclone-tgz: 
           requires:
@@ -1755,6 +1800,21 @@ workflows:
       - test-macos-cyclone-tgz-build-vortrac-latest:
           requires:
            - test-macos-cyclone-tgz-build-core-latest
+
+
+# this works; turn on later
+#      - package-linux-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-linux-lrose-cyclone-tgz:
+#          requires:
+#           - package-linux-lrose-cyclone-tgz
+
+#      - test-macos-lrose-cyclone-tgz-previous:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+
+
           
 #      - package-osx-brew-formula:
 #          requires:
