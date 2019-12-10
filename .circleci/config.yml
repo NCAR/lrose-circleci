@@ -1801,7 +1801,7 @@ workflows:
           requires:
            - package-macos-lrose-cyclone-tgz
 
-      - package-linux-brew-formula-fractl
+      - package-linux-brew-formula-fractl:
           requires:
            - package-macos-lrose-cyclone-tgz
 
