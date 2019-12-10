@@ -398,7 +398,7 @@ jobs:
       - run: git clone https://github.com/nsf-lrose/release-tools
 
       - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-fractl-brew-formula.sh 
-      - run: mv lrose-fractl.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
+      - run: mv lrose-cyclone-fractl.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
 
       - persist_to_workspace:
           root: workspace_macos
@@ -551,6 +551,9 @@ jobs:
             brew install eigen
             brew install libomp libzip
 
+      # don't exit if one of the commands fails 
+      - run: set +e
+
       - run: find /usr/local/ -name Qt5Config.cmake
 
       - run:
@@ -558,7 +561,7 @@ jobs:
           command: |
             echo "building samurai"
             cd workarea/$SOURCE_DIR/samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -CMAKE_PREFIX_PATH=/usr/local//Cellar/qt/5.13.1/lib/cmake/Qt5  .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -CMAKE_PREFIX_PATH=/usr/local//Cellar/qt/5.13.2/lib/cmake/Qt5 .
             make 
             make install
 
