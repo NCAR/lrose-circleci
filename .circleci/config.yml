@@ -507,14 +507,14 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
-     # - restore_cache:
-     #     key: v1-macos-with-lrose-core-installed-cache
+      - restore_cache:
+          key: v2-macos-with-lrose-core-installed-cache
 
       - run:
           name: extract lrose-cyclone tgz 
@@ -535,14 +535,19 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
 
-     # - save_cache:
-     #     key: v1-macos-with-lrose-core-installed-cache
-     #     paths:
-     #       - workarea
-     #       - $LROSE_INSTALL_DIR
-
+      - save_cache:
+          key: v2-macos-with-lrose-core-installed-cache
+          paths:
+            - workarea
+            - $LROSE_INSTALL_DIR
 
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install libomp libzip
 
       - run:
           name: Build/install samurai  
@@ -552,6 +557,11 @@ jobs:
             cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
             make 
             make install
+
+      - run:
+          name: Install needed packages for vortrac
+          command: |
+            brew install armadillo                                                         
                         
       - run:
           name: Add to Environment Variables for vortrac
@@ -1784,22 +1794,28 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-cyclone-tgz-build-core-latest:
+      - test-macos-lrose-cyclone-tgz-latest:
           requires:
            - package-macos-lrose-cyclone-tgz
-      - test-macos-cyclone-tgz-build-samurai-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
 
-      - test-macos-cyclone-tgz-build-fractl-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
-      - test-macos-cyclone-tgz-build-hawkeye-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
-      - test-macos-cyclone-tgz-build-vortrac-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+
+# separate install scripts
+#      - test-macos-cyclone-tgz-build-core-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+#      - test-macos-cyclone-tgz-build-samurai-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
+
+#      - test-macos-cyclone-tgz-build-fractl-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
+#      - test-macos-cyclone-tgz-build-hawkeye-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
+#      - test-macos-cyclone-tgz-build-vortrac-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
 
 
 # this works; turn on later
