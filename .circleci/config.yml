@@ -646,7 +646,7 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
-      - run: $LROSE_INSTALL_DIR/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
 
       - persist_to_workspace:
           root: /tmp
@@ -722,8 +722,6 @@ jobs:
           at: /tmp/workspace_macos
       - attach_workspace:
           at: /tmp/workarea
-      - attach_workspace:
-          at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -755,8 +753,8 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
                         
       - run:
           name: Add to Environment Variables for vortrac
@@ -823,8 +821,6 @@ jobs:
           at: /tmp/workspace_macos
       - attach_workspace:
           at: /tmp/workarea
-      - attach_workspace:
-          at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -853,8 +849,8 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
       # TODO: create the DMG then, save as an artifact
       - run:
@@ -872,10 +868,6 @@ jobs:
             hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
             cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
 
-      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
-      - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
-      - run: $LROSE_INSTALL_DIR/bin/samurai -h
-
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
@@ -889,8 +881,6 @@ jobs:
           at: /tmp/workspace_macos
       - attach_workspace:
           at: /tmp/workarea
-      - attach_workspace:
-          at: $HOME/lrose
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -922,8 +912,8 @@ jobs:
           command: |
             echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$HOME/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$HOME/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
       # annoying ... returns error: Exited with code exit status 1                                  
       # which causes a failure, but it works.  So, we need to fix this ... 
@@ -944,9 +934,6 @@ jobs:
             make install 
 
       - run: $LROSE_INSTALL_DIR/bin/fractl  -h
-
-      - store_artifacts:
-          path: /tmp/workspace_macos/releases/lrose-cyclone
 
 
   test-macos-lrose-cyclone-tgz-previous:
@@ -1684,12 +1671,37 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
+      - test-macos-cyclone-tgz-build-core-latest:
           requires:
            - package-macos-lrose-cyclone-tgz
-      - test-macos-lrose-cyclone-tgz-previous:
+      - test-macos-cyclone-tgz-build-samurai-latest:
           requires:
-           - package-macos-lrose-cyclone-tgz
+           - test-macos-cyclone-tgz-build-core-latest
+
+      - test-macos-cyclone-tgz-build-hawkeye-latest:
+          requires:
+           - test-macos-cyclone-tgz-build-core-latest
+
+      - test-macos-cyclone-tgz-build-fractl-latest:
+          requires:
+           - test-macos-cyclone-tgz-build-core-latest
+
+      - test-macos-cyclone-tgz-build-vortrac-latest:
+          requires:
+           - test-macos-cyclone-tgz-build-core-latest
+
+
+
+# TODO: correct these names
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-cyclone-tgz-build-core-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz-latest
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz-latest
 
 # --------
           
