@@ -549,12 +549,14 @@ jobs:
             brew install eigen
             brew install libomp libzip
 
+      - run: find /usr/local/ -name Qt5Config.cmake
+
       - run:
           name: Build/install samurai  
           command: |
             echo "building samurai"
             cd workarea/$SOURCE_DIR/samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -CMAKE_PREFIX_PATH=/usr/local//Cellar/qt/5.13.1/lib/cmake/Qt5  .
             make 
             make install
 
