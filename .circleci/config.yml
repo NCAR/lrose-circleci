@@ -649,8 +649,8 @@ jobs:
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
 
       - persist_to_workspace:
-          root: /tmp
-          path: workarea
+          root: workarea
+#          path: workarea
       #- persist_to_workspace:
       #    root: workarea
       
@@ -1721,7 +1721,7 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
-      - package-lrose-core-tgz
+#      - package-lrose-core-tgz
 
 # this works; turn on later
 #      - package-linux-lrose-cyclone-tgz: 
@@ -1736,15 +1736,15 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
 
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-cyclone-tgz-build-core-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-      - test-macos-cyclone-tgz-build-samurai-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-cyclone-tgz-build-core-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+#      - test-macos-cyclone-tgz-build-samurai-latest:
+#          requires:
+#           - test-macos-cyclone-tgz-build-core-latest
 
 #      - test-macos-cyclone-tgz-build-fractl-latest:
 #          requires:
