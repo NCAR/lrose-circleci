@@ -589,14 +589,15 @@ jobs:
             echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
             echo "building vortrac"
-            cd workarea/$SOURCE_DIR/vortrac/src
+            pwd
+            cd ../vortrac/src
             $QT5_BIN/qmake .
             make
             cp vortrac $LROSE_INSTALL_DIR/bin
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
             echo "building HawkEye.dmg"
-            cd workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            cd ../apps/radar/src/HawkEye
             mkdir -p HawkEye.app/Contents/Frameworks
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
@@ -605,13 +606,13 @@ jobs:
             mkdir -p HawkEye.app/Contents/MacOS/../share
             cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
             macdeployqt HawkEye.app -dmg -always-overwrite
-            hdiutil create -volname HawkEye_Installer -srcfolder /tmp/workarea/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
-            cp HawkEye.dmg /tmp/workspace_macos/releases/lrose-cyclone
+            hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
             echo "building fractl"
             ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
             ls -l /usr/local/include/geographiclib
             ls -R /usr/local/include/GeographicLib
-            cd workarea/$SOURCE_DIR/fractl
+            cd ../fractl
             cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
             make
             make install 
