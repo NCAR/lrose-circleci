@@ -809,6 +809,8 @@ jobs:
       - run: ls -R /usr/local/include/GeographicLib
 
 
+      - run: pkgconfig --cflags openmpi
+
       - run: mkdir workarea
             #cd workarea
             #pwd
