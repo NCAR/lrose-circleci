@@ -754,6 +754,7 @@ jobs:
 
 
       - run: brew install qt
+      - run: which qmake
 
 #      - run: brew cask install xquartz 
 
@@ -809,7 +810,7 @@ jobs:
       - run: ls -R /usr/local/include/GeographicLib
 
 
-      - run: pkgconfig --cflags openmpi
+      - run: pkg-config --cflags openmpi
 
       - run: mkdir workarea
             #cd workarea
