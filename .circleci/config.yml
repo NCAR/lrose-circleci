@@ -554,6 +554,20 @@ jobs:
       # don't exit if one of the commands fails 
       # - run: set +e
 
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+
+
+
       - run: find /usr/local/ -name Qt5Config.cmake
 
       # samurai needs Qt, from this error ...
@@ -575,29 +589,32 @@ jobs:
           command: |
             set +e
             echo "building samurai"
-            cd workarea/$SOURCE_DIR/samurai
+            cd /private/tmp/workarea/$SOURCE_DIR/samurai
             cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
             make 
             make install
-            brew install armadillo                                                         
-            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
-            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
-            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
-            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
-            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
-            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
-            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
-            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
-            echo "building vortrac"
             pwd
-            cd ../vortrac/src
+            echo "building vortrac"
+            cd /private/tmp/workarea/$SOURCE_DIR/vortrac/src
+            pwd
+            echo $QT5_BIN
+            ls $QT5_BIN
             $QT5_BIN/qmake .
             make
             cp vortrac $LROSE_INSTALL_DIR/bin
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
+            echo "building fractl"
+            ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
+            ls -l /usr/local/include/geographiclib
+            ls -R /usr/local/include/GeographicLib
+            cd /private/tmp/workarea/$SOURCE_DIR/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install 
             echo "building HawkEye.dmg"
-            cd ../apps/radar/src/HawkEye
+            cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            pwd
             mkdir -p HawkEye.app/Contents/Frameworks
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
@@ -605,17 +622,9 @@ jobs:
             cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
             mkdir -p HawkEye.app/Contents/MacOS/../share
             cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
-            macdeployqt HawkEye.app -dmg -always-overwrite
+            $QT5_BIN/macdeployqt HawkEye.app -dmg -always-overwrite
             hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
             cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
-            echo "building fractl"
-            ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
-            ls -l /usr/local/include/geographiclib
-            ls -R /usr/local/include/GeographicLib
-            cd ../fractl
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
-            make
-            make install 
             $LROSE_INSTALL_DIR/bin/RadxPrint -h
             $LROSE_INSTALL_DIR/bin/vortrac  -h
             $LROSE_INSTALL_DIR/bin/samurai -h
