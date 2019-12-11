@@ -732,8 +732,7 @@ jobs:
 
 
   #test-macos-lrose-cyclone-tgz-previous:
-  test-macos-lrose-samurai
-
+  test-macos-lrose-samurai:
     macos:
       xcode: "10.3.0"
 
