@@ -595,6 +595,7 @@ jobs:
             make install
             pwd
             echo "building vortrac"
+            find /usr/local -name netcdf.h
             cd /private/tmp/workarea/$SOURCE_DIR/vortrac/src
             pwd
             qmake .
@@ -2004,14 +2005,14 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
+      - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-linux-brew-formula-fractl:
 #          requires:
