@@ -822,22 +822,27 @@ jobs:
       # Qt5Config.cmake
       # qt5-config.cmake
 
-      #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
-
+      
       # create soft link for geographiclib since brew install didn't 
       - run: ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
       - run: ls -l /usr/local/include/geographiclib
       - run: ls -R /usr/local/include/GeographicLib
 
-
+      - run: ls -R /usr/local/bin/pkg-config
      # - run: pkg-config --cflags openmpi
+     # samurai needs openMP flags set, from this error ...
+     # CMake Error at /usr/local/Cellar/cmake/3.15.5/share/cmake/Modules/FindPackageHandleStandardArgs.cmake:137 (message):
+     # Could NOT find OpenMP_C (missing: OpenMP_C_FLAGS OpenMP_C_LIB_NAMES)
+     # OpenMP_C_FLAG "-fopenmp=libomp -Wno-unused-command-line-argument
+     # OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5"
 
       - run: mkdir workarea
             #cd workarea
             #pwd
       - run: cd workarea; git clone https://github.com/mmbell/samurai
            # echo "building samurai"
-      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 -DOpenMP_C_LIB_NAMES="libomp" "libgomp" "libiomp5" -DOpenMP_C_FLAG "-fopenmp=libomp -Wno-unused-command-line-argument" .
+
       # checkout tagged version of samurai before open mpi integration
       # - run: cd workarea; git checkout 
       # - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
@@ -1980,14 +1985,14 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-      - package-lrose-core-tgz
-
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-lrose-core-tgz
+#
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
 
 #      - package-linux-brew-formula-fractl:
 #          requires:
