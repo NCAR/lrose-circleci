@@ -748,7 +748,7 @@ jobs:
             brew install libzip
             brew install rsync
 
-      - run: echo "where is #include <netcdf.h> error building vortrac ... "
+      - run: echo "where is netcdf.h error building vortrac ... "
       - run: find /usr/local/include -name netcdf.h
 
       - run: brew install libomp --build-from-source
@@ -2005,7 +2005,7 @@ workflows:
       
 # ------ here 
 #      - package-lrose-core-tgz
-#
+
 #      - package-macos-lrose-cyclone-tgz: 
 #          requires:
 #           - package-lrose-core-tgz
