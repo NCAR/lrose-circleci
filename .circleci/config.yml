@@ -750,6 +750,8 @@ jobs:
             brew install szip pkg-config                                                            
             brew install libomp libzip
             brew install rsync
+            brew install geographiclib                                                     
+
 
       - run: brew install qt
 
@@ -800,6 +802,12 @@ jobs:
       # qt5-config.cmake
 
       #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
+
+      # create soft link for geographiclib since brew install didn't 
+      - run: ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
+      - run: ls -l /usr/local/include/geographiclib
+      - run: ls -R /usr/local/include/GeographicLib
+
 
       - run: mkdir workarea
             #cd workarea
