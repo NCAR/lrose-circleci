@@ -749,6 +749,7 @@ jobs:
             brew install rsync
 
       - run: brew install libomp
+# installed here: /usr/local/Cellar/libomp/9.0.0
 
       - run: brew install geographiclib                                                     
 
@@ -829,7 +830,7 @@ jobs:
       - run: ls -R /usr/local/include/GeographicLib
 
 
-      - run: pkg-config --cflags openmpi
+     # - run: pkg-config --cflags openmpi
 
       - run: mkdir workarea
             #cd workarea
