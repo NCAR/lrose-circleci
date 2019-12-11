@@ -590,7 +590,7 @@ jobs:
             set +e
             echo "building samurai"
             cd /private/tmp/workarea/$SOURCE_DIR/samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
             make 
             make install
             pwd
@@ -837,10 +837,10 @@ jobs:
             #pwd
       - run: cd workarea; git clone https://github.com/mmbell/samurai
            # echo "building samurai"
-#      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
       # checkout tagged version of samurai before open mpi integration
       # - run: cd workarea; git checkout 
-      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+      # - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
       - run: cd workarea/samurai; make 
       - run: cd workarea/samurai; make install
 
@@ -1980,15 +1980,15 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
-#
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
-#
+      - package-lrose-core-tgz
+
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
+
 #      - package-linux-brew-formula-fractl:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
