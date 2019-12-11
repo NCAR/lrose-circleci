@@ -729,6 +729,91 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
+
+
+  #test-macos-lrose-cyclone-tgz-previous:
+  test-macos-lrose-samurai
+
+    macos:
+      xcode: "10.3.0"
+
+    working_directory: /tmp
+    steps:
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config                                                            
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew cask install xquartz 
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      # mkdir: /usr/local/lrose: Permission denied
+      # mkdir: /usr/local/lrose: No such file or directory
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-cyclone-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-cyclone-$RELEASE_DATE.mac_osx" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+
+      - run: find /usr/local/ -name Qt5Config.cmake
+
+      # samurai needs Qt, from this error ...
+      # CMake Error at CMakeLists.txt:20 (find_package):
+      # By not providing "FindQt5.cmake" in CMAKE_MODULE_PATH this project has
+      # asked CMake to find a package configuration file provided by "Qt5", but
+      # CMake did not find one.
+      #
+      # Could not find a package configuration file provided by "Qt5" with any of
+      # the following names:
+      # 
+      # Qt5Config.cmake
+      # qt5-config.cmake
+
+      #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
+
+      - run:
+          name: Build/install samurai  
+          command: |
+            set +e
+            mkdir workarea
+            git clone https://github.com/mmbell/samurai
+            echo "building samurai"
+            cd /private/tmp/workarea/samurai
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+            make 
+            make install
+
+
+
   test-macos-cyclone-tgz-build-core-latest:
     macos:
       xcode: "11.2.1"
@@ -1073,7 +1158,7 @@ jobs:
       - run: $LROSE_INSTALL_DIR/bin/fractl  -h
 
 
-  test-macos-lrose-cyclone-tgz-previous:
+  test-macos-lrose-cyclone-tgz-previous-old:
     macos:
       xcode: "10.3.0"
 
@@ -1858,21 +1943,24 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
+      - test-macos-lrose-samurai
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
       
-
-      - package-lrose-core-tgz
-
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-
-      - package-linux-brew-formula-fractl:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-
+# ------ here 
+#      - package-lrose-core-tgz
+#
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+#
+#      - package-linux-brew-formula-fractl:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+# ------ here 
 
 # separate install scripts
 #      - test-macos-cyclone-tgz-build-core-latest:
