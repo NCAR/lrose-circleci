@@ -843,8 +843,19 @@ jobs:
       - run: ls -R  /usr/local/Cellar/open-mpi
 
       - run: cd workarea; git clone https://github.com/mmbell/samurai
+
+# OpenMP support was drastically improved in CMake 3.9+. The Modern(TM) way to add OpenMP to a target is:
+#
+# find_package(OpenMP)
+# if(OpenMP_CXX_FOUND)
+#    target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
+# endif()
+#
+      # do some awk manipulation of the CMakeLists.txt file
+      
+
            # echo "building samurai"
-      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5;/usr/local/Cellar/open-mpi/4.0.1_2     .
+      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5;/usr/local/Cellar/open-mpi/4.0.2     .
 
 # -DOpenMP_C="${CMAKE_C_COMPILER}" -DOpenMP_C_LIB_NAMES="libomp" "libgomp" "libiomp5" -DOpenMP_C_FLAG="-fopenmp=libomp -Wno-unused-command-line-argument" .
 
