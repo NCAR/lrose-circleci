@@ -750,11 +750,34 @@ jobs:
             brew install szip pkg-config                                                            
             brew install libomp libzip
             brew install rsync
-            brew install geographiclib                                                     
+
+
+      - run: brew install geographiclib                                                     
 
 
       - run: brew install qt
+#
+# qt is keg-only, which means it was not symlinked into /usr/local,
+# because Qt 5 has CMake issues when linked.
+#
+# If you need to have qt first in your PATH run:
+#  echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
+#
+# For compilers to find qt you may need to set:
+#  export LDFLAGS="-L/usr/local/opt/qt/lib"
+#  export CPPFLAGS="-I/usr/local/opt/qt/include"
+#
+# For pkg-config to find qt you may need to set:
+#  export PKG_CONFIG_PATH="/usr/local/opt/qt/lib/pkgconfig"
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+
       - run: which qmake
+      - run: which macdeployqt
 
 #      - run: brew cask install xquartz 
 
@@ -762,7 +785,6 @@ jobs:
           name: Setup Environment Variables
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
-            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
 
       - run: pwd
 
