@@ -497,6 +497,7 @@ jobs:
           command: |
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
 
       - run: echo $HOME
 
@@ -563,7 +564,6 @@ jobs:
             echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
-            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
 
 
@@ -597,9 +597,7 @@ jobs:
             echo "building vortrac"
             cd /private/tmp/workarea/$SOURCE_DIR/vortrac/src
             pwd
-            echo $QT5_BIN
-            ls $QT5_BIN
-            $QT5_BIN/qmake .
+            qmake .
             make
             cp vortrac $LROSE_INSTALL_DIR/bin
             cd ..
@@ -622,7 +620,7 @@ jobs:
             cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
             mkdir -p HawkEye.app/Contents/MacOS/../share
             cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
-            $QT5_BIN/macdeployqt HawkEye.app -dmg -always-overwrite
+            macdeployqt HawkEye.app -dmg -always-overwrite
             hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
             cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
             $LROSE_INSTALL_DIR/bin/RadxPrint -h
@@ -644,7 +642,6 @@ jobs:
             echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
-            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
                                                               
       - run:
@@ -652,7 +649,7 @@ jobs:
           command: |
             echo "building vortrac"
             cd workarea/$SOURCE_DIR/vortrac/src
-            $QT5_BIN/qmake .
+            qmake .
             make
             cp vortrac $LROSE_INSTALL_DIR/bin
             cd ..
@@ -748,9 +745,10 @@ jobs:
             brew install fftw
             brew install netcdf
             brew install szip pkg-config                                                            
-            brew install libomp libzip
+            brew install libzip
             brew install rsync
 
+      - run: brew install libomp
 
       - run: brew install geographiclib                                                     
 
@@ -807,7 +805,6 @@ jobs:
             echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
-            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
 
       - run: find /usr/local/ -name Qt5Config.cmake
@@ -839,7 +836,8 @@ jobs:
             #pwd
       - run: cd workarea; git clone https://github.com/mmbell/samurai
            # echo "building samurai"
-      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+#      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
       - run: cd workarea/samurai; make 
       - run: cd workarea/samurai; make install
 
