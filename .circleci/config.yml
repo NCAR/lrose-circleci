@@ -856,7 +856,20 @@ jobs:
 # endif()
 #
       # do some awk manipulation of the CMakeLists.txt file
-      
+      - run:
+          name: edit CMakeList.txt file
+          command: |
+            cd workarea/samurai
+            awk '(NR < 46) {print $0}' CMakeLists.txt > temp_cmake.txt
+            echo " if(OpenMP_CXX_FOUND) \
+                      target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX) \
+                   endif()" >> temp_cmake.txt
+            awk '(NR > 54) {print $0}' CMakeLists.txt >> temp_cmake.txt
+            cat temp_cmake.txt
+            mv CMakeLists.txt junk
+            mv temp_cmake.txt CMakeLists.txt
+            
+#            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
 
            # echo "building samurai"
       - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5;/usr/local/Cellar/open-mpi/4.0.2     .
@@ -2005,14 +2018,14 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-      - package-lrose-core-tgz
+#      - package-lrose-core-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
 
 #      - package-linux-brew-formula-fractl:
 #          requires:
