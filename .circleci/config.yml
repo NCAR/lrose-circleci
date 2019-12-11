@@ -745,13 +745,15 @@ jobs:
           command: |
             brew install cmake
             brew install eigen
-            brew install fftw flex
-            brew install qt5 netcdf
+            brew install fftw
+            brew install netcdf
             brew install szip pkg-config                                                            
             brew install libomp libzip
             brew install rsync
 
-      - run: brew cask install xquartz 
+      - run: brew install qt
+
+#      - run: brew cask install xquartz 
 
       - run: 
           name: Setup Environment Variables
@@ -759,7 +761,7 @@ jobs:
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
 
-      - run: echo $HOME
+      - run: pwd
 
       # mkdir: /usr/local/lrose: Permission denied
       # mkdir: /usr/local/lrose: No such file or directory
@@ -804,9 +806,11 @@ jobs:
           command: |
             set +e
             mkdir workarea
+            cd workarea
+            pwd
             git clone https://github.com/mmbell/samurai
             echo "building samurai"
-            cd /private/tmp/workarea/samurai
+            cd samurai
             cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
             make 
             make install
