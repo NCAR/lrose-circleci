@@ -603,7 +603,7 @@ jobs:
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
             echo "building fractl"
-            ln -s ../Cellar/geographiclib /usr/local/include/GeographicLib
+            ln -s /usr/local/Cellar/geographiclib /usr/local/include/GeographicLib
             ls -l /usr/local/include/geographiclib
             ls -R /usr/local/include/GeographicLib
             cd /private/tmp/workarea/$SOURCE_DIR/fractl
@@ -747,6 +747,9 @@ jobs:
             brew install szip pkg-config                                                            
             brew install libzip
             brew install rsync
+
+      - run: echo "where is #include <netcdf.h> error building vortrac ... "
+      - run: find /usr/local/include -name netcdf.h
 
       - run: brew install libomp --build-from-source
 # installed here: /usr/local/Cellar/libomp/9.0.0
