@@ -801,19 +801,14 @@ jobs:
 
       #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
 
-      - run:
-          name: Build/install samurai  
-          command: |
-            set +e
-            mkdir workarea
-            cd workarea
-            pwd
-            git clone https://github.com/mmbell/samurai
-            echo "building samurai"
-            cd samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
-            make 
-            make install
+      - run: mkdir workarea
+            #cd workarea
+            #pwd
+      - run: cd workarea; git clone https://github.com/mmbell/samurai
+           # echo "building samurai"
+      - run: cd workarea/samurai; cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+      - run: cd workarea/samurai; make 
+      - run: cd workarea/samurai; make install
 
 
 
