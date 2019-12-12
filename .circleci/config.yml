@@ -861,9 +861,9 @@ jobs:
           command: |
             cd workarea/samurai
             awk '(NR < 46) {print $0}' CMakeLists.txt > temp_cmake.txt
-            echo " if(OpenMP_CXX_FOUND) \
-                      target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX) \
-                   endif()" >> temp_cmake.txt
+            echo "if(OpenMP_CXX_FOUND)" >> temp_cmake.txt
+            echo "    target_link_libraries(OpenMP_TARGET PUBLIC OpenMP::OpenMP_CXX)" >> temp_cmake.txt
+            echo "endif()" >> temp_cmake.txt >> temp_cmake.txt
             awk '(NR > 54) {print $0}' CMakeLists.txt >> temp_cmake.txt
             cat temp_cmake.txt
             mv CMakeLists.txt junk
