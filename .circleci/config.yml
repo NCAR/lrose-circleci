@@ -1963,24 +1963,24 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-cyclone-tgz-build-core-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-      - test-macos-cyclone-tgz-build-samurai-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+      #- test-macos-cyclone-tgz-build-core-latest:
+      #    requires:
+      #     - package-macos-lrose-cyclone-tgz
+      #- test-macos-cyclone-tgz-build-samurai-latest:
+      #    requires:
+      #     - test-macos-cyclone-tgz-build-core-latest
 
-      - test-macos-cyclone-tgz-build-hawkeye-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+      #- test-macos-cyclone-tgz-build-hawkeye-latest:
+      #    requires:
+      #     - test-macos-cyclone-tgz-build-core-latest
 
-      - test-macos-cyclone-tgz-build-fractl-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+      #- test-macos-cyclone-tgz-build-fractl-latest:
+      #    requires:
+      #     - test-macos-cyclone-tgz-build-core-latest
 
-      - test-macos-cyclone-tgz-build-vortrac-latest:
-          requires:
-           - test-macos-cyclone-tgz-build-core-latest
+      #- test-macos-cyclone-tgz-build-vortrac-latest:
+      #    requires:
+      #     - test-macos-cyclone-tgz-build-core-latest
 
 
 
@@ -1997,8 +1997,8 @@ workflows:
 
 # --------
           
-  now:
-    jobs:
+#  now:
+#    jobs:
 #       - test-brew-install-lrose-cyclone
 #       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
@@ -2013,7 +2013,7 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
-      - test-macos-lrose-samurai
+#      - test-macos-lrose-samurai
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
       
