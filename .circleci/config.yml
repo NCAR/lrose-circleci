@@ -551,6 +551,7 @@ jobs:
             brew install cmake
             brew install eigen
             brew install libomp libzip
+            brew install llvm
 
       # don't exit if one of the commands fails 
       # - run: set +e
@@ -565,8 +566,6 @@ jobs:
             echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
             echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
-
-
 
       - run: find /usr/local/ -name Qt5Config.cmake
 
@@ -589,8 +588,10 @@ jobs:
           command: |
             set +e
             echo "building samurai"
+            ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
+            ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
             cd /private/tmp/workarea/$SOURCE_DIR/samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+            CC=clang-omp CXX=clang-omp++ cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
             make 
             make install
             pwd
@@ -1997,8 +1998,8 @@ workflows:
 
 # --------
           
-#  now:
-#    jobs:
+  now:
+    jobs:
 #       - test-brew-install-lrose-cyclone
 #       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
@@ -2018,14 +2019,17 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
-
-#      - package-macos-lrose-cyclone-tgz: 
+      - package-lrose-core-tgz
+#      - package-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-linux-brew-formula-fractl:
 #          requires:
