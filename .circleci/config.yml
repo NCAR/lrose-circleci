@@ -563,8 +563,8 @@ jobs:
             echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
             echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
             echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
-            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV
-            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=/usr/local/include" >> $BASH_ENV
+            echo "export NETCDF_LIB=/usr/local/lib" >> $BASH_ENV
             echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
 
       - run: find /usr/local/ -name Qt5Config.cmake
@@ -2027,22 +2027,22 @@ workflows:
 #          requires:
 #           - package-lrose-core-tgz
 
-      - test-macos-lrose-samurai
+#      - test-macos-lrose-samurai
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
+      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-linux-brew-formula-fractl:
 #          requires:
