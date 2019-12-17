@@ -2099,7 +2099,7 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
-      - test-macos-lrose-cyclone.rb
+      - test-macos-lrose-cyclone-rb
 
 # ------ here 
 
