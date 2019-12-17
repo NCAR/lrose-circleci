@@ -2082,24 +2082,24 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-      - package-lrose-core-tgz
+#      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-core-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
 #      - test-macos-lrose-cyclone-tgz-latest:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
 
-      - package-brew-formula-workspace:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-brew-formula-workspace:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
-      #- test-macos-lrose-cyclone.rb
+      - test-macos-lrose-cyclone.rb
 
 # ------ here 
 
