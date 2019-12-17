@@ -302,7 +302,7 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
 
-  package-osx-brew-formula:
+  package-brew-formula-workspace:
     executor: my-executor
     working_directory: /tmp
     steps:
@@ -354,6 +354,51 @@ jobs:
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+  package-brew-formula-wget:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+#      - attach_workspace:
+#          at: /tmp/workspace_macos
+#      - run: cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum
+  
+#  just call the script to build the brew formula
+#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
+
+# begin script ...
+#       - run: git clone ...release-tools
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=20191213" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export TARFILE=lrose-cyclone-$RELEASE_DATE.src.mac_osx.tgz" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/$RELEASE_DATE/$TARFILE" >> $BASH_ENV
+            echo "export checksum2='cat /tmp/workspace_macos/releases/lrose-cyclone/osx/checksum'" >> $BASH_ENV
+            echo "export checksum=`sha256sum /tmp/workspace_macos/releases/lrose-cyclone/osx/$TARFILE`" >> $BASH_ENV
+
+      - run: echo $checksum
+      - run: echo $URL
+      - run: echo $TARFILE
+      - run: echo $RELEASE_DATE
+
+      - run: git clone https://github.com/nsf-lrose/release-tools
+
+      - run: ./release-tools/cyclone/homebrew-scripts/make-lrose-cyclone-brew-formula.sh 
+      - run: mv lrose-cyclone.rb /tmp/workspace_macos/releases/lrose-cyclone/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone/osx
+
 
   package-linux-brew-formula-fractl:
     executor: my-executor
@@ -409,9 +454,14 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-cyclone/osx
 
 
+  # test using this release ...
+  # https://github.com/NCAR/lrose-core/releases/tag/lrose-core-20191213
+  #
   test-macos-lrose-cyclone-rb:
     macos:
-      xcode: "10.1.0"
+      xcode: "11.2.1"
+
+#      xcode: "10.1.0"
 #     working_directory: /tmp
     steps:
       - run:
@@ -425,7 +475,7 @@ jobs:
       # - run: brew install homebrew/cask-cask/brew-cask
         # Error: caskroom/cask was moved. Tap homebrew/cask-cask instead.
       # - run: brew cask install xquartz 
-      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191121/lrose-cyclone.rb
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191217/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
       - run: RadxPrint -h
       # - run: vortrac  -h
@@ -529,7 +579,7 @@ jobs:
       #- run:
       #    name: build lrose-cyclone 
       #    command: |
-      #      echo "building lrose-cyclone from tgz"
+      #      echo "building lrose-cylone from tgz"
       - run: cd workarea; ls
 
       - run: cd workarea/$SOURCE_DIR; pwd
@@ -2040,13 +2090,17 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-
-#      - package-linux-brew-formula-fractl:
+#      - test-macos-lrose-cyclone-tgz-latest:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
+
+      - package-brew-formula-workspace:
+          requires:
+           - package-macos-lrose-cyclone-tgz
+        # upload lrose-cyclone.rb after this runs
+        # then run
+      #- test-macos-lrose-cyclone.rb
+
 # ------ here 
 
 # separate install scripts
