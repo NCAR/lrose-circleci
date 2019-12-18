@@ -508,6 +508,32 @@ jobs:
       - run: samurai -h
       - run: fractl -h
 
+  # test using this release ...
+  # https://github.com/NCAR/lrose-core/releases/tag/lrose-core-20191213
+  #
+  test-macos-lrose-core-rb:
+    macos:
+      xcode: "11.2.1"
+
+#      xcode: "10.1.0"
+#     working_directory: /tmp
+    steps:
+      - run:
+          name: brew install lrose-cyclone.rb 
+          command: echo "testing brew install MacOS-Cyclone"
+ 
+      - run: brew update
+      - run: brew install wget
+      # - run: brew install cmake
+        # xquartz is needed! Don't even think about removing this line.
+      # - run: brew install homebrew/cask-cask/brew-cask
+        # Error: caskroom/cask was moved. Tap homebrew/cask-cask instead.
+      - run: brew cask install xquartz 
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20191213/lrose-core.rb
+      - run: brew install lrose-core.rb
+      - run: RadxPrint -h
+
+
 
   test-macos-lrose-cyclone-tgz-latest:
     macos:
@@ -2099,7 +2125,10 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
-      - test-macos-lrose-cyclone-rb
+#      - test-macos-lrose-cyclone-rb
+
+# test lrose-cyclone using separate brew formulas ...
+      - test-macos-lrose-core-rb
 
 # ------ here 
 
