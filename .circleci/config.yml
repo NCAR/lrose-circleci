@@ -677,7 +677,7 @@ jobs:
             pwd
             qmake .
             make
-            cp vortrac $LROSE_INSTALL_DIR/bin
+            cp vortrac.app/Contents/MacOS/vortrac $LROSE_INSTALL_DIR/bin
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
             echo "building fractl"
@@ -703,6 +703,7 @@ jobs:
             cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
             $LROSE_INSTALL_DIR/bin/RadxPrint -h
             $LROSE_INSTALL_DIR/bin/vortrac  -h
+            $LROSE_INSTALL_DIR/bin/fractl -h
             $LROSE_INSTALL_DIR/bin/samurai -h
 
       # the rest is just an expansion of the above ... 
@@ -2108,21 +2109,21 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
+      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
-#      - package-brew-formula-workspace:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-brew-formula-workspace:
+          requires:
+           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
 #      - test-macos-lrose-cyclone-rb
