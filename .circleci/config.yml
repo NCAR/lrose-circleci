@@ -587,6 +587,8 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
+            # samurai needs LROSE_ROOT_DIR
+
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
@@ -701,15 +703,21 @@ jobs:
             cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
             pwd
             mkdir -p HawkEye.app/Contents/Frameworks
+            echo " ... after mkdir"
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
             mkdir -p HawkEye.app/Contents/MacOS/../share
             cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
+            echo " ... before calling macdeployqt"
             macdeployqt HawkEye.app -dmg -always-overwrite
+            echo " .. before calling hdiutil"
             hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            echo " ... after dmp build"
             cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
+            echo " ... done with building HawkEye"
+            echo " Start of tests ... "
             $LROSE_INSTALL_DIR/bin/RadxPrint -h
             $LROSE_INSTALL_DIR/bin/vortrac  -h
             $LROSE_INSTALL_DIR/bin/fractl -h
