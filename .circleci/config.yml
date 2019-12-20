@@ -665,13 +665,18 @@ jobs:
       # cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.1/lib/cmake/Qt5 -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c`  -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` -D OpenMP_CXX_LIB_NAMES=""  .
       #
 
+#            ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
+#            ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
+
+
       - run:
           name: Build/install samurai  
           command: |
             set +e
             echo "building samurai"
-            ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
-            ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
+            echo "ls $LROSE_INSTALL_DIR"
+            ls $LROSE_INSTALL_DIR
+            echo " ... after ls $LROSE_INSTALL_DIR"
             cd /private/tmp/workarea/$SOURCE_DIR/samurai
             cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR \
                -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 \
@@ -701,7 +706,12 @@ jobs:
             make install 
             echo "building HawkEye.dmg"
             cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
-            pwd
+            pwd            
+            make clean
+            /usr/local/Cellar/qt/5.13.2/bin/qmake -o Makefile.qmake
+            echo " ...  make from_qmake"
+            make -f Makefile.qmake
+            echo " ... after qmake"
             mkdir -p HawkEye.app/Contents/Frameworks
             echo " ... after mkdir"
             cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
@@ -709,7 +719,7 @@ jobs:
             cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
             cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
             mkdir -p HawkEye.app/Contents/MacOS/../share
-            cp -r $LROSE_INSTALL_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
+            cp -r $SOURCE_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
             echo " ... before calling macdeployqt"
             macdeployqt HawkEye.app -dmg -always-overwrite
             echo " .. before calling hdiutil"
