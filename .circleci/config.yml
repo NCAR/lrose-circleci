@@ -659,6 +659,10 @@ jobs:
 
       #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
 
+      #
+      # cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.1/lib/cmake/Qt5 -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c`  -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` -D OpenMP_CXX_LIB_NAMES=""  .
+      #
+
       - run:
           name: Build/install samurai  
           command: |
@@ -667,7 +671,12 @@ jobs:
             ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
             ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
             cd /private/tmp/workarea/$SOURCE_DIR/samurai
-            CC=clang-omp CXX=clang-omp++ cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR \
+               -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 \
+               -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c` \
+               -D OpenMP_C_LIB_NAMES="" \ 
+               -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` \
+               -D OpenMP_CXX_LIB_NAMES="" .
             make 
             make install
             pwd
