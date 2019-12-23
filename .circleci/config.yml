@@ -699,7 +699,7 @@ jobs:
             echo $OCFLAGS
             echo $OCXXFLAGS
             cd /private/tmp/workarea/$SOURCE_DIR/samurai
-            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=$CMAKE_QT5 -D OpenMP_C_FLAGS=OCFLAGS -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=OCXXFLAGS -D OpenMP_CXX_LIB_NAMES="" .
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=$CMAKE_QT5 -D OpenMP_C_FLAGS=$OCFLAGS -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=$OCXXFLAGS -D OpenMP_CXX_LIB_NAMES="" .
             make 
             make install
             pwd
@@ -747,10 +747,11 @@ jobs:
             cd /private/tmp/workarea/$SOURCE_DIR/vortrac
             pwd            
             echo " ... before calling macdeployqt"
+            cd src
             macdeployqt vortrac.app -dmg -always-overwrite
-            cp Resources/*.xml vortrac.app/Contents/Resources/
+            cp ../Resources/*.xml vortrac.app/Contents/Resources/
             echo " .. before calling hdiutil"
-            hdiutil create -volname Vortrac_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/vortrac/vortrac.app -ov -format UDZO vortrac.dmg
+            hdiutil create -volname Vortrac_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/vortrac/src/vortrac.app -ov -format UDZO vortrac.dmg
             echo " ... after dmp build"
             cp vortrac.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
             echo " ... done with building vortrac"
