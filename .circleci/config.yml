@@ -683,7 +683,7 @@ jobs:
                -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c` \
                -D OpenMP_C_LIB_NAMES="" \ 
                -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` \
-               -D OpenMP_CXX_LIB_NAMES="" .
+               -D OpenMP_CXX_LIB_NAMES="" /private/tmp/workarea/$SOURCE_DIR/samurai
             make 
             make install
             pwd
