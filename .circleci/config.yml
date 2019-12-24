@@ -2021,7 +2021,7 @@ jobs:
       - run: /usr/local/lrose/bin/RadxPrint -h
 
   # build from the head of lrose-core
-  build-cyclone-docker:
+  package-cyclone-docker:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
     machine:
@@ -2036,12 +2036,15 @@ jobs:
       - run: ls workspace
       - run: cd workspace/release-tools/cyclone/lrose-docker-scripts; ./build.sh
       - run: ls -R
+      - run: which docker
+      - run: mkdir -p /tmp/workspace/deploy/docker-images
+#      - run: docker save -o /tmp/workspace/deploy/docker-images  
 #      - persist_to_workspace:
 #          root: workspace
 #          paths: 
-#      - store_artifacts:
-#          path: /tmp/workspace
-#          destination: 
+      - store_artifacts:
+          path: /tmp/workspace
+          destination: 
   
         #  --releaseDate lrose-cyclone-20190801
       #- run: |
@@ -2151,7 +2154,7 @@ workflows:
   now:
     jobs:
 #       - test-brew-install-lrose-cyclone
-#       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
+#       - package-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
 #      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
