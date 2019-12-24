@@ -756,10 +756,15 @@ jobs:
             cp vortrac.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
             echo " ... done with building vortrac"
             echo " Start of tests ... "
+            echo "   testing RadxPrint ..."
             $LROSE_INSTALL_DIR/bin/RadxPrint -h
+            echo "   testing vortrac ..."
             $LROSE_INSTALL_DIR/bin/vortrac  -h
+            echo "   testing fractl ..."
             $LROSE_INSTALL_DIR/bin/fractl -h
+            echo "   testing samurai ..."
             $LROSE_INSTALL_DIR/bin/samurai -h
+            echo " End of tests"
 
       # the rest is just an expansion of the above ... 
       - run:
@@ -2148,12 +2153,6 @@ workflows:
 #       - test-brew-install-lrose-cyclone
 #       - build-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
-#      - workspace-producer
-#      - workspace-consumer:
-#          requires:
-#           - workspace-producer
-
-
 #      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
 #          requires:
@@ -2183,10 +2182,11 @@ workflows:
         # then run
 #      - test-macos-lrose-cyclone-rb
 
-# test lrose-cyclone using separate brew formulas ...
       - test-macos-lrose-core-rb
 
 # ------ here 
+
+# test lrose-cyclone using separate brew formulas ...
 
 # separate install scripts
 #      - test-macos-cyclone-tgz-build-core-latest:
@@ -2237,6 +2237,11 @@ workflows:
 #      - buildntest-linux-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-cyclone-tgz
+
+#      - workspace-producer
+#      - workspace-consumer:
+#          requires:
+#           - workspace-producer
 
 
 # not functional until pushing artifacts to git repo ...
