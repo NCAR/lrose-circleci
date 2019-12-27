@@ -769,7 +769,7 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
-test-macos-cyclone-expanded-tgz-not-used:
+  test-macos-cyclone-expanded-tgz-not-used:
     macos:
       xcode: "11.2.1"
 
