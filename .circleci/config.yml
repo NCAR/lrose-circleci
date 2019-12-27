@@ -766,6 +766,18 @@ jobs:
             $LROSE_INSTALL_DIR/bin/samurai -h
             echo " End of tests"
 
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-cyclone
+
+test-macos-cyclone-expanded-tgz-not-used:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
       # the rest is just an expansion of the above ... 
       - run:
           name: Install needed packages for vortrac
@@ -2037,14 +2049,16 @@ jobs:
       - run: cd workspace/release-tools/cyclone/lrose-docker-scripts; ./build.sh
       - run: ls -R
       - run: which docker
+      - run: docker images
       - run: mkdir -p /tmp/workspace/deploy/docker-images
-#      - run: docker save -o /tmp/workspace/deploy/docker-images  
+      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
+      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:18.10  
 #      - persist_to_workspace:
 #          root: workspace
 #          paths: 
       - store_artifacts:
-          path: /tmp/workspace
-          destination: 
+          path: /tmp/workspace/deploy/docker-images
+#          destination: 
   
         #  --releaseDate lrose-cyclone-20190801
       #- run: |
