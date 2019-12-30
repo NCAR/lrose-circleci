@@ -2036,8 +2036,8 @@ jobs:
   package-cyclone-docker:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
-    machine:
-      docker_layer_caching: true
+    machine: true
+#      docker_layer_caching: true
     steps:
       - run: date
       - run:
@@ -2074,7 +2074,7 @@ jobs:
   test-cyclone-docker:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
-    machine:
+    machine: true
       docker_layer_caching: true
 
     working_directory: /tmp
@@ -2219,26 +2219,26 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-      - package-lrose-core-tgz
+#      - package-lrose-core-tgz
 #      - package-lrose-cyclone-tgz:
 #          requires:
 #           - package-lrose-core-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
 
-      - package-brew-formula-workspace:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-brew-formula-workspace:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
 #      - test-macos-lrose-cyclone-rb
 
-      - test-macos-lrose-core-rb
+#      - test-macos-lrose-core-rb
 
 # ------ here 
 
