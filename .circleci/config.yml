@@ -2040,38 +2040,86 @@ jobs:
       docker_layer_caching: true
     steps:
       - run: date
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
       ## - checkout
       - run: echo "building lrose-cyclone docker image ..."
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
       - run: pwd
       - run: ls workspace
-      - run: cd workspace/release-tools/cyclone/lrose-docker-scripts; ./build.sh
+
+      - run:
+          name: Build the container
+          command: |
+            cd workspace/release-tools/cyclone/lrose-docker-scripts
+            ./build_latest.sh -u 18.10
+
       - run: ls -R
       - run: which docker
       - run: docker images
       - run: mkdir -p /tmp/workspace/deploy/docker-images
-      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
-      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:18.10  
-#      - persist_to_workspace:
-#          root: workspace
-#          paths: 
+#      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
+      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
+      - persist_to_workspace:
+          root: workspace
+          paths: deploy/docker-images
       - store_artifacts:
           path: /tmp/workspace/deploy/docker-images
-#          destination: 
+
+
+  test-cyclone-docker:
+    ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
+    # executor: ubuntu-executor
+    machine:
+      docker_layer_caching: true
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+#          root: workspace
+#          paths: deploy/docker-images
+
+      - run: date
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      - run: 
+          name: load docker image 
+          command: |
+            docker load -i /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
+
+      # - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
+
+      - run: docker images
+
+      - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
+      - run: pwd
+      - run: ls workspace
+
+      - run:
+          name: Run tests in the container
+          command: |
+            cd workspace/release-tools/cyclone/lrose-docker-scripts
+            docker run -it nsflrose/lrose-cyclone:$RELEASE_DATE
+            RadxPrint -h
+            fractl -h
+            samurai -h
+            vortrac -h
+            exit
+
+#      - run: ls -R
+#      - run: which docker
+#      - run: mkdir -p /tmp/workspace/deploy/docker-images
+#      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
   
-        #  --releaseDate lrose-cyclone-20190801
-      #- run: |
-      #    if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-cyclone --prefix /usr/local/lrose` == 0 ]]; then
-      #        echo "It worked"
-      #    else 
-      #        tail -n 100 /tmp/lrose_build/logs/*
-      #    fi
-               
-      #- run: ls -R /usr/local/lrose
-      #- run: /usr/local/lrose/bin/RadxPrint -h
-
-
 
 workflows:
   version: 2.1
@@ -2131,42 +2179,33 @@ workflows:
       - package-macos-lrose-cyclone-tgz: 
           requires:
            - package-lrose-core-tgz
-      #- test-macos-cyclone-tgz-build-core-latest:
-      #    requires:
-      #     - package-macos-lrose-cyclone-tgz
-      #- test-macos-cyclone-tgz-build-samurai-latest:
-      #    requires:
-      #     - test-macos-cyclone-tgz-build-core-latest
 
-      #- test-macos-cyclone-tgz-build-hawkeye-latest:
-      #    requires:
-      #     - test-macos-cyclone-tgz-build-core-latest
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
-      #- test-macos-cyclone-tgz-build-fractl-latest:
-      #    requires:
-      #     - test-macos-cyclone-tgz-build-core-latest
+      - package-brew-formula-workspace:
+          requires:
+           - package-macos-lrose-cyclone-tgz
+        # upload lrose-cyclone.rb after this runs
+        # then run
+#      - test-macos-lrose-cyclone-rb
 
-      #- test-macos-cyclone-tgz-build-vortrac-latest:
-      #    requires:
-      #     - test-macos-cyclone-tgz-build-core-latest
-
-
-
-# TODO: correct these names
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-cyclone-tgz-build-core-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz-latest
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz-latest
 
 # --------
           
   now:
     jobs:
+
+      # no dependencies for docker image; uses checkout_and_build_script to 
+      # pull the top of master branch
+      - package-cyclone-docker
+      - test-cyclone-docker:
+          requires:
+           - package-cyclone-docker
+          
+
+
 #       - test-brew-install-lrose-cyclone
 #       - package-cyclone-docker  # error in build apps; not sure where; log file is /tmp/lrose_build/logs/build-apps.log
 
