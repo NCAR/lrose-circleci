@@ -2037,7 +2037,7 @@ jobs:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
     machine: true
-#      docker_layer_caching: true
+    docker_layer_caching: true
     steps:
       - run: date
       - run:
@@ -2063,7 +2063,7 @@ jobs:
       - run: docker images
       - run: mkdir -p /tmp/workspace/deploy/docker-images
 #      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
-      - run: docker save -o /tmp/workspace/deploy/docker-images/lrose-cyclone-saved  nsflrose/lrose-cyclone:$RELEASE_DATE
+      - run: docker save -o /tmp/workspace/deploy/docker-images/nsflrose.tar  "nsflrose/lrose-cyclone:$RELEASE_DATE"
       - persist_to_workspace:
           root: workspace
           paths: deploy/docker-images
