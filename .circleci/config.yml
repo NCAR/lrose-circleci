@@ -2063,7 +2063,7 @@ jobs:
       - run: docker images
       - run: mkdir -p /tmp/workspace/deploy/docker-images
 #      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
-      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
+      - run: docker save -o /tmp/workspace/deploy/docker-images/lrose-cyclone-saved  nsflrose/lrose-cyclone:$RELEASE_DATE
       - persist_to_workspace:
           root: workspace
           paths: deploy/docker-images
@@ -2094,7 +2094,9 @@ jobs:
       - run: 
           name: load docker image 
           command: |
-            docker load -i /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
+            docker load -i /tmp/workspace/deploy/docker-images/lrose-cyclone-saved  
+
+#  nsflrose/lrose-cyclone:$RELEASE_DATE
 
       # - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
 
