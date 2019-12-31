@@ -2062,7 +2062,7 @@ jobs:
       - run: ls -R
       - run: which docker
       - run: docker images
-      - run: mkdir -p /tmp/workspace/deploy/docker-images
+      - run: mkdir -p workspace/deploy/docker-images
 
       - run:
           name: Set Docker Image Name
@@ -2072,7 +2072,7 @@ jobs:
       - run: echo $IMAGE_NAME
       
 #      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
-      - run: docker save -o /tmp/workspace/deploy/docker-images/nsflrose.tar $IMAGE_NAME
+      - run: docker save -o workspace/deploy/docker-images/nsflrose.tar $IMAGE_NAME
 
 #"nsflrose/lrose-cyclone:${RELEASE_DATE}"
 
@@ -2080,7 +2080,7 @@ jobs:
           root: workspace
           paths: deploy/docker-images
       - store_artifacts:
-          path: /tmp/workspace/deploy/docker-images
+          path: workspace/deploy/docker-images
 
 
   test-cyclone-docker:
@@ -2106,7 +2106,7 @@ jobs:
       - run: 
           name: load docker image 
           command: |
-            docker load -i /tmp/workspace/deploy/docker-images/lrose-cyclone-saved  
+            docker load -i /tmp/workspace/deploy/docker-images/nsflrose.tar  
 
 #  nsflrose/lrose-cyclone:$RELEASE_DATE
 
