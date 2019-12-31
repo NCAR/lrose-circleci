@@ -2036,9 +2036,9 @@ jobs:
   package-cyclone-docker:
     ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
-    machine: true
+    # machine: true
 
-    #docker_layer_caching: true
+    docker_layer_caching: true
 
     steps:
       - run: date
