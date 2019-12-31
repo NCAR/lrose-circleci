@@ -2108,10 +2108,6 @@ jobs:
           command: |
             docker load -i /tmp/workspace/deploy/docker-images/nsflrose.tar  
 
-#  nsflrose/lrose-cyclone:$RELEASE_DATE
-
-      # - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:$RELEASE_DATE
-
       - run: docker images
 
       - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
@@ -2122,17 +2118,10 @@ jobs:
           name: Run tests in the container
           command: |
             cd workspace/release-tools/cyclone/lrose-docker-scripts
-            docker run -it nsflrose/lrose-cyclone:$RELEASE_DATE
-            RadxPrint -h
-            fractl -h
-            samurai -h
-            vortrac -h
-            exit
-
-#      - run: ls -R
-#      - run: which docker
-#      - run: mkdir -p /tmp/workspace/deploy/docker-images
-#      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
+            docker run  nsflrose/lrose-cyclone:$RELEASE_DATE RadxPrint -h
+            docker run  nsflrose/lrose-cyclone:$RELEASE_DATE fractl -h
+            docker run  nsflrose/lrose-cyclone:$RELEASE_DATE samurai -h
+            docker run  nsflrose/lrose-cyclone:$RELEASE_DATE vortrac -h
   
 
 workflows:
