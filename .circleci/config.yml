@@ -2194,12 +2194,6 @@ workflows:
         # then run
 #      - test-macos-lrose-cyclone-rb
 
-
-# --------
-          
-  now:
-    jobs:
-
       # no dependencies for docker image; uses checkout_and_build_script to 
       # pull the top of master branch
       - package-cyclone-docker
@@ -2207,6 +2201,11 @@ workflows:
           requires:
            - package-cyclone-docker
           
+
+# --------
+          
+  now:
+    jobs:
 
 
 #       - test-brew-install-lrose-cyclone
