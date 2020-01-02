@@ -477,10 +477,18 @@ jobs:
       - run: brew cask install xquartz 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20191217/lrose-cyclone.rb
       - run: brew install lrose-cyclone.rb
-      - run: RadxPrint -h
-      # - run: vortrac  -h
-      - run: samurai -h
-      - run: fractl -h
+      - run:
+          name: Testing lrose-cyclone ...  
+          command: |
+            set +e
+            echo "testing RadxPrint"
+            RadxPrint -h
+            echo "testing samurai"
+            samurai -h
+            echo "testing vortrac"
+            vortrac -h
+            echo "testing fractl"
+            fractl -h
 
   test-brew-install-lrose-cyclone-from-workspace:
     macos:
@@ -2204,8 +2212,8 @@ workflows:
 
 # --------
           
-#  now:
-#    jobs:
+  now:
+    jobs:
 
 
 #       - test-brew-install-lrose-cyclone
@@ -2238,7 +2246,7 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
-#      - test-macos-lrose-cyclone-rb
+      - test-macos-lrose-cyclone-rb
 
 #      - test-macos-lrose-core-rb
 
