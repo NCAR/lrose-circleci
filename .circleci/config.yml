@@ -2188,10 +2188,11 @@ jobs:
           name: Set Environment Variables for MacOS Installer
           command: |
             echo "export INSTALL_BASE_DIR=/usr/local" >> $BASE_ENV
-            echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASE_ENV
-            echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASE_ENV
-            echo "export SOURCE_BASE_DIR=/usr/local" >> $BASE_ENV
-            echo "export STAGING=/usr/local" >> $BASE_ENV
+
+#            echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASE_ENV
+#            echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASE_ENV
+#            echo "export SOURCE_BASE_DIR=/usr/local" >> $BASE_ENV
+#            echo "export STAGING=/usr/local" >> $BASE_ENV
 
 
 workflows:
@@ -2294,10 +2295,10 @@ workflows:
 
      - test_1
 
-     - package-cyclone-docker
-     - test-cyclone-docker:
-         requires:
-           - package-cyclone-docker
+#     - package-cyclone-docker
+#     - test-cyclone-docker:
+#         requires:
+#           - package-cyclone-docker
  
  
 #      - package-lrose-core-tgz
