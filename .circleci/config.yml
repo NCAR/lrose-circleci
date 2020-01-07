@@ -774,6 +774,53 @@ jobs:
             $LROSE_INSTALL_DIR/bin/samurai -h
             echo " End of tests"
 
+
+      - run:
+          name: Set Environment Variables for MacOS Installer
+          command: |
+            echo "export INSTALL_BASE_DIR=/usr/local" >> $BASE_ENV
+            echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASE_ENV
+            echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASE_ENV
+            echo "export SOURCE_BASE_DIR=/usr/local" >> $BASE_ENV
+            echo "export STAGING=/usr/local" >> $BASE_ENV
+ 
+
+#
+# just use the install area as the staging area
+#     echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+
+
+      - run:
+          name: Build MacOS Installer
+          command: |
+            set +e
+            cd /private/tmp/workarea
+            mkdir macos_installer
+            echo "building MacOS Installer"
+            echo "  copying 3rd party libraries to staging area"
+            echo "  (use otool -L to find these dependencies"
+            cp ${SOURCE_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libz.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libbz2.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libc++.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libfftw3.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libomp.dylib ${STAGING}/lrose/lib
+            cp ${SOURCE_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
+            echo "  copy frameworks from 3rd parties"
+            pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
+            pkgbuild --root /tmp/workarea/install --scripts scripts  --identifier edu.ucar.lrose --install-location "/usr/local"  ${PACKAGE_NAME}
+            productbuild --synthesize --package ${PACKAGE_NAME} Distribution.xml
+            productbuild --distribution ./Distribution.xml --package-path . --resources myresources/ ./${ARCHIVE_FILENAME}
+            echo "   make the disk image (.dmg)"
+            mkdir -p for_dmg_only
+            cp ${ARCHIVE_FILENAME} for_dmg_only/.
+            hdiutil create -volname LROSE-Cyclone_Installer -srcfolder for_dmg_only -ov -format UDZO LROSE-Cyclone_Installer.dmg
+            cp LROSE-Cyclone_Installer.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
+
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
@@ -2229,24 +2276,24 @@ workflows:
 #           - package-macos-lrose-cyclone-tgz
       
 # ------ here 
-#      - package-lrose-core-tgz
-#      - package-lrose-cyclone-tgz:
-#          requires:
-#           - package-lrose-core-tgz
+      - package-lrose-core-tgz
+      - package-lrose-cyclone-tgz:
+          requires:
+           - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-brew-formula-workspace:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
-      - test-macos-lrose-cyclone-rb
+#      - test-macos-lrose-cyclone-rb
 
 #      - test-macos-lrose-core-rb
 
