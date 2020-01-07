@@ -2277,9 +2277,9 @@ workflows:
       
 # ------ here 
       - package-lrose-core-tgz
-      - package-lrose-cyclone-tgz:
-          requires:
-           - package-lrose-core-tgz
+      #- package-lrose-cyclone-tgz:
+      #    requires:
+      #     - package-lrose-core-tgz
 
       - package-macos-lrose-cyclone-tgz: 
           requires:
