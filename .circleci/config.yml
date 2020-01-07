@@ -774,7 +774,6 @@ jobs:
             $LROSE_INSTALL_DIR/bin/samurai -h
             echo " End of tests"
 
-
       - run:
           name: Set Environment Variables for MacOS Installer
           command: |
@@ -2179,6 +2178,22 @@ jobs:
             docker run  nsflrose/lrose-cyclone:$RELEASE_DATE vortrac -h
   
 
+  test_1:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - run:
+          name: Set Environment Variables for MacOS Installer
+          command: |
+            echo "export INSTALL_BASE_DIR=/usr/local" >> $BASE_ENV
+            echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASE_ENV
+            echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASE_ENV
+            echo "export SOURCE_BASE_DIR=/usr/local" >> $BASE_ENV
+            echo "export STAGING=/usr/local" >> $BASE_ENV
+
+
 workflows:
   version: 2.1
   nightly:
@@ -2275,18 +2290,27 @@ workflows:
 #          requires:
 #           - package-macos-lrose-cyclone-tgz
       
-# ------ here 
-      - package-lrose-core-tgz
+# ------ here
+
+     - test_1
+
+     - package-cyclone-docker
+      - test-cyclone-docker:
+          requires:
+           - package-cyclone-docker
+ 
+ 
+#      - package-lrose-core-tgz
       #- package-lrose-cyclone-tgz:
       #    requires:
       #     - package-lrose-core-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
 
 #      - package-brew-formula-workspace:
 #          requires:
