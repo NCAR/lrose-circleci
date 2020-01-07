@@ -2295,8 +2295,8 @@ workflows:
      - test_1
 
      - package-cyclone-docker
-      - test-cyclone-docker:
-          requires:
+     - test-cyclone-docker:
+         requires:
            - package-cyclone-docker
  
  
