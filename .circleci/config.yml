@@ -780,8 +780,8 @@ jobs:
             echo "export INSTALL_BASE_DIR=/usr/local" >> $BASH_ENV
             echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASH_ENV
             echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASH_ENV
-            echo "export SOURCE_BASE_DIR=/usr/local" >> $BASH_ENV
-            echo "export STAGING=/usr/local" >> $BASH_ENV
+            echo "export PARTY3_BASE_DIR=/usr/local" >> $BASH_ENV
+            echo "export STAGING=$LROSE_INSTALL_DIR" >> $BASH_ENV
 
 #
 # just use the install area as the staging area
@@ -794,20 +794,30 @@ jobs:
             set +e
             cd /private/tmp/workarea
             mkdir macos_installer
+            mkdir scripts
+            echo "#!/bin/sh" >> scripts/postinstall
+            echo "echo \"Running postinstall\" > /tmp/my_postinstall.log " >> scripts/postinstall
+            echo "exit 0 # all good" >> scripts/postinstall
+            echo "#!/bin/sh" >> scripts/preinstall
+            echo "echo \"Running preinstall\" > /tmp/my_preinstall.log " >> scripts/preinstall
+            echo "exit 0 # all good" >> scripts/preinstall
+            mkdir myresources
+            echo "license" >> myresources/LICENSE.html
+            echo "readme" >> myresources/README.html
             echo "building MacOS Installer"
             echo "  copying 3rd party libraries to staging area"
-            echo "  (use otool -L to find these dependencies"
-            cp ${SOURCE_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libz.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libbz2.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libc++.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libfftw3.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libomp.dylib ${STAGING}/lrose/lib
-            cp ${SOURCE_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
+            echo "  (use otool -L to find these dependencies)"
+            cp ${PARTY3_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libz.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libbz2.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libc++.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libfftw3.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
             echo "  copy frameworks from 3rd parties"
             pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
             pkgbuild --root /tmp/workarea/install --scripts scripts  --identifier edu.ucar.lrose --install-location "/usr/local"  ${PACKAGE_NAME}
