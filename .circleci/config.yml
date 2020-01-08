@@ -801,6 +801,8 @@ jobs:
             echo "#!/bin/sh" >> scripts/preinstall
             echo "echo \"Running preinstall\" > /tmp/my_preinstall.log " >> scripts/preinstall
             echo "exit 0 # all good" >> scripts/preinstall
+            chmod u+x scripts/postinstall
+            chmod u+x scripts/preinstall
             mkdir myresources
             echo "license" >> myresources/LICENSE.html
             echo "readme" >> myresources/README.html
@@ -819,8 +821,9 @@ jobs:
             cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libpng16*dylib ${STAGING}/lib
             echo "  copy frameworks from 3rd parties"
+            tar -czf staging.tar.gz /tmp/workarea/install 
             pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
-            pkgbuild --root /tmp/workarea/install --scripts scripts  --identifier edu.ucar.lrose --install-location "/usr/local/lrose_20200108"  ${PACKAGE_NAME}
+            pkgbuild --root /tmp/workarea/install --scripts scripts --identifier edu.ucar.lrose --install-location "/usr/local/lrose_20200108"  ${PACKAGE_NAME}
             productbuild --synthesize --package ${PACKAGE_NAME} Distribution.xml
             productbuild --distribution ./Distribution.xml --package-path . --resources myresources/ ./${ARCHIVE_FILENAME}
             echo "   make the disk image (.dmg)"
