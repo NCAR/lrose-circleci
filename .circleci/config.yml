@@ -787,13 +787,13 @@ jobs:
 # just use the install area as the staging area
 #     echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
 
-
       - run:
           name: Build MacOS Installer
           command: |
             set +e
             cd /private/tmp/workarea
             mkdir macos_installer
+            cd macos_installer
             mkdir scripts
             echo "#!/bin/sh" >> scripts/postinstall
             echo "echo \"Running postinstall\" > /tmp/my_postinstall.log " >> scripts/postinstall
@@ -807,27 +807,35 @@ jobs:
             echo "building MacOS Installer"
             echo "  copying 3rd party libraries to staging area"
             echo "  (use otool -L to find these dependencies)"
-            cp ${PARTY3_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libz.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libbz2.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libc++.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libfftw3.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lrose/lib
-            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lrose/lib
+            cp ${PARTY3_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libz*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libbz2*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libc++*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libfftw3*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libpng16*dylib ${STAGING}/lib
             echo "  copy frameworks from 3rd parties"
             pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
-            pkgbuild --root /tmp/workarea/install --scripts scripts  --identifier edu.ucar.lrose --install-location "/usr/local"  ${PACKAGE_NAME}
+            pkgbuild --root /tmp/workarea/install --scripts scripts  --identifier edu.ucar.lrose --install-location "/usr/local/lrose_20200108"  ${PACKAGE_NAME}
             productbuild --synthesize --package ${PACKAGE_NAME} Distribution.xml
             productbuild --distribution ./Distribution.xml --package-path . --resources myresources/ ./${ARCHIVE_FILENAME}
             echo "   make the disk image (.dmg)"
             mkdir -p for_dmg_only
             cp ${ARCHIVE_FILENAME} for_dmg_only/.
             hdiutil create -volname LROSE-Cyclone_Installer -srcfolder for_dmg_only -ov -format UDZO LROSE-Cyclone_Installer.dmg
-            cp LROSE-Cyclone_Installer.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
+            cd ..
+            cp -R macos_installer /private/tmp/workspace_macos/releases/lrose-cyclone
+
+
+#            cp LROSE-Cyclone_Installer.dmg /private/tmp/workspace_macos/releases/lrose-cyclone
+#            cp ${ARCHIVE_FILENAME} /private/tmp/workspace_macos/releases/lrose-cyclone
+#            cp LROSE-Cyclone_Components.plist /private/tmp/workspace_macos/releases/lrose-cyclone
+#            cp /private/tmp/workspace_macos/releases/lrose-cyclone
+#            cp /private/tmp/workspace_macos/releases/lrose-cyclone
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
@@ -2301,7 +2309,7 @@ workflows:
       
 # ------ here
 
-     - test_1
+#     - test_1
 
 #     - package-cyclone-docker
 #     - test-cyclone-docker:
@@ -2309,17 +2317,17 @@ workflows:
 #           - package-cyclone-docker
  
  
-#      - package-lrose-core-tgz
+      - package-lrose-core-tgz
       #- package-lrose-cyclone-tgz:
       #    requires:
       #     - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-brew-formula-workspace:
 #          requires:
