@@ -861,9 +861,6 @@ jobs:
             ls
             pwd
             echo "------------"
-            echo "man installer"
-            man installer
-            echo "------------"
             echo "installer -pkginfo"
             installer -pkginfo -pkg LROSE-Cyclone_Installer.pkg
             echo "------------"
