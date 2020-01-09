@@ -860,7 +860,13 @@ jobs:
             wget https://github.com/NCAR/lrose-release-test/releases/tag/20200108/LROSE-Cyclone_Installer.pkg
             ls
             pwd
+            echo "------------"
+            echo "man installer"
+            man installer
+            echo "------------"
+            echo "installer -pkginfo"
             installer -pkginfo -pkg LROSE-Cyclone_Installer.pkg
+            echo "------------"
             installer -verbose -allowUntrusted -pkg /tmp/my_workarea/LROSE-Cyclone_Installer.pkg -target /
             /usr/local/lrose20200108/lrose/bin/RadxPrint -h
             /usr/local/lrose20200108/lrose/bin/vortrac -h
