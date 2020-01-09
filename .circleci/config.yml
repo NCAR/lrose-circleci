@@ -850,6 +850,7 @@ jobs:
 
     working_directory: /tmp
     steps:
+      - run: brew install wget
       - run:
           name: Install  .pkg file
           command: |
