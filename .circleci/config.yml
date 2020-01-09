@@ -854,8 +854,12 @@ jobs:
       - run:
           name: Install  .pkg file
           command: |
+            cd /tmp
+            mkdir my_workarea
+            cd my_workarea
             wget https://github.com/NCAR/lrose-release-test/releases/tag/20200108/LROSE-Cyclone_Installer.pkg
             ls
+            pwd
             installer -pkginfo -pkg LROSE-Cyclone_Installer.pkg
             installer -verbose -allowUntrusted -pkg LROSE-Cyclone_Installer.pkg -target /
             /usr/local/lrose20200108/lrose/bin/RadxPrint -h
