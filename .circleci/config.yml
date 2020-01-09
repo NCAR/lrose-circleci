@@ -843,6 +843,25 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-cyclone
 
+
+  test-macos-lrose-cyclone-installer-latest:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+      - run:
+          name: Install  .pkg file
+          command: |
+            wget https://github.com/NCAR/lrose-release-test/releases/tag/20200108/LROSE-Cyclone_Installer.pkg
+            ls
+            installer -verbose -allowUntrusted -pkg LROSE-Cyclone_Installer.pkg -target /
+            /usr/local/lrose20200108/lrose/bin/RadxPrint -h
+            /usr/local/lrose20200108/lrose/bin/vortrac -h
+            /usr/local/lrose20200108/lrose/bin/fractl -h
+            /usr/local/lrose20200108/lrose/bin/samurai -h
+
+
+
   test-macos-cyclone-expanded-tgz-not-used:
     macos:
       xcode: "11.2.1"
@@ -2313,6 +2332,7 @@ workflows:
 # ------ here
 
 #     - test_1
+      - test-macos-lrose-cyclone-installer-latest
 
 #     - package-cyclone-docker
 #     - test-cyclone-docker:
@@ -2320,17 +2340,17 @@ workflows:
 #           - package-cyclone-docker
  
  
-      - package-lrose-core-tgz
+#      - package-lrose-core-tgz
       #- package-lrose-cyclone-tgz:
       #    requires:
       #     - package-lrose-core-tgz
 
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-macos-lrose-cyclone-tgz-latest:
-          requires:
-           - package-macos-lrose-cyclone-tgz
+#      - package-macos-lrose-cyclone-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
 
 #      - package-brew-formula-workspace:
 #          requires:
