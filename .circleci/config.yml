@@ -849,6 +849,7 @@ jobs:
       xcode: "11.2.1"
 
     working_directory: /tmp
+    steps:
       - run:
           name: Install  .pkg file
           command: |
