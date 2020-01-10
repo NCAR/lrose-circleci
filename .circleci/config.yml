@@ -862,9 +862,9 @@ jobs:
             pwd
             echo "------------"
             echo "installer -pkginfo"
-            installer -pkginfo -pkg LROSE-Cyclone_Installer.pkg
+            installer -pkginfo -pkg LROSE-Cyclone_Installer*
             echo "------------"
-            installer -verbose -allowUntrusted -pkg /tmp/my_workarea/LROSE-Cyclone_Installer.pkg -target /
+            installer -verbose -allowUntrusted -pkg /tmp/my_workarea/LROSE-Cyclone_Installer* -target /
             /usr/local/lrose20200108/lrose/bin/RadxPrint -h
             /usr/local/lrose20200108/lrose/bin/vortrac -h
             /usr/local/lrose20200108/lrose/bin/fractl -h
