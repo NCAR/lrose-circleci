@@ -810,16 +810,15 @@ jobs:
             echo "  copying 3rd party libraries to staging area"
             echo "  (use otool -L to find these dependencies)"
             cp ${PARTY3_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lib
-            cp ${PARTY3_BASE_DIR}/lib/libhdf5_cpp.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libhdf5*.dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libz*dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libbz2*dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libc++*dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libfftw3*dylib ${STAGING}/lib
-            cp ${PARTY3_BASE_DIR}/lib/libpng16.*.dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lib
             cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lib
-            cp ${PARTY3_BASE_DIR}/lib/libpng16*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/opt/libpng/lib/libpng16*dylib ${STAGING}/lib
             echo "  copy frameworks from 3rd parties"
             tar -czf staging.tar.gz /tmp/workarea/install 
             pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
@@ -2342,7 +2341,7 @@ workflows:
 # ------ here
 
 #     - test_1
-      - test-macos-lrose-cyclone-installer-latest
+#      - test-macos-lrose-cyclone-installer-latest
 
 #     - package-cyclone-docker
 #     - test-cyclone-docker:
@@ -2350,17 +2349,17 @@ workflows:
 #           - package-cyclone-docker
  
  
-#      - package-lrose-core-tgz
+      - package-lrose-core-tgz
       #- package-lrose-cyclone-tgz:
       #    requires:
       #     - package-lrose-core-tgz
 
-#      - package-macos-lrose-cyclone-tgz: 
-#          requires:
-#           - package-lrose-core-tgz
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-macos-lrose-cyclone-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-macos-lrose-cyclone-tgz-latest:
+          requires:
+           - package-macos-lrose-cyclone-tgz
 
 #      - package-brew-formula-workspace:
 #          requires:
