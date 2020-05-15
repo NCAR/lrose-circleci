@@ -2358,14 +2358,14 @@ jobs:
             make
             make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
 
-      - run:
-          name: Build/install samurai  
-          command: |
-            echo "building samurai"
-            cd workarea/$TARGET/samurai
-            /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
-            make   # VERBOSE=1
-            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
+      #- run:
+      #    name: Build/install samurai  
+      #    command: |
+      #      echo "building samurai"
+      #      cd workarea/$TARGET/samurai
+      #      /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+      #      make   # VERBOSE=1
+      #      make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
           
       - run:
           name: Add to Environment Variables for vortrac
@@ -2392,7 +2392,7 @@ jobs:
                                                                                             
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
       - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
-      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+      #- run: $LROSE_INSTALL_DIR/bin/samurai -h
 
       # annoying ... returns error: Exited with code exit status 1 
       # which causes a failure, but it works.  So, we need to fix this ...
@@ -2467,6 +2467,333 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-elle
 
+
+  test-macos-lrose-elle-tgz-latest:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config                                                            
+            brew install geographiclib                                                     
+            brew install armadillo                                                         
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew cask install xquartz 
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-elle-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-elle-$RELEASE_DATE.mac_osx" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            # samurai needs LROSE_ROOT_DIR
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+
+      - run:
+          name: extract lrose-elle tgz 
+          command: |
+            echo "extracting lrose-elle from tgz"
+            mkdir workarea
+            cd workarea
+            tar xf /tmp/workspace_macos/releases/lrose-elle/osx/$TARGET.tgz
+
+      - run: cd workarea; ls
+
+      - run: cd workarea/$SOURCE_DIR; pwd
+
+      - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+      - run: cd workarea/$SOURCE_DIR; make install
+
+      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install libomp libzip
+            brew install llvm
+
+      # don't exit if one of the commands fails 
+      # - run: set +e
+
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=/usr/local/include" >> $BASH_ENV
+            echo "export NETCDF_LIB=/usr/local/lib" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+
+      - run: find /usr/local/ -name Qt5Config.cmake
+
+      # NOTE: This may no longer be true; Qt was removed from Samurai
+      # samurai needs Qt, from this error ...
+      # CMake Error at CMakeLists.txt:20 (find_package):
+      # By not providing "FindQt5.cmake" in CMAKE_MODULE_PATH this project has
+      # asked CMake to find a package configuration file provided by "Qt5", but
+      # CMake did not find one.
+      #
+      # Could not find a package configuration file provided by "Qt5" with any of
+      # the following names:
+      # 
+      # Qt5Config.cmake
+      # qt5-config.cmake
+
+      #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
+
+      #
+      # cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.1/lib/cmake/Qt5 -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c`  -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` -D OpenMP_CXX_LIB_NAMES=""  .
+      #
+
+#            ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
+#            ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
+
+# 
+#            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR \
+#               -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 \
+#               -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c` \
+#               -D OpenMP_C_LIB_NAMES="" \ 
+#               -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` \
+#               -D OpenMP_CXX_LIB_NAMES="" /private/tmp/workarea/$SOURCE_DIR/samurai
+#
+
+      - run:
+          name: Set Environment Variables for samurai
+          command: |
+            echo "export OCFLAGS=`pkg-config --cflags ompi-c`" >> $BASH_ENV
+            echo "export OCXXFLAGS=`pkg-config --cflags ompi-cxx`" >> $BASH_ENV
+
+            #  echo "export CMAKE_QT5=/usr/local/opt/qt/lib/cmake/Qt5" >> $BASH_ENV
+
+      - run:
+          name: Build/install samurai  
+          command: |
+            set +e
+            echo "building samurai"
+            echo "ls $LROSE_INSTALL_DIR"
+            ls $LROSE_INSTALL_DIR
+            echo " ... after ls $LROSE_INSTALL_DIR"
+            echo " ... cmake.qt5.config or something should be here"
+            ls $CMAKE_QT5
+            echo $OCFLAGS
+            echo $OCXXFLAGS
+            cd /private/tmp/workarea/$SOURCE_DIR/samurai
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=$CMAKE_QT5 -D OpenMP_C_FLAGS=$OCFLAGS -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=$OCXXFLAGS -D OpenMP_CXX_LIB_NAMES="" .
+            make 
+            make install
+            pwd
+            echo "building vortrac"
+            find /usr/local -name netcdf.h
+            cd /private/tmp/workarea/$SOURCE_DIR/vortrac/src
+            pwd
+            qmake .
+            make
+            cp vortrac.app/Contents/MacOS/vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
+            rsync -av Resources $LROSE_INSTALL_DIR
+            echo "building fractl"
+            ln -s /usr/local/Cellar/geographiclib /usr/local/include/GeographicLib
+            ls -l /usr/local/include/geographiclib
+            ls -R /usr/local/include/GeographicLib
+            cd /private/tmp/workarea/$SOURCE_DIR/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install 
+            echo "building HawkEye.dmg"
+            cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            pwd            
+            make clean
+            qmake -o Makefile.qmake
+            echo " ...  make from_qmake"
+            make -f Makefile.qmake
+            echo " ... after qmake"
+            mkdir -p HawkEye.app/Contents/Frameworks
+            echo " ... after mkdir"
+            cp /usr/lib/libexpat.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libbz2.1.0.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libz.1.dylib HawkEye.app/Contents/Frameworks/.
+            cp /usr/lib/libSystem.B.dylib HawkEye.app/Contents/Frameworks/.
+            mkdir -p HawkEye.app/Contents/MacOS/../share
+            cp -r /private/tmp/workarea/$SOURCE_DIR/share/color_scales HawkEye.app/Contents/MacOS/../share/.
+            echo " ... before calling macdeployqt"
+            macdeployqt HawkEye.app -dmg -always-overwrite
+            echo " .. before calling hdiutil"
+            hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            echo " ... after dmp build"
+            cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-elle
+            echo " ... done with building HawkEye"
+            echo "building vortrac.dmg"
+            cd /private/tmp/workarea/$SOURCE_DIR/vortrac
+            pwd            
+            echo " ... before calling macdeployqt"
+            cd src
+            macdeployqt vortrac.app -dmg -always-overwrite
+            cp ../Resources/*.xml vortrac.app/Contents/Resources/
+            echo " .. before calling hdiutil"
+            hdiutil create -volname Vortrac_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/vortrac/src/vortrac.app -ov -format UDZO vortrac.dmg
+            echo " ... after dmp build"
+            cp vortrac.dmg /private/tmp/workspace_macos/releases/lrose-elle
+            echo " ... done with building vortrac"
+            echo " Start of tests ... "
+            echo "   testing RadxPrint ..."
+            $LROSE_INSTALL_DIR/bin/RadxPrint -h
+            echo "   testing vortrac ..."
+            $LROSE_INSTALL_DIR/bin/vortrac  -h
+            echo "   testing fractl ..."
+            $LROSE_INSTALL_DIR/bin/fractl -h
+            echo "   testing samurai ..."
+            $LROSE_INSTALL_DIR/bin/samurai -h
+            echo " End of tests"
+
+      - run:
+          name: Set Environment Variables for MacOS Installer
+          command: |
+            echo "export INSTALL_BASE_DIR=/usr/local" >> $BASH_ENV
+            echo "export ARCHIVE_FILENAME=LROSE-Cyclone_Installer.pkg" >> $BASH_ENV
+            echo "export PACKAGE_NAME=LROSE-Core.pkg" >> $BASH_ENV
+            echo "export PARTY3_BASE_DIR=/usr/local" >> $BASH_ENV
+            echo "export STAGING=$LROSE_INSTALL_DIR" >> $BASH_ENV
+
+#
+# just use the install area as the staging area
+#     echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+
+      - run:
+          name: Build MacOS Installer
+          command: |
+            set +e
+            cd /private/tmp/workarea
+            mkdir macos_installer
+            cd macos_installer
+            mkdir scripts
+            echo "#!/bin/sh" >> scripts/postinstall
+            echo "echo \"Running postinstall\" > /tmp/my_postinstall.log " >> scripts/postinstall
+            echo "exit 0 # all good" >> scripts/postinstall
+            echo "#!/bin/sh" >> scripts/preinstall
+            echo "echo \"Running preinstall\" > /tmp/my_preinstall.log " >> scripts/preinstall
+            echo "exit 0 # all good" >> scripts/preinstall
+            chmod u+x scripts/postinstall
+            chmod u+x scripts/preinstall
+            mkdir myresources
+            echo "license" >> myresources/LICENSE.html
+            echo "readme" >> myresources/README.html
+            echo "building MacOS Installer"
+            echo "  copying 3rd party libraries to staging area"
+            echo "  (use otool -L to find these dependencies)"
+            cp ${PARTY3_BASE_DIR}/lib/libnetcdf.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libhdf5*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libarmadillo.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libz*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libbz2*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libc++*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libfftw3*dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libGeographic.*.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/lib/libomp.dylib ${STAGING}/lib
+            cp ${PARTY3_BASE_DIR}/opt/libpng/lib/libpng16*dylib ${STAGING}/lib
+            echo "  copy frameworks from 3rd parties"
+            tar -czf staging.tar.gz /tmp/workarea/install 
+            pkgbuild --analyze --root /tmp/workarea/install LROSE-Cyclone_Components.plist
+            pkgbuild --root /tmp/workarea/install --scripts scripts --identifier edu.ucar.lrose --install-location "/usr/local/lrose_20200108"  ${PACKAGE_NAME}
+            productbuild --synthesize --package ${PACKAGE_NAME} Distribution.xml
+            productbuild --distribution ./Distribution.xml --package-path . --resources myresources/ ./${ARCHIVE_FILENAME}
+            echo "   make the disk image (.dmg)"
+            mkdir -p for_dmg_only
+            cp ${ARCHIVE_FILENAME} for_dmg_only/.
+            hdiutil create -volname LROSE-Cyclone_Installer -srcfolder for_dmg_only -ov -format UDZO LROSE-Cyclone_Installer.dmg
+            cd ..
+            cp -R macos_installer /private/tmp/workspace_macos/releases/lrose-elle
+
+
+#            cp LROSE-Cyclone_Installer.dmg /private/tmp/workspace_macos/releases/lrose-elle
+#            cp ${ARCHIVE_FILENAME} /private/tmp/workspace_macos/releases/lrose-elle
+#            cp LROSE-Cyclone_Components.plist /private/tmp/workspace_macos/releases/lrose-elle
+#            cp /private/tmp/workspace_macos/releases/lrose-elle
+#            cp /private/tmp/workspace_macos/releases/lrose-elle
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-elle
+
+
+  package-brew-formula-elle-workspace:
+    executor: my-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run: cat /tmp/workspace_macos/releases/lrose-elle/osx/checksum
+  
+#       - run: git clone ... get the release tools <====
+      #- run: ls workspace_macos
+      #- run: cd release-tools/elle
+
+#  just call the script to build the brew formula
+#  I'll just have to extract the .rb file from the script? But, that should be easy, I think.
+
+# begin script ...
+#       - run: git clone ...release-tools
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export TARFILE=lrose-elle-$RELEASE_DATE.src.mac_osx.tgz" >> $BASH_ENV
+
+      - run: 
+          name: Add to Environment Variables
+          command: |
+            echo "export URL=https://github.com/NCAR/lrose-release-test/releases/download/$RELEASE_DATE/$TARFILE" >> $BASH_ENV
+            echo "export checksum2='cat /tmp/workspace_macos/releases/lrose-elle/osx/checksum'" >> $BASH_ENV
+            echo "export checksum=`sha256sum /tmp/workspace_macos/releases/lrose-elle/osx/$TARFILE`" >> $BASH_ENV
+
+      - run: echo $checksum
+      - run: echo $URL
+      - run: echo $TARFILE
+      - run: echo $RELEASE_DATE
+
+      - run: git clone https://github.com/nsf-lrose/release-tools
+
+      - run: ./release-tools/elle/homebrew-scripts/make-lrose-elle-brew-formula.sh 
+      - run: mv lrose-elle.rb /tmp/workspace_macos/releases/lrose-elle/osx
+
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-elle/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-elle/osx
 # ---------- end Elle release ----------
 
 
@@ -2512,7 +2839,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 2 * * *"   # for 7:30 pm MST 
+          cron: "45 2 * 3 *"   # for 7:30 pm MST 
           filters:
             branches:
               only:
@@ -2554,7 +2881,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 2 * * *"   # for 7:30 pm MST 
+          cron: "45 4 * * *"   # for 7:30 pm MST 
           filters:
             branches:
               only:
@@ -2572,13 +2899,13 @@ workflows:
           requires:
            - package-lrose-core-tgz
 
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - test-macos-lrose-elle-tgz-latest:
+          requires:
+           - package-macos-lrose-elle-tgz
 
-#      - package-brew-formula-workspace:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
+      - package-brew-formula-elle-workspace:
+          requires:
+           - package-macos-lrose-elle-tgz
         # upload lrose-cyclone.rb after this runs
         # then run
 #      - test-macos-lrose-cyclone-rb
@@ -2608,6 +2935,11 @@ workflows:
       - package-macos-lrose-elle-tgz: 
           requires:
            - package-lrose-core-tgz
+
+      - test-macos-lrose-elle-tgz-latest:
+          requires:
+           - package-macos-lrose-elle-tgz
+
         # end testing for elle release
 
 
