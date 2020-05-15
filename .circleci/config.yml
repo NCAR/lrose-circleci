@@ -2241,6 +2241,235 @@ jobs:
             echo "export SOURCE_BASE_DIR=/usr/local" >> $BASH_ENV
             echo "export STAGING=/usr/local" >> $BASH_ENV
 
+# ---------- for Elle release ----------
+
+
+  package-linux-lrose-elle-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_linux
+      - run:
+          name: package lrose-elle packages ( .tgz )
+          command: echo "package lrose-elle software"
+      - run: echo "package lrose-elle .tgz ..."
+      - run: ls -R
+      - run: pwd   # /private/tmp
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_linux/releases" >> $BASH_ENV
+            # echo "export TAG=lrose-elle-20200601" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |        
+            echo "export TARGET=lrose-elle-$RELEASE_DATE.src" >> $BASH_ENV
+
+      - run: ls -R /tmp/workspace_linux
+      - run: echo "RELEASE_DATE = " $RELEASE_DATE
+      - run: echo "TARGET = " $TARGET
+      - run: tar zxf /tmp/workspace_linux/releases/lrose-core/lrose-core-$RELEASE_DATE.src.tgz
+      - run: ls
+
+# Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE/share 
+
+# Grab addons from mmbell
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/samurai
+      # - run: cd lrose-core-$RELEASE_DATE/samurai; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/samurai; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/fractl 
+      # - run: cd lrose-core-$RELEASE_DATE/fractl; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/fractl; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE; git clone https://github.com/mmbell/vortrac 
+      #- run: cd lrose-core-$RELEASE_DATE/vortrac; git checkout -q $TAG
+      - run: cd lrose-core-$RELEASE_DATE/vortrac; rm -rf .git
+
+        # make the elle tar file 
+      - run: mv lrose-core-$RELEASE_DATE lrose-elle-$RELEASE_DATE
+      - run: tar zcf $TARGET.tgz lrose-elle-$RELEASE_DATE
+      - run: ls 
+
+      - run: mkdir -p /tmp/workspace_linux/releases/lrose-elle
+
+        # move the tar file into the persisted workspace 
+      - run: mv $TARGET.tgz /tmp/workspace_linux/releases/lrose-elle
+
+      - persist_to_workspace:
+          root: workspace_linux
+          paths: 
+            - releases/lrose-elle
+
+      - store_artifacts:
+          path: /tmp/workspace_linux/releases/lrose-elle
+
+
+  test-linux-lrose-elle-tgz:
+    executor: centos7-executor
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_linux
+
+      - run: mkdir workarea
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-elle-$RELEASE_DATE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
+            echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
+
+      - run:
+          name: extract lrose-elle tgz 
+          command: |
+            echo "extracting lrose-elle from tgz"
+            cd workarea; tar xf /tmp/workspace_linux/releases/lrose-elle/$TARGET.src.tgz
+            pwd
+            ls
+      - run:
+          name: build lrose-elle
+          command: |
+            echo "building lrose-elle from tgz"
+            cd workarea; cd $TARGET; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+            make install
+
+      - run:
+          name: Build/install fractl  
+          command: |
+            echo "building fractl"
+            cd workarea/$TARGET/fractl
+            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make
+            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
+
+      - run:
+          name: Build/install samurai  
+          command: |
+            echo "building samurai"
+            cd workarea/$TARGET/samurai
+            /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make   # VERBOSE=1
+            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
+          
+      - run:
+          name: Add to Environment Variables for vortrac
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV  
+
+      - run:
+          name: Build/install vortrac  
+          command: |
+            echo "building vortrac"
+            cd workarea/$TARGET/vortrac/src
+            $QT5_BIN/qmake .
+            make
+            cp vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
+            rsync -av Resources $LROSE_INSTALL_DIR
+                                                                                            
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
+      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      # annoying ... returns error: Exited with code exit status 1 
+      # which causes a failure, but it works.  So, we need to fix this ...
+      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
+      - run: workarea/$TARGET/vortrac/src/vortrac -h
+
+  # we are just packaging the tgz file; no building, so we don't need macos machine
+  package-macos-lrose-elle-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+      - run:
+          name: package lrose-elle packages (.tgz)
+          command: echo "package lrose-elle software"
+      - run: ls -R
+
+      # - run: cd workspace_macos; git clone https://github.com/NCAR/release-tools
+      - run: pwd   # /private/tmp
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_macos/releases" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |        
+            echo "export TARGET=lrose-elle-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+
+      - run: ls -R /tmp/workspace_macos
+      - run: echo "RELEASE_DATE = " $RELEASE_DATE
+      - run: echo "TARGET = " $TARGET
+      - run: tar zxf /tmp/workspace_macos/releases/lrose-core/osx/lrose-core-$RELEASE_DATE.src.mac_osx.tgz
+      - run: ls
+
+      # Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$RELEASE_DATE.mac_osx/share 
+
+      # Grab addons from mmbell
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/samurai
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx/samurai; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/fractl
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx/fractl; rm -rf .git
+
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx; git clone https://github.com/mmbell/vortrac
+      - run: cd lrose-core-$RELEASE_DATE.mac_osx/vortrac; rm -rf .git
+
+        # make the elle tar file 
+      - run: mv lrose-core-$RELEASE_DATE.mac_osx lrose-elle-$RELEASE_DATE.mac_osx
+      - run: tar zcf $TARGET.tgz lrose-elle-$RELEASE_DATE.mac_osx
+      - run: ls 
+
+      - run: mkdir -p /tmp/workspace_macos/releases/lrose-elle/osx
+
+        # generate a checksum for the brew formula; add it to the persisted workspace
+      - run: sha256sum $TARGET.tgz > /tmp/workspace_macos/releases/lrose-elle/osx/checksum
+      - run: cat /tmp/workspace_macos/releases/lrose-elle/osx/checksum
+
+        # move the tar file into the persisted workspace 
+      - run: mv $TARGET.tgz /tmp/workspace_macos/releases/lrose-elle/osx
+
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-elle/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-elle
+
+# ---------- end Elle release ----------
+
+
 
 workflows:
   version: 2.1
@@ -2321,9 +2550,65 @@ workflows:
           
 
 # --------
+  nightly_lrose_elle:
+    triggers: 
+      - schedule:
+          #     "mm hh day month dow"  Note: 22 is about 3pm MST
+          cron: "45 2 * * *"   # for 7:30 pm MST 
+          filters:
+            branches:
+              only:
+                - master
+    jobs:      
+      - package-lrose-core-tgz
+      - package-linux-lrose-elle-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-linux-lrose-elle-tgz:
+          requires:
+           - package-linux-lrose-elle-tgz
+
+      - package-macos-lrose-elle-tgz: 
+          requires:
+           - package-lrose-core-tgz
+
+#      - test-macos-lrose-cyclone-tgz-latest:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+
+#      - package-brew-formula-workspace:
+#          requires:
+#           - package-macos-lrose-cyclone-tgz
+        # upload lrose-cyclone.rb after this runs
+        # then run
+#      - test-macos-lrose-cyclone-rb
+
+      # no dependencies for docker image; uses checkout_and_build_script to 
+      # pull the top of master branch
+#      - package-cyclone-docker
+#      - test-cyclone-docker:
+#          requires:
+#           - package-cyclone-docker
+          
+
+# --------
           
   now:
     jobs:
+
+	# testing for elle release
+      - package-lrose-core-tgz
+      - package-linux-lrose-elle-tgz: 
+          requires:
+           - package-lrose-core-tgz
+      - test-linux-lrose-elle-tgz:
+          requires:
+           - package-linux-lrose-elle-tgz
+
+      - package-macos-lrose-elle-tgz: 
+          requires:
+           - package-lrose-core-tgz
+        # end testing for elle release
 
 
 #       - test-brew-install-lrose-cyclone
