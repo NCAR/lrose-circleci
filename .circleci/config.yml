@@ -2881,7 +2881,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 4 * * *"   # for 7:30 pm MST 
+          cron: "45 4 * 1 *"   # for 7:30 pm MST 
           filters:
             branches:
               only:
