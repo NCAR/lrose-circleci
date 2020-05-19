@@ -2358,15 +2358,22 @@ jobs:
             make
             make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
 
-      #- run:
-      #    name: Build/install samurai  
-      #    command: |
-      #      echo "building samurai"
-      #      cd workarea/$TARGET/samurai
-      #      /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
-      #      make   # VERBOSE=1
-      #      make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
+      - run:
+          name: Build/install samurai  
+          command: |
+            echo "building samurai"
+            cd workarea/$TARGET/samurai
+            /usr/bin/cmake3 -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR .
+            make   # VERBOSE=1
+            make install   # without CMAKE_INSTALL_PREFIX installs in /usr/local/bin/fractl
           
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+      - run: $LROSE_INSTALL_DIR/bin/samurai -h
+
+      # annoying ... returns error: Exited with code exit status 1 
+      # which causes a failure, but it works.  So, we need to fix this ...
+      - run: $LROSE_INSTALL_DIR/bin/fractl -h
+
       - run:
           name: Add to Environment Variables for vortrac
           command: |
@@ -2390,14 +2397,7 @@ jobs:
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
                                                                                             
-      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
       - run: $LROSE_INSTALL_DIR/bin/vortrac  -h
-      #- run: $LROSE_INSTALL_DIR/bin/samurai -h
-
-      # annoying ... returns error: Exited with code exit status 1 
-      # which causes a failure, but it works.  So, we need to fix this ...
-      - run: $LROSE_INSTALL_DIR/bin/fractl -h
-
       - run: workarea/$TARGET/vortrac/src/vortrac -h
 
   # we are just packaging the tgz file; no building, so we don't need macos machine
@@ -2794,6 +2794,99 @@ jobs:
 
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-elle/osx
+
+
+  # build from the head of lrose-core
+  package-elle-docker:
+    ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
+    # executor: ubuntu-executor
+    machine:
+      docker_layer_caching: true
+
+    steps:
+      - run: date
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      ## - checkout
+      - run: echo "building lrose-elle docker image ..."
+      - run: mkdir -p workspace
+      - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
+      - run: pwd
+      - run: ls workspace
+
+      - run:
+          name: Build the container
+          command: |
+            cd workspace/release-tools/elle/lrose-docker-scripts
+            ./build_latest.sh -u 18.10
+
+      - run: ls -R
+      - run: which docker
+      - run: docker images
+      - run: mkdir -p workspace/deploy/docker-images
+
+      - run:
+          name: Set Docker Image Name
+          command: |
+            echo "export IMAGE_NAME=nsflrose/lrose-elle:$RELEASE_DATE" >> $BASH_ENV
+
+      - run: echo $IMAGE_NAME
+      
+#      - run: docker save -o /tmp/workspace/deploy/docker-images nsflrose/lrose-cyclone:16.04  
+      - run: docker save -o workspace/deploy/docker-images/nsflrose.tar $IMAGE_NAME
+
+#"nsflrose/lrose-cyclone:${RELEASE_DATE}"
+
+      - persist_to_workspace:
+          root: workspace
+          paths: deploy/docker-images
+      - store_artifacts:
+          path: workspace/deploy/docker-images
+
+
+  test-elle-docker:
+    ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
+    # executor: ubuntu-executor
+    machine: true
+#      docker_layer_caching: true
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+#          root: workspace
+#          paths: deploy/docker-images
+
+      - run: date
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+
+      - run: 
+          name: load docker image 
+          command: |
+            docker load -i /tmp/workspace/deploy/docker-images/nsflrose.tar  
+
+      - run: docker images
+
+      - run: cd workspace; git clone https://github.com/nsf-lrose/release-tools
+      - run: pwd
+      - run: ls workspace
+
+      - run:
+          name: Run tests in the container
+          command: |
+            cd workspace/release-tools/elle/lrose-docker-scripts
+            docker run  nsflrose/lrose-elle:$RELEASE_DATE RadxPrint -h
+            docker run  nsflrose/lrose-elle:$RELEASE_DATE fractl -h
+            docker run  nsflrose/lrose-elle:$RELEASE_DATE samurai -h
+            docker run  nsflrose/lrose-elle:$RELEASE_DATE vortrac -h
+
 # ---------- end Elle release ----------
 
 
@@ -2881,7 +2974,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 4 * 1 *"   # for 7:30 pm MST 
+          cron: "45 4 * * *"   # for 7:30 pm MST 
           filters:
             branches:
               only:
@@ -2912,10 +3005,10 @@ workflows:
 
       # no dependencies for docker image; uses checkout_and_build_script to 
       # pull the top of master branch
-#      - package-cyclone-docker
-#      - test-cyclone-docker:
-#          requires:
-#           - package-cyclone-docker
+      - package-elle-docker
+      - test-elle-docker:
+          requires:
+           - package-elle-docker
           
 
 # --------
