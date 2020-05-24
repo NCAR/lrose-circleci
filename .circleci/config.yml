@@ -45,7 +45,7 @@ jobs:
       - run: pwd
       - run: ls workspace
       - run: |
-          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-blaze --prefix /usr/local/lrose` == 0 ]]; then
+          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py  --package=lrose-blaze --prefix /usr/local/lrose` == 0 ]]; then
               echo "It worked"
           else 
               tail -n 100 /tmp/lrose_build/logs/*
@@ -2821,7 +2821,7 @@ jobs:
           name: Build the container
           command: |
             cd workspace/release-tools/elle/lrose-docker-scripts
-            ./build_latest.sh -u 18.10
+            ./build_latest.sh -u 18.04
 
       - run: ls -R
       - run: which docker
