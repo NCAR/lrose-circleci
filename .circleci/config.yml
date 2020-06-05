@@ -2244,6 +2244,56 @@ jobs:
 # ---------- for Elle release ----------
 
 
+  # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
+  #       build it on a linux platform using automake and libtool
+  #  TODO: need to add tag to clone command
+  package-lrose-core-tag-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - run:
+          name: build MacOS tgz
+          command: echo "build MacOS source tgz"
+      - run: echo "building lrose-core ..."
+      # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
+      - run: mkdir -p workspace_macos
+      - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace_macos
+      - run: alias qmake-qt5='qmake'
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+      - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
+        # package for macos
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos/releases --package=lrose-core --osx
+
+      - run: ls /tmp/workspace_macos/releases/lrose-core/osx
+      - run: cd /tmp/workspace_macos/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$RELEASE_DATE.src.mac_osx.tgz
+        # package for linux 
+      - run: ./workspace_macos/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_linux/releases --package=lrose-core 
+      - run: cd /tmp/workspace_linux/releases/lrose-core; mv lrose-core-$RELEASE_DATE.tgz lrose-core-$RELEASE_DATE.src.tgz
+
+      - run: ls /tmp/workspace_linux/releases/lrose-core
+
+      - persist_to_workspace:
+          root: workspace_macos
+          paths: 
+            - releases/lrose-core/osx
+      - persist_to_workspace:
+          root: workspace_linux
+          paths: 
+            - releases/lrose-core
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-core/osx
+      - store_artifacts:   
+          path: /tmp/workspace_linux/releases/lrose-core
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+
+
+
   package-linux-lrose-elle-tgz:
     executor: centos7-executor
     working_directory: /tmp
@@ -2887,6 +2937,222 @@ jobs:
             docker run  nsflrose/lrose-elle:$RELEASE_DATE samurai -h
             docker run  nsflrose/lrose-elle:$RELEASE_DATE vortrac -h
 
+
+
+  # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
+  #       build it on a linux platform using automake and libtool
+  #
+  package-lrose-elle-BoundaryEditorIntegrate-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - run:
+          name: build MacOS tgz
+          command: echo "build MacOS source tgz"
+      - run: echo "building lrose-core ..."
+      # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
+      - run: mkdir -p workspace_macos_elle_branch
+      - run: cd workspace_macos_elle_branch; git clone -b BoundaryEditorIntegrat https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace_macos_elle_branch
+      - run: alias qmake-qt5='qmake'
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
+
+      - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
+        # package for macos
+      - run: ./workspace_macos_elle_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_elle_branch/releases --package=lrose-core --osx
+
+      - run: ls /tmp/workspace_macos_elle_branch/releases/lrose-core/osx
+      - run: cd /tmp/workspace_macos_elle_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
+
+      - persist_to_workspace:
+          root: workspace_macos_elle_branch
+          paths: 
+            - releases/lrose-core/osx
+      - store_artifacts:
+          path: /tmp/workspace_macos_elle_branch/releases/lrose-core/osx
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+
+
+
+  # we are just packaging the tgz file; no building, so we don't need macos machine
+  package-macos-lrose-elle-BoundaryEditorIntegrate-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos_elle_branch
+      - run:
+          name: package lrose-elle BoundaryEditorIntegrate packages (.tgz)
+          command: echo "package lrose-elle BoundaryEditorIntegrate software"
+      - run: ls -R
+
+      - run: pwd   # /private/tmp
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_macos/releases" >> $BASH_ENV
+            echo "BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
+
+# TODO: checkout/pull the BoundaryEditorIntegrate branch; tar it to the workspace area??
+# basically include the steps to package the branch release
+
+      - run:
+          name: Add to Environment Variables
+          command: |        
+            echo "export TARGET=lrose-elle-$BRANCH-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+
+      - run: ls -R /tmp/workspace_macos_elle_branch
+      - run: echo "RELEASE_DATE = " $RELEASE_DATE
+      - run: echo "TARGET = " $TARGET
+      - run: echo "BRANCH = " $BRANCH
+      - run: tar zxf /tmp/workspace_macos_elle_branch/releases/lrose-core/osx/lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
+      - run: ls
+
+      # Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$BRANCH-$RELEASE_DATE.mac_osx/share 
+
+        # make the elle tar file 
+      - run: mv lrose-core-$BRANCH-$RELEASE_DATE.mac_osx lrose-elle-$BRANCH-$RELEASE_DATE.mac_osx
+      - run: tar zcf $TARGET.tgz lrose-elle-$BRANCH-$RELEASE_DATE.mac_osx
+      - run: ls 
+
+      - run: mkdir -p /tmp/workspace_macos_elle_branch/releases/lrose-elle/osx
+
+        # move the tar file into the persisted workspace 
+      - run: mv $TARGET.tgz /tmp/workspace_macos_elle_branch/releases/lrose-elle/osx
+
+      - persist_to_workspace:
+          root: workspace_macos_elle_branch
+          paths: 
+            - releases/lrose-elle/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos_elle_branch/releases/lrose-elle
+
+
+  build-macos-lrose-elle-HawkEye-Edit:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos_elle_branch
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake eigen fftw flex qt5 netcdf szip pkg-config libzip rsync
+
+      - run: brew cask install xquartz 
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-elle-$BRANCH-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-elle-$BRANCH-$RELEASE_DATE.mac_osx" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            # samurai needs LROSE_ROOT_DIR
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+
+      - run:
+          name: extract lrose-elle tgz 
+          command: |
+            echo "extracting lrose-elle from tgz"
+            mkdir workarea
+            cd workarea
+            tar xf /tmp/workspace_macos_elle_branch/releases/lrose-elle/osx/$TARGET.tgz
+
+      - run: cd workarea; ls
+
+      - run: cd workarea/$SOURCE_DIR; pwd
+
+      - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+      
+      # we just need to build the libraries; then build HawkEye-Edit
+      - run: cd workarea/$SOURCE_DIR/codebase/libs; make install
+      - run: cd workarea/$SOURCE_DIR/codebase/apps/radar/src/HawkEye; make install
+
+      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
+      - run:
+          name: Install needed packages
+          command: |
+            brew install llvm
+
+      # don't exit if one of the commands fails 
+      # - run: set +e
+
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=/usr/local/include" >> $BASH_ENV
+            echo "export NETCDF_LIB=/usr/local/lib" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+
+      - run: find /usr/local/ -name Qt5Config.cmake
+
+      - run:
+          name: Build/install HawkEye-Edit  
+          command: |
+            set +e
+            echo "building HawkEye-Edit.dmg"
+            cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            pwd            
+            make clean
+            qmake -o Makefile.qmake
+            echo " ...  make from_qmake"
+            make -f Makefile.qmake
+            echo " ... after qmake"
+            mkdir -p HawkEye-Edit.app/Contents/Frameworks
+            echo " ... after mkdir"
+            cp /usr/lib/libexpat.1.dylib HawkEye-Edit.app/Contents/Frameworks/.
+            cp /usr/lib/libbz2.1.0.dylib HawkEye-Edit.app/Contents/Frameworks/.
+            cp /usr/lib/libz.1.dylib HawkEye-Edit.app/Contents/Frameworks/.
+            cp /usr/lib/libSystem.B.dylib HawkEye-Edit.app/Contents/Frameworks/.
+            mkdir -p HawkEye-Edit.app/Contents/MacOS/../share
+            cp -r /private/tmp/workarea/$SOURCE_DIR/share/color_scales HawkEye-Edit.app/Contents/MacOS/../share/.
+            echo " ... before calling macdeployqt"
+            macdeployqt HawkEye-Edit.app -dmg -always-overwrite
+            echo " .. before calling hdiutil"
+            hdiutil create -volname HawkEye-Edit_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye-Edit.app -ov -format UDZO HawkEye-Edit.dmg
+            echo " ... after dmg build"
+            cp HawkEye-Edit.dmg /private/tmp/workspace_macos/releases/lrose-elle
+            echo " ... done with building HawkEye-Edit"
+            echo " Start of tests ... "
+            echo "   testing HawkEye-Edit ..."
+            $LROSE_INSTALL_DIR/bin/HawkEye -h
+            echo " End of tests"
+
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-elle
+
+
+
 # ---------- end Elle release ----------
 
 
@@ -3016,22 +3282,37 @@ workflows:
   now:
     jobs:
 
+      # testing for elle BoundaryEditorIntegrate release
+      - package-lrose-elle-BoundaryEditorIntegrate-tgz
+      - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz: 
+          requires:
+           - package-lrose-elle-BoundaryEditorIntegrate-tgz
+
+
+      - build-macos-lrose-elle-HawkEye-Edit:
+          requires:
+           - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz
+
+        # end testing for elle BoundaryEditorIntegrate release
+
+
+
       # testing for elle release
-      - package-lrose-core-tgz
-      - package-linux-lrose-elle-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-linux-lrose-elle-tgz:
-          requires:
-           - package-linux-lrose-elle-tgz
-
-      - package-macos-lrose-elle-tgz: 
-          requires:
-           - package-lrose-core-tgz
-
-      - test-macos-lrose-elle-tgz-latest:
-          requires:
-           - package-macos-lrose-elle-tgz
+#      - package-lrose-core-tgz
+#      - package-linux-lrose-elle-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#      - test-linux-lrose-elle-tgz:
+#          requires:
+#           - package-linux-lrose-elle-tgz
+#
+#      - package-macos-lrose-elle-tgz: 
+#          requires:
+#           - package-lrose-core-tgz
+#
+#      - test-macos-lrose-elle-tgz-latest:
+#          requires:
+#           - package-macos-lrose-elle-tgz
 
         # end testing for elle release
 
