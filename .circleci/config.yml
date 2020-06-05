@@ -2952,7 +2952,7 @@ jobs:
       - run: echo "building lrose-core ..."
       # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
       - run: mkdir -p workspace_macos_elle_branch
-      - run: cd workspace_macos_elle_branch; git clone -b BoundaryEditorIntegrat https://github.com/NCAR/lrose-core
+      - run: cd workspace_macos_elle_branch; git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos_elle_branch
       - run: alias qmake-qt5='qmake'
