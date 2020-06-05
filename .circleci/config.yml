@@ -2952,7 +2952,7 @@ jobs:
       - run: echo "building lrose-core ..."
       # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
       - run: mkdir -p workspace_macos_elle_branch
-      - run: cd workspace_macos_elle_branch; git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
+      - run: cd workspace_macos_elle_branch; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos_elle_branch
       - run: alias qmake-qt5='qmake'
@@ -2964,7 +2964,8 @@ jobs:
 
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
         # package for macos
-      - run: ./workspace_macos_elle_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_elle_branch/releases --package=lrose-core --osx
+# TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
+      - run: ./workspace_macos_elle_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_elle_branch/releases --package=lrose-core --osx --tag $BRANCH
 
       - run: ls /tmp/workspace_macos_elle_branch/releases/lrose-core/osx
       - run: cd /tmp/workspace_macos_elle_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
