@@ -3044,18 +3044,21 @@ jobs:
     macos:
       xcode: "11.2.1"
 
-    working_directory: /tmp
+    #working_directory: /tmp
     steps:
-      #- attach_workspace:
-      #    at: /tmp/workspace_macos_elle_branch
+      - attach_workspace:
+          at: /tmp/workspace_macos
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
           name: Install needed packages
           command: |
-            brew install cmake eigen fftw flex qt5 netcdf szip pkg-config libzip rsync
+            brew install qt5 netcdf szip pkg-config libzip rsync
 
-      - run: brew cask install xquartz 
+
+#            brew install cmake eigen fftw flex qt5 netcdf szip pkg-config libzip rsync
+
+#      - run: brew cask install xquartz 
 
       - run: 
           name: Setup Environment Variables
@@ -3063,8 +3066,9 @@ jobs:
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-            echo "export BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
-            echo "export MYHOME=/tmp/workarea" >> $BASH_ENV
+            echo "export BRANCH=BoundaryEditorIntegrate" >> $BASH_ENV
+            
+# echo "export MYHOME=/tmp/workarea" >> $BASH_ENV
 
       - run: echo $HOME
 
@@ -3073,23 +3077,21 @@ jobs:
           command: |
             echo "export TARGET=lrose-elle-$BRANCH-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-elle-$BRANCH-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=$MYHOME/install/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=$MYHOME/install/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=$HOME/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=$HOME/install/lrose" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
             echo "export HOST_OS=OSX_LROSE" >> $BASH_ENV
-            echo "export LROSE_CORE_DIR=$MYHOME/lrose-core" >> $BASH_ENV
+            echo "export LROSE_CORE_DIR=$HOME/lrose-core" >> $BASH_ENV
 
       - run:
           name: build libraries and HawkEye app 
           command: |
             echo "cloning branch"
-            mkdir workarea
-            cd $HOME
             pwd
             git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
             ls 
             alias qmake-qt5='qmake'
-            cd lrose-core
+            cd $LROSE_CORE_DIR
             ./build/scripts/installPackageMakefiles.py
             echo "building tdrp ..."
             cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
@@ -3137,7 +3139,7 @@ jobs:
           command: |
             set +e
             echo "building HawkEye-Edit.dmg"
-            cd /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye
+            cd $LROSE_CORE_DIR/codebase/apps/radar/src/HawkEye
             pwd            
             make clean
             qmake -o Makefile.qmake
@@ -3151,11 +3153,11 @@ jobs:
             cp /usr/lib/libz.1.dylib HawkEye-Edit.app/Contents/Frameworks/.
             cp /usr/lib/libSystem.B.dylib HawkEye-Edit.app/Contents/Frameworks/.
             mkdir -p HawkEye-Edit.app/Contents/MacOS/../share
-            cp -r /private/tmp/workarea/lrose-displays/color_scales HawkEye-Edit.app/Contents/MacOS/../share/.
+            cp -r $HOME/lrose-displays/color_scales HawkEye-Edit.app/Contents/MacOS/../share/.
             echo " ... before calling macdeployqt"
             macdeployqt HawkEye-Edit.app -dmg -always-overwrite
             echo " .. before calling hdiutil"
-            hdiutil create -volname HawkEye-Edit_Installer -srcfolder /private/tmp/workarea/$SOURCE_DIR/apps/radar/src/HawkEye/HawkEye-Edit.app -ov -format UDZO HawkEye-Edit.dmg
+            hdiutil create -volname HawkEye-Edit_Installer -srcfolder $LROSE_CORE_DIR/codebase/apps/radar/src/HawkEye/HawkEye-Edit.app -ov -format UDZO HawkEye-Edit.dmg
             echo " ... after dmg build"
             cp HawkEye-Edit.dmg /private/tmp/workspace_macos/releases/lrose-elle
             echo " ... done with building HawkEye-Edit"
