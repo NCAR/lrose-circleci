@@ -3093,7 +3093,11 @@ jobs:
             git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
             ls 
             alias qmake-qt5='qmake'
+            echo "-------"
             cd $LROSE_CORE_DIR
+            pwd
+            ls
+            echo "--------"
             ./build/scripts/installPackageMakefiles.py
             echo "building tdrp ..."
             cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
