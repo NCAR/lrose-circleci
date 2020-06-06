@@ -2952,7 +2952,7 @@ jobs:
       - run: echo "building lrose-core ..."
       # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
       - run: mkdir -p workspace_macos_elle_branch
-      - run: cd workspace_macos_elle_branch; git clone https://github.com/NCAR/lrose-core
+      - run: cd workspace_macos_elle_branch; git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos_elle_branch
       - run: alias qmake-qt5='qmake'
@@ -2965,7 +2965,8 @@ jobs:
       - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
         # package for macos
 # TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
-      - run: ./workspace_macos_elle_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_elle_branch/releases --package=lrose-core --osx --tag=BoundaryEditorIntegrate
+# even with --tag option, this still doesn't work
+#      - run: ./workspace_macos_elle_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_elle_branch/releases --package=lrose-core --osx --tag=BoundaryEditorIntegrate
 
       - run: ls /tmp/workspace_macos_elle_branch/releases/lrose-core/osx
       - run: cd /tmp/workspace_macos_elle_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
@@ -3045,8 +3046,8 @@ jobs:
 
     working_directory: /tmp
     steps:
-      - attach_workspace:
-          at: /tmp/workspace_macos_elle_branch
+      #- attach_workspace:
+      #    at: /tmp/workspace_macos_elle_branch
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -3079,24 +3080,27 @@ jobs:
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
 
       - run:
-          name: extract lrose-elle tgz 
+          name: build libraries and HawkEye app 
           command: |
-            echo "extracting lrose-elle from tgz"
+            echo "cloning branch"
             mkdir workarea
             cd workarea
-            tar xf /tmp/workspace_macos_elle_branch/releases/lrose-elle/osx/$TARGET.tgz
+            git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
+            pwd
+            ls 
+            alias qmake-qt5='qmake'
+            cd lrose-core
+            ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+            echo "building libraries"      
+            cd /tmp/workarea/lrose-core/codebase/libs; make install
+            cd /tmp/workarea/lrose-core/codebase/apps/radar/src/HawkEye; make install
 
-      - run: cd workarea; ls
-
-      - run: cd workarea/$SOURCE_DIR; pwd
-
-      - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-      
-      # we just need to build the libraries; then build HawkEye-Edit
-      - run: cd workarea/$SOURCE_DIR/codebase/libs; make install
-      - run: cd workarea/$SOURCE_DIR/codebase/apps/radar/src/HawkEye; make install
-
-      - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
+      # Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      # should be in /tmp/workarea/lrose-displays
+# TODO: merge these two commands ....
+      #- run: rsync -av lrose-displays/color_scales lrose-core-$BRANCH-$RELEASE_DATE.mac_osx/share 
+      #- run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
       - run:
           name: Install needed packages
           command: |
@@ -3135,7 +3139,7 @@ jobs:
             cp /usr/lib/libz.1.dylib HawkEye-Edit.app/Contents/Frameworks/.
             cp /usr/lib/libSystem.B.dylib HawkEye-Edit.app/Contents/Frameworks/.
             mkdir -p HawkEye-Edit.app/Contents/MacOS/../share
-            cp -r /private/tmp/workarea/$SOURCE_DIR/share/color_scales HawkEye-Edit.app/Contents/MacOS/../share/.
+            cp -r /private/tmp/workarea/lrose-displays/color_scales HawkEye-Edit.app/Contents/MacOS/../share/.
             echo " ... before calling macdeployqt"
             macdeployqt HawkEye-Edit.app -dmg -always-overwrite
             echo " .. before calling hdiutil"
@@ -3284,15 +3288,15 @@ workflows:
     jobs:
 
       # testing for elle BoundaryEditorIntegrate release
-      - package-lrose-elle-BoundaryEditorIntegrate-tgz
-      - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz: 
-          requires:
-           - package-lrose-elle-BoundaryEditorIntegrate-tgz
+      # - package-lrose-elle-BoundaryEditorIntegrate-tgz
+      # - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz: 
+      #    requires:
+      #     - package-lrose-elle-BoundaryEditorIntegrate-tgz
 
 
-      - build-macos-lrose-elle-HawkEye-Edit:
-          requires:
-           - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz
+      - build-macos-lrose-elle-HawkEye-Edit
+      #    requires:
+      #     - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz
 
         # end testing for elle BoundaryEditorIntegrate release
 
