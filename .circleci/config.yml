@@ -3094,11 +3094,11 @@ jobs:
             ls 
             alias qmake-qt5='qmake'
             echo "-------"
-            cd $LROSE_CORE_DIR
+            cd $LROSE_CORE_DIR/codebase
             pwd
             ls
             echo "--------"
-            ./build/scripts/installPackageMakefiles.py
+            ./make_bin/installPackageMakefiles.py --osx
             echo "building tdrp ..."
             cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
             make install
