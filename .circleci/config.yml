@@ -3063,7 +3063,8 @@ jobs:
             echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-            echo "BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
+            echo "export BRANCH = BoundaryEditorIntegrate" >> $BASH_ENV
+            echo "export MYHOME=/tmp/workarea" >> $BASH_ENV
 
       - run: echo $HOME
 
@@ -3072,28 +3073,39 @@ jobs:
           command: |
             echo "export TARGET=lrose-elle-$BRANCH-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
             echo "export SOURCE_DIR=lrose-elle-$BRANCH-$RELEASE_DATE.mac_osx" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=$MYHOME/install/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=$MYHOME/install/lrose" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-            # samurai needs LROSE_ROOT_DIR
-            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export HOST_OS=OSX_LROSE" >> $BASH_ENV
+            echo "export LROSE_CORE_DIR=$MYHOME/lrose-core" >> $BASH_ENV
 
       - run:
           name: build libraries and HawkEye app 
           command: |
             echo "cloning branch"
             mkdir workarea
-            cd workarea
-            git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
+            cd $HOME
             pwd
+            git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
             ls 
             alias qmake-qt5='qmake'
             cd lrose-core
-            ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
-            echo "building libraries"      
-            cd /tmp/workarea/lrose-core/codebase/libs; make install
-            cd /tmp/workarea/lrose-core/codebase/apps/radar/src/HawkEye; make install
+            ./build/scripts/installPackageMakefiles.py
+            echo "building tdrp ..."
+            cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
+            make install
+            cd $LROSE_CORE_DIR/codebase/apps/tdrp/src/tdrp_gen
+            make install
+            echo "building libraries"
+            cd $LROSE_CORE_DIR/codebase/libs/
+            make -j 8 install_include
+            make -j 8 install      
+            echo "building HawkEye app ..."
+            cd $LROSE_CORE_DIR/codebase/apps/radar/src/HawkEye 
+            make install
+
+
+#            cd /tmp/workarea/lrose-core/codebase/apps/radar/src/HawkEye; make install
 
       # Grab the color scales
       - run: git clone https://github.com/ncar/lrose-displays
