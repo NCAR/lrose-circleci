@@ -3070,6 +3070,7 @@ jobs:
             
 # echo "export MYHOME=/tmp/workarea" >> $BASH_ENV
 
+        # $HOME should be /Users/distiller
       - run: echo $HOME
 
       - run:
@@ -3087,6 +3088,7 @@ jobs:
           name: build libraries and HawkEye app 
           command: |
             echo "cloning branch"
+            cd $HOME
             pwd
             git clone -b BoundaryEditorIntegrate https://github.com/NCAR/lrose-core
             ls 
