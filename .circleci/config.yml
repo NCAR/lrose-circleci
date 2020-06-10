@@ -2895,7 +2895,7 @@ jobs:
           root: workspace
           paths: deploy/docker-images
       - store_artifacts:
-          path: /home/circleci
+          path: /home/circleci/build_logs
         
 # path: workspace/release-tools/elle/lrose-docker-scripts
 
