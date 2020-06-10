@@ -2871,7 +2871,7 @@ jobs:
           name: Build the container
           command: |
             cd workspace/release-tools/elle/lrose-docker-scripts
-            ./build_latest.sh -u 18.04
+            ./build_latest.sh -t latest
 
       - run: ls -R
       - run: which docker
@@ -3307,6 +3307,11 @@ workflows:
   now:
     jobs:
 
+      - package-elle-docker
+      - test-elle-docker:
+          requires:
+           - package-elle-docker
+
       # testing for elle BoundaryEditorIntegrate release
       # - package-lrose-elle-BoundaryEditorIntegrate-tgz
       # - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz: 
@@ -3314,7 +3319,7 @@ workflows:
       #     - package-lrose-elle-BoundaryEditorIntegrate-tgz
 
 
-      - build-macos-lrose-elle-HawkEye-Edit
+      # - build-macos-lrose-elle-HawkEye-Edit
       #    requires:
       #     - package-macos-lrose-elle-BoundaryEditorIntegrate-tgz
 
