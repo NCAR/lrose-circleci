@@ -2894,9 +2894,7 @@ jobs:
           root: workspace
           paths: deploy/docker-images
       - store_artifacts:
-          root: workspace
-          path: deploy/docker-images
-          path: release-tools/elle/lrose-docker-scripts
+          path: workspace/release-tools/elle/lrose-docker-scripts
 
 #          path: workspace/deploy/docker-images
 
