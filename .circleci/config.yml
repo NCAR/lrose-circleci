@@ -2666,6 +2666,7 @@ jobs:
             pwd
             qmake .
             make
+            cp ../Resources/*.xml vortrac.app/Contents/Resources/
             cp vortrac.app/Contents/MacOS/vortrac $LROSE_INSTALL_DIR/bin
             cd ..
             rsync -av Resources $LROSE_INSTALL_DIR
@@ -2895,7 +2896,7 @@ jobs:
           root: workspace
           paths: deploy/docker-images
       - store_artifacts:
-          path: /home/circleci/build_logs
+          path: /tmp/build_logs
         
 # path: workspace/release-tools/elle/lrose-docker-scripts
 
