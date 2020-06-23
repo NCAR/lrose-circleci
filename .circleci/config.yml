@@ -2874,16 +2874,9 @@ jobs:
               --prefix /tmp/lrose \
               --buildDir /tmp/lrose_build \
               --logDir /tmp/build_logs/core_apps \
+              --installLroseRuntimeLibs \
+              --cmake3 --fractl --vortrac --samurai \
               --noScripts
-            echo "running  checkout and build script wind apps ... "
-            /tmp/checkout_and_build_auto.py \
-              --package lrose-core \
-              --prefix /tmp/lrose \
-              --buildDir /tmp/lrose_build_wind \
-              --logDir /tmp/build_logs/wind_apps \
-              --no_core_apps \
-              --noScripts \
-              --cmake3 --fractl --vortrac --samurai
             echo "testing RadxPrint ..."
             /tmp/lrose/bin/RadxPrint -h
             echo "testing fractl ..."
