@@ -2858,6 +2858,7 @@ jobs:
           no_output_timeout: 30m
           command: |
             set +e
+            export LROSE_INSTALL_DIR=/usr/local/lrose
             echo "create link for qtmake ..."
             cd /usr/bin 
             ln -s qmake-qt5 qmake
@@ -2871,20 +2872,22 @@ jobs:
             echo "running  checkout and build script core_apps ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
-              --prefix /tmp/lrose \
+              --prefix $LROSE_INSTALL_DIR \
               --buildDir /tmp/lrose_build \
               --logDir /tmp/build_logs/core_apps \
               --installLroseRuntimeLibs \
               --cmake3 --fractl --vortrac --samurai \
               --noScripts
+            echo "checking lrose/lib contents ..."
+            ls -R $LROSE_INSTALL_DIR/lib
             echo "testing RadxPrint ..."
-            /tmp/lrose/bin/RadxPrint -h
+            $LROSE_INSTALL_DIR/bin/RadxPrint -h
             echo "testing fractl ..."
-            /tmp/lrose/bin/fractl -h
+            $LROSE_INSTALL_DIR/bin/fractl -h
             echo "testing samurai ..."
-            /tmp/lrose/bin/samurai -h
+            $LROSE_INSTALL_DIR/bin/samurai -h
             echo "testing vortrac ..."
-            /tmp/lrose/bin/vortrac -h
+            $LROSE_INSTALL_DIR/bin/vortrac -h
 
       - store_artifacts:
           path: /tmp/build_logs
@@ -2949,6 +2952,7 @@ jobs:
 
       - run:
           name: Build the container
+          no_output_timeout: 30m
           command: |
             cd workspace/release-tools/elle/lrose-docker-scripts
             ./build_latest.sh -t latest
