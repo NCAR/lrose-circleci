@@ -2863,8 +2863,10 @@ jobs:
             cd /tmp
             echo "pwd ..."
             pwd
-            echo "git clone lrose checkout_and_build script ... "
+            echo "fetch the lrose checkout_and_build script ... "
             wget "https://raw.githubusercontent.com/NCAR/lrose-core/master/build/checkout_and_build_auto.py"
+            ls
+            chmod u+x checkout_and_build_auto.py
             echo "running  checkout and build script ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
