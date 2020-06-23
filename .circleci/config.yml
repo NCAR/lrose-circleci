@@ -2852,9 +2852,6 @@ jobs:
     executor: centos7-executor
     working_directory: /tmp 
 
-    environment:
-      MAKEFLAGS: "-i"
-
     steps:
       - run:
           name: checkout_and_build 
@@ -2870,12 +2867,22 @@ jobs:
             wget "https://raw.githubusercontent.com/NCAR/lrose-core/master/build/checkout_and_build_auto.py"
             ls
             chmod u+x checkout_and_build_auto.py
-            echo "running  checkout and build script ... "
+            echo "running  checkout and build script no_core_apps ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
               --prefix /tmp/lrose \
               --buildDir /tmp/lrose_build \
-              --logDir /tmp/build_logs \
+              --logDir /tmp/build_logs/no_core_apps \
+              --no_core_apps \
+              --noScripts
+            echo "running  checkout and build script wind apps ... "
+            /tmp/checkout_and_build_auto.py \
+              --package lrose-core \
+              --prefix /tmp/lrose \
+              --buildDir /tmp/lrose_build \
+              --logDir /tmp/build_logs/wind_apps \
+              --no_core_apps \
+              --noScripts \
               --cmake3 --fractl --vortrac --samurai
             echo "testing RadxPrint ..."
             /tmp/lrose/bin/RadxPrint -h
