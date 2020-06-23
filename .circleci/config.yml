@@ -2852,6 +2852,9 @@ jobs:
     executor: centos7-executor
     working_directory: /tmp 
 
+    environment:
+      MAKEFLAGS: "-i"
+
     steps:
       - run:
           name: checkout_and_build 
