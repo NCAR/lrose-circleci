@@ -2846,6 +2846,71 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-elle/osx
 
+  # ----------------------
+
+  test-linux-elle-checkout-and-build:
+    executor: centos7-executor
+    working_directory: /tmp 
+
+    steps:
+      - run:
+          name: checkout_and_build 
+          command: |
+            set +e
+            echo "create link for qtmake ..."
+            cd /usr/bin 
+            ln -s qmake-qt5 qmake
+            cd /tmp
+            echo "pwd ..."
+            pwd
+            echo "git clone lrose checkout_and_build script ... "
+            wget "https://raw.githubusercontent.com/NCAR/lrose-core/master/build/checkout_and_build_auto.py"
+            echo "running  checkout and build script ... "
+            /tmp/checkout_and_build_auto.py \
+              --package lrose-core \
+              --prefix /usr/local/lrose \
+              --buildDir /tmp/lrose_build \
+              --logDir /tmp/build_logs \
+              --cmake3 --fractl --vortrac --samurai
+
+      - store_artifacts:
+          path: /tmp/build_logs
+
+  # -----------------------
+
+  test-macos-elle-checkout-and-build:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config
+            brew install geographiclib
+            brew install armadillo
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew cask install xquartz
+
+      - run:
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+
+  # --------------------------
 
   # build from the head of lrose-core
   package-elle-docker:
@@ -3312,11 +3377,11 @@ workflows:
           
   now:
     jobs:
-
-      - package-elle-docker
-      - test-elle-docker:
-          requires:
-           - package-elle-docker
+      - test-linux-elle-checkout-and-build
+      # - package-elle-docker
+      # - test-elle-docker:
+      #     requires:
+      #      - package-elle-docker
 
       # testing for elle BoundaryEditorIntegrate release
       # - package-lrose-elle-BoundaryEditorIntegrate-tgz
