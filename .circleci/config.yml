@@ -2868,10 +2868,18 @@ jobs:
             echo "running  checkout and build script ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
-              --prefix /usr/local/lrose \
+              --prefix /tmp/lrose \
               --buildDir /tmp/lrose_build \
               --logDir /tmp/build_logs \
               --cmake3 --fractl --vortrac --samurai
+            echo "testing RadxPrint ..."
+            /tmp/lrose/bin/RadxPrint -h
+            echo "testing fractl ..."
+            /tmp/lrose/bin/fractl -h
+            echo "testing samurai ..."
+            /tmp/lrose/bin/samurai -h
+            echo "testing vortrac ..."
+            /tmp/lrose/bin/vortrac -h
 
       - store_artifacts:
           path: /tmp/build_logs
