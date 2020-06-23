@@ -2855,9 +2855,9 @@ jobs:
     steps:
       - run:
           name: checkout_and_build 
+          no_output_timeout: 30m
           command: |
             set +e
-            export PYTHONUNBUFFERED=1
             echo "create link for qtmake ..."
             cd /usr/bin 
             ln -s qmake-qt5 qmake
