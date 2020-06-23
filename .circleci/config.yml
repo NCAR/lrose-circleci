@@ -2875,11 +2875,18 @@ jobs:
               --logDir /tmp/build_logs/no_core_apps \
               --no_core_apps \
               --noScripts
+            echo "running  checkout and build script core apps ... "
+            /tmp/checkout_and_build_auto.py \
+              --package lrose-core \
+              --prefix /tmp/lrose \
+              --buildDir /tmp/lrose_build_apps \
+              --logDir /tmp/build_logs/wind_apps \
+              --noScripts \
             echo "running  checkout and build script wind apps ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
               --prefix /tmp/lrose \
-              --buildDir /tmp/lrose_build \
+              --buildDir /tmp/lrose_build_wind \
               --logDir /tmp/build_logs/wind_apps \
               --no_core_apps \
               --noScripts \
