@@ -2857,6 +2857,7 @@ jobs:
           name: checkout_and_build 
           command: |
             set +e
+            export PYTHONUNBUFFERED=1
             echo "create link for qtmake ..."
             cd /usr/bin 
             ln -s qmake-qt5 qmake
@@ -2867,21 +2868,13 @@ jobs:
             wget "https://raw.githubusercontent.com/NCAR/lrose-core/master/build/checkout_and_build_auto.py"
             ls
             chmod u+x checkout_and_build_auto.py
-            echo "running  checkout and build script no_core_apps ... "
+            echo "running  checkout and build script core_apps ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
               --prefix /tmp/lrose \
               --buildDir /tmp/lrose_build \
-              --logDir /tmp/build_logs/no_core_apps \
-              --no_core_apps \
+              --logDir /tmp/build_logs/core_apps \
               --noScripts
-            echo "running  checkout and build script core apps ... "
-            /tmp/checkout_and_build_auto.py \
-              --package lrose-core \
-              --prefix /tmp/lrose \
-              --buildDir /tmp/lrose_build_apps \
-              --logDir /tmp/build_logs/wind_apps \
-              --noScripts \
             echo "running  checkout and build script wind apps ... "
             /tmp/checkout_and_build_auto.py \
               --package lrose-core \
