@@ -2273,6 +2273,8 @@ jobs:
           command: |
             echo "export PATH=$QT5_BINDIR:$PATH" >> $BASH_ENV
             echo "PATH = $PATH"
+        
+        # Remember, the variables are not available until the command is finished. Grrh!
       - run:
           name: Check path variables
           command: |
@@ -2280,7 +2282,6 @@ jobs:
             echo "QT5_BINDIR = $QT5_BINDIR "
             echo "PATH = $PATH"
 
-      - run: which qmake
       - run: 
           name: Setup Environment Variables
           command: |
