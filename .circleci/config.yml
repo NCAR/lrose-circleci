@@ -2266,9 +2266,9 @@ jobs:
           command: |
             echo "export PKG_CONFIG_PATH=/usr/lib64/pkgconfig" >> $BASH_ENV
             echo "export QT5_BINDIR=`pkg-config --variable=bindir Qt5`"  >> $BASH_ENV
-            echo $QT5_BINDIR
+            echo "QT5_BINDIR = $QT5_BINDIR "
             echo "export PATH=$QT5_BINDIR:$PATH" >> $BASH_ENV
-            echo $PATH
+            echo "PATH = $PATH"
 
       - run: which qmake
       - run: 
