@@ -150,7 +150,7 @@ jobs:
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos
-      - run: alias qmake-qt5='qmake'
+      # - run: alias qmake-qt5='qmake'
       - run: 
           name: Setup Environment Variables
           command: |
@@ -2260,7 +2260,8 @@ jobs:
       - run: cd workspace_macos; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace_macos
-      - run: alias qmake-qt5='qmake'
+      #- run: alias qmake-qt5='qmake'
+      - run: export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
       - run: 
           name: Setup Environment Variables
           command: |
@@ -3394,7 +3395,8 @@ workflows:
           
   now:
     jobs:
-      - test-linux-elle-checkout-and-build
+      - package-lrose-core-tag-tgz
+      # - test-linux-elle-checkout-and-build
       # - package-elle-docker
       # - test-elle-docker:
       #     requires:
