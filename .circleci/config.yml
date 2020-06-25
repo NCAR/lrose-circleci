@@ -2261,11 +2261,16 @@ jobs:
       - run: pwd
       - run: ls workspace_macos
       #- run: alias qmake-qt5='qmake'
-      - run: export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
-      - run: export QT5_BINDIR=`pkg-config --variable=bindir Qt5`
-      - run: echo $QT5_BINDIR
-      - run: export PATH=$QT5_BINDIR:$PATH
-      - run: echo $PATH
+      - run: 
+          name: Setup path variables
+          command: |
+            echo "export PKG_CONFIG_PATH=/usr/lib64/pkgconfig" >> $BASH_ENV
+            echo "export QT5_BINDIR=`pkg-config --variable=bindir Qt5`"  >> $BASH_ENV
+            echo $QT5_BINDIR
+            echo "export PATH=$QT5_BINDIR:$PATH" >> $BASH_ENV
+            echo $PATH
+
+      - run: which qmake
       - run: 
           name: Setup Environment Variables
           command: |
