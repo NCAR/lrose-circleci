@@ -2270,6 +2270,12 @@ jobs:
             echo "QT5_BINDIR = $QT5_BINDIR "
             echo "export PATH=$QT5_BINDIR:$PATH" >> $BASH_ENV
             echo "PATH = $PATH"
+      - run:
+          name: Check path variables
+          command: |
+            echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
+            echo "QT5_BINDIR = $QT5_BINDIR "
+            echo "PATH = $PATH"
 
       - run: which qmake
       - run: 
