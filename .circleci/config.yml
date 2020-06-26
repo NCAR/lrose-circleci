@@ -2999,18 +2999,17 @@ jobs:
           root: workspace
           paths: deploy/docker-images
       - store_artifacts:
-          path: /tmp/build_logs
-        
+          path: workspace/deploy/docker-images 
+
 # path: workspace/release-tools/elle/lrose-docker-scripts
 
 #          path: workspace/deploy/docker-images
 
 
   test-elle-docker:
-    ## just use a generic ubuntu. The Dockerfile installs the dependent packages.
+    ## just use a generic ubuntu machine. The Dockerfile installs the dependent packages.
     # executor: ubuntu-executor
     machine: true
-#      docker_layer_caching: true
 
     working_directory: /tmp
     steps:
@@ -3380,17 +3379,17 @@ workflows:
               only:
                 - master
     jobs:      
-      - package-lrose-core-tgz
+      - package-lrose-core-tag-tgz
       - package-linux-lrose-elle-tgz: 
           requires:
-           - package-lrose-core-tgz
+           - package-lrose-core-tag-tgz
       - test-linux-lrose-elle-tgz:
           requires:
            - package-linux-lrose-elle-tgz
 
       - package-macos-lrose-elle-tgz: 
           requires:
-           - package-lrose-core-tgz
+           - package-lrose-core-tag-tgz
 
       - test-macos-lrose-elle-tgz-latest:
           requires:
@@ -3415,9 +3414,9 @@ workflows:
           
   now:
     jobs:
-      - package-lrose-core-tag-tgz
+      # - package-lrose-core-tag-tgz
       # - test-linux-elle-checkout-and-build
-      # - package-elle-docker
+       - package-elle-docker
       # - test-elle-docker:
       #     requires:
       #      - package-elle-docker
