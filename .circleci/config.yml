@@ -3417,9 +3417,9 @@ workflows:
       # - package-lrose-core-tag-tgz
       # - test-linux-elle-checkout-and-build
        - package-elle-docker
-      # - test-elle-docker:
-      #     requires:
-      #      - package-elle-docker
+       - test-elle-docker:
+           requires:
+            - package-elle-docker
 
       # testing for elle BoundaryEditorIntegrate release
       # - package-lrose-elle-BoundaryEditorIntegrate-tgz
