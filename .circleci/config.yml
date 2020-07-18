@@ -2581,6 +2581,8 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
             echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+            echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             # samurai needs LROSE_ROOT_DIR
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
