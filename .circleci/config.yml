@@ -2916,6 +2916,23 @@ jobs:
           path: /tmp/build_logs
 
   # -----------------------
+  
+    test-macos-lrose-samurai-rb:
+    macos:
+      xcode: "11.2.1"
+
+    steps:
+      - run:
+          name: brew install lrose-samurai.rb
+          command: echo "testing brew install MacOS-Elle lrose-samurai.rb"
+ 
+      - run: brew update
+      - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-samurai.rb
+      - run: brew install lrose-samurai.rb
+      - run: samurai -h
+  
+  # -----------
 
   test-macos-elle-checkout-and-build:
     macos:
@@ -3416,12 +3433,13 @@ workflows:
           
   now:
     jobs:
+      - test-macos-lrose-samurai-rb
       # - package-lrose-core-tag-tgz
       # - test-linux-elle-checkout-and-build
-       - package-elle-docker
-       - test-elle-docker:
-           requires:
-            - package-elle-docker
+      # - package-elle-docker
+      # - test-elle-docker:
+      #     requires:
+      #      - package-elle-docker
 
       # testing for elle BoundaryEditorIntegrate release
       # - package-lrose-elle-BoundaryEditorIntegrate-tgz
