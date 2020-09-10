@@ -2928,7 +2928,9 @@ jobs:
  
       - run: brew update
       - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-samurai.rb
+      - run: brew install lrose-core.rb
       - run: brew install lrose-samurai.rb
       - run: samurai -h
   
