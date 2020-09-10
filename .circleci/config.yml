@@ -2931,7 +2931,11 @@ jobs:
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-samurai.rb
       - run: brew cask install xquartz 
-      - run: brew install lrose-core.rb
+      - run: 
+          name: installing lrose-core
+          no_output_timeout: 30m
+          command: |
+            brew install lrose-core.rb
       - run: brew install lrose-samurai.rb
       - run: samurai -h
   
