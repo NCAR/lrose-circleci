@@ -2919,7 +2919,9 @@ jobs:
   
   test-macos-lrose-samurai-rb:
     macos:
-      xcode: "11.2.1"
+      xcode: "10.2.1"
+      
+      #       xcode: "11.2.1"
 
     steps:
       - run:
