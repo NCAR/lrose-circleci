@@ -2933,7 +2933,7 @@ jobs:
       - run: brew cask install xquartz 
       - run: 
           name: installing lrose-core
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             brew install lrose-core.rb
       - run: brew install lrose-samurai.rb
