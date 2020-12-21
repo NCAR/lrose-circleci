@@ -74,7 +74,7 @@ jobs:
       - run: pwd
       - run: ls workspace
       - run: |
-          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
+          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose --verbose` == 0 ]]; then
               echo "It worked"
           else
               tail -n 100 /tmp/lrose_build/logs/*
