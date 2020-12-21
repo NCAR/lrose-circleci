@@ -74,7 +74,7 @@ jobs:
       - run: pwd
       - run: ls workspace
       - run: |
-          if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --useSystemNetcdf --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
+          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose` == 0 ]]; then
               echo "It worked"
           else
               tail -n 100 /tmp/lrose_build/logs/*
@@ -3442,7 +3442,8 @@ workflows:
           
   now:
     jobs:
-      - test-macos-lrose-samurai-rb
+	- two
+      # - test-macos-lrose-samurai-rb
       # - package-lrose-core-tag-tgz
       # - test-linux-elle-checkout-and-build
       # - package-elle-docker
