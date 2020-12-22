@@ -65,7 +65,7 @@ jobs:
             - lrose-core
 
   two:
-    executor: my-executor
+    executor: centos8-executor
     steps:
       - run: echo "building lrose-core ..."
       - run: yum install -y qt5-qtdeclarative-devel
@@ -82,7 +82,7 @@ jobs:
             echo $PATH
             echo "export PATH=$PATH:/usr/local/lrose/bin" >> $BASH_ENV
             echo $PATH
-            if [[ `echo "y" | ./workspace/lrose-core/build/checkout_and_build_auto.py --package=lrose-core --prefix=/usr/local/lrose --verbose` == 0 ]]; then
+            if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix=/usr/local/lrose --verbose` == 0 ]]; then
               echo "It worked"
             else
               tail -n 100 /tmp/lrose_build/logs/*
