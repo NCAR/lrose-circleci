@@ -78,13 +78,16 @@ jobs:
           command: |
             set +e
             echo "building ..."
-            if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose --verbose` == 0 ]]; then
+            echo $HOME
+            echo "export SOME_VAR=$HOME/lrose" >> $BASH_ENV
+            if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --verbose` == 0 ]]; then
               echo "It worked"
             else
               tail -n 100 /tmp/lrose_build/logs/*
             fi
-            ls -R /usr/local/lrose
-      - run: /usr/local/lrose/bin/RadxPrint -h
+            ls -R $HOME/lrose/bin
+            ls -R $HOME/lrose/lib
+      - run: $HOME/lrose/bin/RadxPrint -h
 
  
   attached-workspace:
