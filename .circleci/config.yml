@@ -79,7 +79,8 @@ jobs:
             set +e
             echo "building ..."
             echo $HOME
-            echo "export SOME_VAR=$HOME/lrose" >> $BASH_ENV
+            echo "export HOME=/usr/local" >> $BASH_ENV
+            echo $HOME
             if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --verbose` == 0 ]]; then
               echo "It worked"
             else
