@@ -73,13 +73,17 @@ jobs:
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
       - run: pwd
       - run: ls workspace
-      - run: |
-          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose --verbose` == 0 ]]; then
+      - run:
+          name: building core  ...
+          command: |
+            set +e
+            echo "building ..."
+            if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix /usr/local/lrose --verbose` == 0 ]]; then
               echo "It worked"
-          else
+            else
               tail -n 100 /tmp/lrose_build/logs/*
-          fi
-      - run: ls -R /usr/local/lrose
+            fi
+            ls -R /usr/local/lrose
       - run: /usr/local/lrose/bin/RadxPrint -h
 
  
