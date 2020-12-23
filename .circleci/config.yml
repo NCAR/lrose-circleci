@@ -68,7 +68,7 @@ jobs:
     executor: my-executor
     steps:
       - run: echo "building lrose-core ..."
-      - run: yum install -y qt5-qtdeclarative-devel
+      # - run: yum install -y qt5-qtdeclarative-devel
       - run: mkdir -p workspace
       - run: cd workspace; git clone https://github.com/NCAR/lrose-core
       - run: pwd
@@ -82,10 +82,11 @@ jobs:
             echo "export HOST_OS=LINUX_LROSE" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_CORE_DIR=$HOME/workspace/lrose-core" >> $BASH_ENV
+            echo "$LROSE_CORE_DIR"
             cd $LROSE_CORE_DIR
-            echo "pwd" 
+            echo "pwd ..." 
             pwd
-            echo "ls"
+            echo "ls ..."
             ls
             ./build/scripts/installPackageMakefiles.py
             cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
