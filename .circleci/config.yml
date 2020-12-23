@@ -83,7 +83,9 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export LROSE_CORE_DIR=$HOME/workspace/lrose-core" >> $BASH_ENV
             cd $LROSE_CORE_DIR
+            echo "pwd" 
             pwd
+            echo "ls"
             ls
             ./build/scripts/installPackageMakefiles.py
             cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
