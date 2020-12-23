@@ -79,9 +79,9 @@ jobs:
             set +e
             echo "building ..."
             echo "Remember, $HOME=/root"
-            echo "export HOST_OS=LINUX_LROSE" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export LROSE_CORE_DIR=$HOME/workspace/lrose-core" >> $BASH_ENV
+            export HOST_OS=LINUX_LROSE
+            export LROSE_INSTALL_DIR=/usr/local/lrose
+            export LROSE_CORE_DIR=$HOME/workspace/lrose-core
             echo "$LROSE_CORE_DIR"
             cd $LROSE_CORE_DIR
             echo "pwd ..." 
