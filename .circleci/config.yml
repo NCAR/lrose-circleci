@@ -64,8 +64,8 @@ jobs:
           paths:
             - lrose-core
 
-  two:
-    executor: centos8-executor
+  current-head:
+    executor: my-executor
     steps:
       - run: echo "building lrose-core ..."
       - run: yum install -y qt5-qtdeclarative-devel
@@ -79,14 +79,29 @@ jobs:
             set +e
             echo "building ..."
             echo "Remember, $HOME=/root"
-            echo $PATH
-            echo "export PATH=$PATH:/usr/local/lrose/bin" >> $BASH_ENV
-            echo $PATH
-            if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix=/usr/local/lrose --verbose` == 0 ]]; then
-              echo "It worked"
-            else
-              tail -n 100 /tmp/lrose_build/logs/*
-            fi
+            echo "export HOST_OS=LINUX_LROSE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_CORE_DIR=$HOME/workspace/lrose-core" >> $BASH_ENV
+            cd $LROSE_CORE_DIR
+            ./build/scripts/installPackageMakefiles.py
+            cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
+            make install
+            cd $LROSE_CORE_DIR/codebase/apps/tdrp/src/tdrp_gen
+            make install
+            cd $LROSE_CORE_DIR/codebase/libs/
+            make -j 8 install_include
+            make -j 8 install
+            cd $LROSE_CORE_DIR/codebase/apps
+            make -j 8 install
+
+  # this script does not work; it is calling tdrp_gen without any reference to $PATH
+  #  setting $PATH environment variable does not help.
+  #          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix=/usr/local/lrose --verbose` == 0 ]]; then
+  #            echo "It worked"
+  #          else
+  #            tail -n 100 /tmp/lrose_build/logs/*
+  #          fi
+      - run:
             ls -R /usr/local/lrose/bin
             ls -R /usr/local/lrose/lib
       - run: /usr/local/lrose/bin/RadxPrint -h
@@ -3351,7 +3366,7 @@ workflows:
               only:
                 - master
     jobs:      
-      - two 
+      - current-head
       
      # - two:
      #    requires:
@@ -3451,7 +3466,7 @@ workflows:
           
   now:
     jobs:
-      - two
+      - current-head
       # - test-macos-lrose-samurai-rb
       # - package-lrose-core-tag-tgz
       # - test-linux-elle-checkout-and-build
