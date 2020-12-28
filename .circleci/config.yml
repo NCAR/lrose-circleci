@@ -4138,17 +4138,17 @@ workflows:
   now:
     jobs:
       # testing from current head
-      - package-lrose-core-tgz
+      - package-lrose-core-head-tgz
       - package-linux-lrose-head-tgz: 
           requires:
-           - package-lrose-core-tgz
+           - package-lrose-core-head-tgz
       - test-linux-lrose-head-tgz:
           requires:
            - package-linux-lrose-head-tgz
 
       - package-macos-lrose-head-tgz: 
           requires:
-           - package-lrose-core-tgz
+           - package-lrose-core-head-tgz
 
       - test-macos-lrose-head-tgz-latest:
           requires:
