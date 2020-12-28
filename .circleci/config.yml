@@ -362,8 +362,11 @@ jobs:
 
 
   test-macos-lrose-head-tgz-latest:
+    #macos:
+    #  xcode: "11.2.1"  # works
+
     macos:
-      xcode: "11.2.1"
+      xcode: "12.2.0"  
 
     working_directory: /tmp
     steps:
