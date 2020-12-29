@@ -2703,7 +2703,7 @@ jobs:
       # - run: wget https://github.com/NCAR/lrose-release-test/releases/download/testing/lrose-cyclone.rb
       # - run: brew install lrose-cyclone.rb
       - run: git clone https://github.com/nsf-lrose/release-tools
-      # NOTE: depends on xxxx.src.mac_osx.tgz <======
+      # NOTE: 1 on xxxx.src.mac_osx.tgz <======
       - run: release-tools/cyclone/homebrew-scripts/make-lrose-cyclone.sh
       - persist_to_workspace:
           root: workspace
@@ -4094,11 +4094,12 @@ workflows:
           
 
 # --------
-  nightly_lrose_elle:
+  yearly_lrose_elle:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 4 * * *"   # for 7:30 pm MST 
+          # cron: "45 4 * * *"   # for 7:30 pm MST 
+          cron: "45 4 1 5 *"   # only in June
           filters:
             branches:
               only:
@@ -4134,6 +4135,49 @@ workflows:
           requires:
            - package-elle-docker
           
+
+  nightly_lrose_head:
+    triggers: 
+      - schedule:
+          #     "mm hh day month dow"  Note: 22 is about 3pm MST
+          cron: "45 4 * * *"   # for 7:30 pm MST 
+          filters:
+            branches:
+              only:
+                - master
+    jobs:  
+      # testing from current head
+      - package-lrose-core-head-tgz
+      - package-linux-lrose-head-tgz: 
+          requires:
+           - package-lrose-core-head-tgz
+      - test-linux-lrose-head-tgz:
+          requires:
+           - package-linux-lrose-head-tgz
+
+      - package-macos-lrose-head-tgz: 
+          requires:
+           - package-lrose-core-head-tgz
+
+      - test-macos-lrose-head-tgz-latest:
+          requires:
+           - package-macos-lrose-head-tgz
+
+# TODO: need to fix up these to use the head
+#      - package-brew-formula-elle-workspace:
+#          requires:
+#           - package-macos-lrose-elle-tgz
+#        # upload lrose-cyclone.rb after this runs
+#        # then run
+##      - test-macos-lrose-cyclone-rb
+#
+#      # no dependencies for docker image; uses checkout_and_build_script to 
+#      # pull the top of master branch
+#      - package-elle-docker
+#      - test-elle-docker:
+#          requires:
+#           - package-elle-docker
+
 
 # --------
           
