@@ -761,6 +761,38 @@ jobs:
             ls -R /usr/local/lrose/lib
       - run: /usr/local/lrose/bin/RadxPrint -h
 
+    build-lrose-manual:
+    executor: my-executor
+    steps:
+      - run: echo "building lrose-core using script build_lrose_manual ..."
+      - run: yum install -y qt5-qtdeclarative-devel
+      - run: mkdir -p workspace
+      - run: cd workspace; git clone https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace
+      - run:
+          name: building core  ...
+          command: |
+            set +e
+            echo "building ..."
+            echo "Remember, \$HOME=/root"
+            export HOST_OS=LINUX_LROSE
+            export LROSE_INSTALL_DIR=/usr/local/lrose
+            export LROSE_CORE_DIR=/tmp/workspace/lrose-core
+            echo "$LROSE_CORE_DIR"
+            workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix=/usr/local/lrose --verbose
+  # this script does not work; it is calling tdrp_gen without any reference to $PATH
+  #  setting $PATH environment variable does not help.
+  #          if [[ `echo "y" | ./workspace/lrose-core/build/build_lrose_manual.py --package=lrose-core --prefix=/usr/local/lrose --verbose` == 0 ]]; then
+  #            echo "It worked"
+  #          else
+  #            tail -n 100 /tmp/lrose_build/logs/*
+  #          fi
+      - run:
+            ls -R /usr/local/lrose/bin
+            ls -R /usr/local/lrose/lib
+      - run: /usr/local/lrose/bin/RadxPrint -h
+
  
   attached-workspace:
     executor: my-executor
@@ -4183,22 +4215,26 @@ workflows:
           
   now:
     jobs:
+      - build-lrose-manual
+
+      # --- 
       # testing from current head
-      - package-lrose-core-head-tgz
-      - package-linux-lrose-head-tgz: 
-          requires:
-           - package-lrose-core-head-tgz
-      - test-linux-lrose-head-tgz:
-          requires:
-           - package-linux-lrose-head-tgz
-
-      - package-macos-lrose-head-tgz: 
-          requires:
-           - package-lrose-core-head-tgz
-
-      - test-macos-lrose-head-tgz-latest:
-          requires:
-           - package-macos-lrose-head-tgz
+      #- package-lrose-core-head-tgz
+      #- package-linux-lrose-head-tgz: 
+      #    requires:
+      #     - package-lrose-core-head-tgz
+      #- test-linux-lrose-head-tgz:
+      #    requires:
+      #     - package-linux-lrose-head-tgz
+      #
+      #- package-macos-lrose-head-tgz: 
+      #    requires:
+      #     - package-lrose-core-head-tgz
+      #
+      #- test-macos-lrose-head-tgz-latest:
+      #    requires:
+      #     - package-macos-lrose-head-tgz
+      # ---
 
       # - test-macos-lrose-samurai-rb
       # - package-lrose-core-tag-tgz
