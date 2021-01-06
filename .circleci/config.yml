@@ -761,7 +761,7 @@ jobs:
             ls -R /usr/local/lrose/lib
       - run: /usr/local/lrose/bin/RadxPrint -h
 
-    build-lrose-manual:
+  build-lrose-manual:
     executor: my-executor
     steps:
       - run: echo "building lrose-core using script build_lrose_manual ..."
