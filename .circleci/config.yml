@@ -4059,7 +4059,8 @@ workflows:
               only:
                 - master
     jobs:
-      - one
+      - build-lrose-manual      
+       # - one
       
   nightly_full:
     triggers: 
