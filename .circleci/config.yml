@@ -3681,7 +3681,8 @@ jobs:
  
       - run: brew update
       - run: brew install wget
-      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
+      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
+      - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210120/lrose-core.rb    
       #- run: brew cask install xquartz 
       - run: brew install --cask xquartz
       - run: 
@@ -3689,6 +3690,11 @@ jobs:
           no_output_timeout: 60m
           command: |
             brew install lrose-core.rb
+      # getting this warning ...
+      # ==> Installing lrose-core
+      # Warning: Calling depends_on :x11 is deprecated! Use depends_on specific X11 formula(e) instead.
+      # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
+      # ==> make install
       - run: RadxPrint -h
   
   # -----------
