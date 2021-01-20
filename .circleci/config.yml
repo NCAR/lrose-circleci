@@ -3682,7 +3682,8 @@ jobs:
       - run: brew update
       - run: brew install wget
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
-      - run: brew cask install xquartz 
+      #- run: brew cask install xquartz 
+      - run: brew install --cask xquartz
       - run: 
           name: installing lrose-core
           no_output_timeout: 60m
