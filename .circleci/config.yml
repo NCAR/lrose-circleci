@@ -3669,6 +3669,26 @@ jobs:
             brew install lrose-core.rb
       - run: brew install lrose-samurai.rb
       - run: samurai -h
+
+  test-macos-elle-rb:
+    macos:
+      xcode: "11.2.1"      # xcode: "10.2.1"
+
+    steps:
+      - run:
+          name: brew install lrose-elle.rb
+          command: echo "testing brew install MacOS-Elle lrose-core.rb"
+ 
+      - run: brew update
+      - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
+      - run: brew cask install xquartz 
+      - run: 
+          name: installing lrose-core
+          no_output_timeout: 60m
+          command: |
+            brew install lrose-core.rb
+      - run: RadxPrint -h
   
   # -----------
 
@@ -4216,7 +4236,9 @@ workflows:
           
   now:
     jobs:
-      - build-lrose-manual
+      - test-macos-elle-rb
+
+      # - build-lrose-manual
 
       # --- 
       # testing from current head
