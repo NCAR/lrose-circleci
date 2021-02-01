@@ -3762,14 +3762,17 @@ jobs:
       #      echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
       #      echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
       #      echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-      
+
       - run:
           name: Clone bootstrap and build
           command: |
             cd /tmp
             git clone https://github.com/ncar/lrose-bootstrap
+            echo "before running checkout_and_build_cmake ..."
             ls
-            ./scripts/checkout_and_build_cmake.py
+            lrose-bootstrap/scripts/checkout_and_build_cmake.py
+            echo "after running checkout_and_build_cmake ..."
+            ls
 
 
   # --------------------------
