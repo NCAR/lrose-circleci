@@ -3763,12 +3763,12 @@ jobs:
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
       - run:
-        name: Clone bootstrap and build
-        command: |
-          cd /tmp
-          git clone https://github.com/ncar/lrose-bootstrap
-          ls
-          ./scripts/checkout_and_build_cmake.py
+          name: Clone bootstrap and build
+          command: |
+            cd /tmp
+            git clone https://github.com/ncar/lrose-bootstrap
+            ls
+            ./scripts/checkout_and_build_cmake.py
 
 
   # --------------------------
