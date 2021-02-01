@@ -3737,10 +3737,7 @@ jobs:
 
     working_directory: /tmp
     steps:
-      # - attach_workspace:
-      #    at: /tmp/workspace_macos
 
-        # needed for QJSEngine: qt5-qtdeclarative-devel
       - run: brew install --cask xquartz
 
       - run:
@@ -3756,13 +3753,6 @@ jobs:
             brew install libomp libzip
             brew install rsync
 
-      #- run:
-      #    name: Setup Environment Variables
-      #    command: |
-      #      echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
-      #      echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
-      #      echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-
       - run:
           name: Clone bootstrap and build
           no_output_timeout: 30m
@@ -3774,6 +3764,16 @@ jobs:
             lrose-bootstrap/scripts/checkout_and_build_cmake.py
             echo "after running checkout_and_build_cmake ..."
             ls
+
+        # *** Installed in dir: /Users/distiller/lrose-install ***
+      - run:
+          name: test install
+          command: |
+            echo "testing with path ..."
+            /Users/distiller/lrose-install/bin/RadxPrint -h
+            echo "testing with no path ... "
+            RadxPrint -h
+
 
 
   # --------------------------
