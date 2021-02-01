@@ -3681,9 +3681,10 @@ jobs:
  
       - run: brew update
       - run: brew install wget
-      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20200701/lrose-core.rb
-      - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210120/lrose-core.rb    
-      #- run: brew cask install xquartz 
+      # this is my patched brew formula ...
+      # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210120/lrose-core.rb    
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210201/lrose-core.rb
+      #- run: brew cask install xquartz  # for older versions of brew 
       - run: brew install --cask xquartz
       - run: 
           name: installing lrose-core
@@ -3748,7 +3749,6 @@ jobs:
             brew install fftw flex
             brew install qt5 netcdf
             brew install szip pkg-config
-            brew install geographiclib
             brew install armadillo
             brew install libomp libzip
             brew install rsync
@@ -3771,8 +3771,11 @@ jobs:
           command: |
             echo "testing with path ..."
             /Users/distiller/lrose-install/bin/RadxPrint -h
-            echo "testing with no path ... "
-            RadxPrint -h
+            echo "All done."
+
+        # does not work without path 
+        # echo "testing with no path ... "
+        # RadxPrint -h
 
 
 
@@ -4204,34 +4207,36 @@ workflows:
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
           # cron: "45 4 * * *"   # for 7:30 pm MST 
-          cron: "45 4 1 5 *"   # only in June
+          cron: "45 4 * 2 *"   # only in February
           filters:
             branches:
               only:
                 - master
-    jobs:      
-      - package-lrose-core-tag-tgz
-      - package-linux-lrose-elle-tgz: 
-          requires:
-           - package-lrose-core-tag-tgz
-      - test-linux-lrose-elle-tgz:
-          requires:
-           - package-linux-lrose-elle-tgz
+    jobs:   
+      # TODO: need a tag here?
+      - test-macos-elle-checkout-and-build-cmake  
+      - test-macos-elle-rb
 
-      - package-macos-lrose-elle-tgz: 
-          requires:
-           - package-lrose-core-tag-tgz
+# TODO: can we get rid of these and replace with test-linux-elle-checkout-and-build-cmake???
+      #- package-lrose-core-tag-tgz
+      #- package-linux-lrose-elle-tgz: 
+      #    requires:
+      #     - package-lrose-core-tag-tgz
+      #- test-linux-lrose-elle-tgz:
+      #    requires:
+      #     - package-linux-lrose-elle-tgz
 
-      - test-macos-lrose-elle-tgz-latest:
-          requires:
-           - package-macos-lrose-elle-tgz
+      #- package-macos-lrose-elle-tgz: 
+      #    requires:
+      #     - package-lrose-core-tag-tgz
 
-      - package-brew-formula-elle-workspace:
-          requires:
-           - package-macos-lrose-elle-tgz
-        # upload lrose-cyclone.rb after this runs
-        # then run
-#      - test-macos-lrose-cyclone-rb
+      #- test-macos-lrose-elle-tgz-latest:
+      #    requires:
+      #     - package-macos-lrose-elle-tgz
+
+      #- package-brew-formula-elle-workspace:
+      #    requires:
+      #     - package-macos-lrose-elle-tgz
 
       # no dependencies for docker image; uses checkout_and_build_script to 
       # pull the top of master branch
@@ -4289,7 +4294,7 @@ workflows:
   now:
     jobs:
       - test-macos-elle-checkout-and-build-cmake
-      # - test-macos-elle-rb
+
 
       # - build-lrose-manual
 
