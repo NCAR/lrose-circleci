@@ -3731,6 +3731,46 @@ jobs:
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
 
+  test-macos-elle-checkout-and-build-cmake:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      # - attach_workspace:
+      #    at: /tmp/workspace_macos
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config
+            brew install geographiclib
+            brew install armadillo
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew cask install xquartz
+
+      - run:
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+      - run:
+        name: Clone bootstrap and build
+        command: |
+          cd /tmp
+          git clone https://github.com/ncar/lrose-bootstrap
+          ls
+          ./scripts/checkout_and_build_cmake.py
+
+
   # --------------------------
 
   # build from the head of lrose-core
@@ -4243,7 +4283,8 @@ workflows:
           
   now:
     jobs:
-      - test-macos-elle-rb
+      - test-macos-elle-checkout-and-build-cmake
+      # - test-macos-elle-rb
 
       # - build-lrose-manual
 
