@@ -3765,6 +3765,7 @@ jobs:
 
       - run:
           name: Clone bootstrap and build
+          no_output_timeout: 30m
           command: |
             cd /tmp
             git clone https://github.com/ncar/lrose-bootstrap
