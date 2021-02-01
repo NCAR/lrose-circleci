@@ -3741,6 +3741,8 @@ jobs:
       #    at: /tmp/workspace_macos
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run: brew install --cask xquartz
+
       - run:
           name: Install needed packages
           command: |
@@ -3754,14 +3756,13 @@ jobs:
             brew install libomp libzip
             brew install rsync
 
-      - run: brew cask install xquartz
-
-      - run:
-          name: Setup Environment Variables
-          command: |
-            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
-            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
-            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+      #- run:
+      #    name: Setup Environment Variables
+      #    command: |
+      #      echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+      #      echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+      #      echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+      
       - run:
           name: Clone bootstrap and build
           command: |
