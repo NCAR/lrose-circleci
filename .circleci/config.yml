@@ -3604,6 +3604,7 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
             echo "export    LROSE_CORE_DIR=/tmp/workarea/lrose-core" >> $BASH_ENV
             echo "export HOST_OS=OSX_LROSE"
+            mkdir -p $LROSE_INSTALL_DIR
           #  echo "export TARGET=lrose-elle-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
           #  echo "export SOURCE_DIR=lrose-elle-$RELEASE_DATE.mac_osx" >> $BASH_ENV
           #  echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
