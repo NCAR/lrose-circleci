@@ -3545,6 +3545,203 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-elle
 
 
+# ----- working here ...
+
+  test-macos-lrose-elle-tag-20200201:
+    macos:
+      xcode: "11.2.1"
+
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install szip pkg-config                                                                                                                
+            brew install armadillo                                                         
+            brew install libomp libzip
+            brew install rsync
+
+#      - run: brew cask install xquartz 
+
+#      brew cask install xquartz
+#Error: 
+#  homebrew-core is a shallow clone.
+#  homebrew-cask is a shallow clone.
+#To `brew update`, first run:
+#  git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+#  git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+#This restriction has been made on GitHub's request because updating shallow
+#clones is an extremely expensive operation due to the tree layout and traffic of
+#Homebrew/homebrew-core and Homebrew/homebrew-cask. We don't do this for you
+#automatically to avoid repeatedly performing an expensive unshallow operation in
+#CI systems (which should instead be fixed to not use shallow clones). Sorry for
+#the inconvenience!
+#Error: Calling brew cask install is disabled! Use brew install [--cask] instead.
+      - run: brew install --cask xquartz
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+            echo "export    LROSE_CORE_DIR=/tmp/workarea/lrose-core" >> $BASH_ENV
+            echo "export HOST_OS=OSX_LROSE"
+          #  echo "export TARGET=lrose-elle-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+          #  echo "export SOURCE_DIR=lrose-elle-$RELEASE_DATE.mac_osx" >> $BASH_ENV
+          #  echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+          #  echo "export LROSE_ROOT_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
+          #  echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+          #  echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+          #  echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+          #  # samurai needs LROSE_ROOT_DIR
+          #  #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+          #  #echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+
+      - run:
+          name: clone as needed lrose-elle  HERE!!!
+          command: |
+            echo "cloning Elle release tag"
+            mkdir workarea
+            cd workarea            
+            git clone --depth 1 --branch lrose-core-20210201 https://github.com/NCAR/lrose-core
+            echo "cloning vortrac release tag"
+            git clone --depth 1 --branch lrose-vortrac-20200701 https://github.com/mmbell/vortrac
+            echo "contents of workarea ..."
+            ls
+
+      # should have 
+      # /private/tmp/workarea/lrose-core
+      #                      /vortrac
+      #                      /lrose-displays
+
+      - run:
+          name: fetching color scales
+          command: |
+            cd workarea
+            git clone https://github.com/ncar/lrose-displays
+            cd lrose-displays
+            mkdir $LROSE_INSTALL_DIR/share
+            rsync -av color_scales $LROSE_INSTALL_DIR/share/  
+
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake
+            brew install eigen
+            brew install libomp libzip
+            brew install llvm
+
+      # don't exit if one of the commands fails 
+      # - run: set +e
+
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=/usr/local/include" >> $BASH_ENV
+            echo "export NETCDF_LIB=/usr/local/lib" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+
+      - run: find /usr/local/ -name Qt5Config.cmake
+
+      - run:
+          name: Build-install-DMG HawkEye and VORTRAC 
+          command: |
+            set +e
+            echo "building lrose-core"
+            cd $LROSE_CORE_DIR
+            ./build/scripts/installPackageMakefiles.py
+            echo "build and install tdrp_gen"
+            cd $LROSE_CORE_DIR/codebase/libs/tdrp/src
+            make install
+            cd $LROSE_CORE_DIR/codebase/apps/tdrp/src/tdrp_gen
+            make install
+            echo "build and install the libraries"
+            cd $LROSE_CORE_DIR/codebase/libs/
+            make -j 8 install_include
+            make -j 8 install
+            echo "done with libraries"
+            echo "ls $LROSE_INSTALL_DIR"
+            ls $LROSE_INSTALL_DIR
+            echo " ... after ls $LROSE_INSTALL_DIR"
+            echo " ... cmake.qt5.config or something should be here"
+            ls $CMAKE_QT5
+            pwd
+            echo "building vortrac"
+            find /usr/local -name netcdf.h
+            cd /private/tmp/workarea/vortrac/src
+            pwd
+            qmake .
+            make
+            cp ../Resources/*.xml vortrac.app/Contents/Resources/
+            cp vortrac.app/Contents/MacOS/vortrac $LROSE_INSTALL_DIR/bin
+            cd ..
+            rsync -av Resources $LROSE_INSTALL_DIR
+            echo "building HawkEye.dmg"
+            cd /private/tmp/workarea/lrose-core/codebase/apps/radar/src/HawkEye
+            pwd            
+            make clean
+            qmake -o Makefile.qmake
+            echo " ...  make from_qmake"
+            make -f Makefile.qmake
+            echo " ... after qmake"
+            mkdir -p HawkEye.app/Contents/Frameworks
+            echo " ... after mkdir"
+            mkdir -p HawkEye.app/Contents/MacOS/../share
+            cp -r /private/tmp/workarea/lrose-displays/color_scales HawkEye.app/Contents/MacOS/../share/.
+            echo " ... before calling macdeployqt"
+            macdeployqt HawkEye.app -dmg -always-overwrite
+            echo " .. before calling hdiutil"
+            hdiutil create -volname HawkEye_Installer -srcfolder /private/tmp/workarea/lrose-core/codebase/apps/radar/src/HawkEye/HawkEye.app -ov -format UDZO HawkEye.dmg
+            echo " ... after dmg build"
+            cp HawkEye.dmg /private/tmp/workspace_macos/releases/lrose-elle
+            echo " ... done with building HawkEye"
+            echo "building vortrac.dmg"
+            cd /private/tmp/workarea/vortrac
+            pwd            
+            echo " ... before calling macdeployqt"
+            cd src
+            cp ../Resources/*.xml vortrac.app/Contents/Resources/
+            macdeployqt vortrac.app -dmg -always-overwrite
+            echo " .. before calling hdiutil"
+            hdiutil create -volname Vortrac_Installer -srcfolder /private/tmp/workarea/vortrac/src/vortrac.app -ov -format UDZO vortrac.dmg
+            echo " ... after dng build"
+            cp vortrac.dmg /private/tmp/workspace_macos/releases/lrose-elle
+            echo " ... done with building vortrac"
+            echo " Start of tests ... "
+            echo "   testing RadxPrint ..."
+            $LROSE_INSTALL_DIR/bin/RadxPrint -h
+            echo "   testing vortrac ..."
+            $LROSE_INSTALL_DIR/bin/vortrac  -h
+            echo " End of tests"
+
+      - store_artifacts:
+          path: /tmp/workspace_macos/releases/lrose-elle
+
+
+# ----- end working here ...
+
   package-brew-formula-elle-workspace:
     executor: my-executor
     working_directory: /tmp
@@ -4293,7 +4490,8 @@ workflows:
           
   now:
     jobs:
-      - test-macos-elle-checkout-and-build-cmake
+      - test-macos-lrose-elle-tag-20200201
+      # - test-macos-elle-checkout-and-build-cmake
 
 
       # - build-lrose-manual
