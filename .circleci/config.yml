@@ -3589,7 +3589,7 @@ jobs:
           name: clone as needed lrose-elle  HERE!!!
           command: |
             echo "cloning Elle release tag"
-            mkdir workarea
+            mkdir -p workarea
             cd workarea            
             git clone --depth 1 --branch lrose-core-20210201 https://github.com/NCAR/lrose-core
             echo "cloning vortrac release tag"
@@ -3608,7 +3608,7 @@ jobs:
             cd workarea
             git clone https://github.com/ncar/lrose-displays
             cd lrose-displays
-            mkdir $LROSE_INSTALL_DIR/share
+            mkdir -p $LROSE_INSTALL_DIR/share
             rsync -av color_scales $LROSE_INSTALL_DIR/share/  
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
