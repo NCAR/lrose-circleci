@@ -3556,39 +3556,6 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace_macos
 
-        # needed for QJSEngine: qt5-qtdeclarative-devel
-      - run:
-          name: Install needed packages
-          command: |
-            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
-            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
-            brew install cmake
-            brew install eigen
-            brew install fftw flex
-            brew install qt5 netcdf
-            brew install szip pkg-config                                                                                                                
-            brew install armadillo                                                         
-            brew install libomp libzip
-            brew install rsync
-
-#      - run: brew cask install xquartz 
-
-#      brew cask install xquartz
-#Error: 
-#  homebrew-core is a shallow clone.
-#  homebrew-cask is a shallow clone.
-#To `brew update`, first run:
-#  git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
-#  git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
-#This restriction has been made on GitHub's request because updating shallow
-#clones is an extremely expensive operation due to the tree layout and traffic of
-#Homebrew/homebrew-core and Homebrew/homebrew-cask. We don't do this for you
-#automatically to avoid repeatedly performing an expensive unshallow operation in
-#CI systems (which should instead be fixed to not use shallow clones). Sorry for
-#the inconvenience!
-#Error: Calling brew cask install is disabled! Use brew install [--cask] instead.
-      - run: brew install --cask xquartz
-
       - run: 
           name: Setup Environment Variables
           command: |
@@ -3604,7 +3571,9 @@ jobs:
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
             echo "export    LROSE_CORE_DIR=/tmp/workarea/lrose-core" >> $BASH_ENV
             echo "export HOST_OS=OSX_LROSE"
-            mkdir -p $LROSE_INSTALL_DIR
+
+            
+      - run: mkdir -p $LROSE_INSTALL_DIR
           #  echo "export TARGET=lrose-elle-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
           #  echo "export SOURCE_DIR=lrose-elle-$RELEASE_DATE.mac_osx" >> $BASH_ENV
           #  echo "export LROSE_INSTALL_DIR=/tmp/workarea/install/lrose" >> $BASH_ENV
@@ -3642,16 +3611,28 @@ jobs:
             mkdir $LROSE_INSTALL_DIR/share
             rsync -av color_scales $LROSE_INSTALL_DIR/share/  
 
+        # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
           name: Install needed packages
           command: |
-            brew install cmake
-            brew install eigen
-            brew install libomp libzip
-            brew install llvm
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+            brew install cmake eigen fftw flex qt5 netcdf szip pkg-config armadillo rsync
 
-      # don't exit if one of the commands fails 
-      # - run: set +e
+#            brew install eigen
+#            brew install fftw flex
+##            brew install qt5 netcdf
+#            brew install szip pkg-config                                                                                                                
+#            brew install armadillo                                                         
+#            brew install libomp libzip
+#            brew install rsync
+
+      - run:
+          name: Install needed packages
+          command: |
+            brew install cmake llvm
+
+      - run: brew install --cask xquartz
 
       - run:
           name: Set Environment Variables
