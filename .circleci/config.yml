@@ -3886,6 +3886,34 @@ jobs:
       # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
       # ==> make install
       - run: RadxPrint -h
+
+  test-macos-elle-rb-20210216:
+    macos:
+      xcode: "11.2.1"      # xcode: "10.2.1"
+
+    steps:
+      - run:
+          name: brew install lrose-elle.rb
+          command: echo "testing brew install MacOS-Elle lrose-core.rb"
+ 
+      - run: brew update
+      - run: brew install wget
+      # this is my patched brew formula ...
+      # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210120/lrose-core.rb    
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
+      #- run: brew cask install xquartz  # for older versions of brew 
+      - run: brew install --cask xquartz
+      - run: 
+          name: installing lrose-core
+          no_output_timeout: 60m
+          command: |
+            brew install lrose-core.rb
+      # getting this warning ...
+      # ==> Installing lrose-core
+      # Warning: Calling depends_on :x11 is deprecated! Use depends_on specific X11 formula(e) instead.
+      # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
+      # ==> make install
+      - run: RadxPrint -h
   
   # -----------
 
@@ -4482,7 +4510,8 @@ workflows:
           
   now:
     jobs:
-      - test-macos-elle-rb
+      - test-macos-elle-rb-20210216
+      # - test-macos-elle-rb
 
       # - what-is-mac-env
 
