@@ -4482,7 +4482,9 @@ workflows:
           
   now:
     jobs:
-      - what-is-mac-env
+      - test-macos-elle-rb
+
+      # - what-is-mac-env
 
       # - test-macos-lrose-elle-tag-20200201
       # - test-macos-elle-checkout-and-build-cmake
