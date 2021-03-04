@@ -3554,6 +3554,7 @@ jobs:
     steps:
       - run: echo $HOME
       - run: ls -al /usr/local
+      - run: ls -R /usr/local/Frameworks
 
 
   test-macos-lrose-elle-tag-20200201:
