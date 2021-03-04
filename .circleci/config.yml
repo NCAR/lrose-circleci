@@ -3547,6 +3547,15 @@ jobs:
 
 # ----- working here ...
 
+  what-is-mac-env:
+    macos:
+      xcode: "11.2.1"
+
+    steps:
+      - run: echo $HOME
+      - run: ls -al /usr/local
+
+
   test-macos-lrose-elle-tag-20200201:
     macos:
       xcode: "11.2.1"
@@ -4472,7 +4481,9 @@ workflows:
           
   now:
     jobs:
-      - test-macos-lrose-elle-tag-20200201
+      - what-is-mac-env
+
+      # - test-macos-lrose-elle-tag-20200201
       # - test-macos-elle-checkout-and-build-cmake
 
 
