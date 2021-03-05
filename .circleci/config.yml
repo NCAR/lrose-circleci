@@ -3903,7 +3903,12 @@ jobs:
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
       #- run: brew cask install xquartz  # for older versions of brew 
       #- run: brew install --cask xquartz
-      - run: brew install qt
+      - run: brew install qt5
+      # installs qt6! ACK!
+      # ==> Installing qt
+#==> Pouring qt-6.0.2.catalina.bottle.tar.gz
+#🍺  /usr/local/Cellar/qt/6.0.2: 8,233 files, 158.1MB
+#==> Upgrading 2 dependents:
       #- run: find / -name Qt5Config.cmake
 
       - run: find /usr/local/ -name qt5-config.cmake
