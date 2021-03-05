@@ -3902,11 +3902,11 @@ jobs:
       # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210120/lrose-core.rb    
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
       #- run: brew cask install xquartz  # for older versions of brew 
-      - run: brew install --cask xquartz
+      #- run: brew install --cask xquartz
       - run: brew install qt
-      - run: find / -name Qt5Config.cmake
+      #- run: find / -name Qt5Config.cmake
 
-      - run: find / -name qt5-config.cmake
+      - run: find /usr/local/ -name qt5-config.cmake
 
       # ---- from old Samurai build ...
       - run: find /usr/local/ -name Qt5Config.cmake
