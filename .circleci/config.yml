@@ -3903,6 +3903,8 @@ jobs:
       - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
       #- run: brew cask install xquartz  # for older versions of brew 
       - run: brew install --cask xquartz
+      - run: brew install qtbase5-dev
+      - run: brew install qtdeclarative5-dev
       - run: 
           name: installing lrose-core
           no_output_timeout: 60m
@@ -4511,7 +4513,7 @@ workflows:
   now:
     jobs:
       - test-macos-elle-rb-20210216
-      - test-macos-elle-rb
+      # - test-macos-elle-rb
 
       # - what-is-mac-env
 
