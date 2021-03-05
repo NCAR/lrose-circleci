@@ -3861,7 +3861,7 @@ jobs:
 
   test-macos-elle-rb:
     macos:
-      xcode: "11.2.1"      # xcode: "10.2.1"
+      xcode: "12.4"  # 11.2.1"      # xcode: "10.2.1"
 
     steps:
       - run:
@@ -3889,7 +3889,7 @@ jobs:
 
   test-macos-elle-rb-20210216:
     macos:
-      xcode: "11.2.1"      # xcode: "10.2.1"
+      xcode: "12.4"  # 11.2.1"      # xcode: "10.2.1"
 
     steps:
       - run:
@@ -4511,7 +4511,7 @@ workflows:
   now:
     jobs:
       - test-macos-elle-rb-20210216
-      # - test-macos-elle-rb
+      - test-macos-elle-rb
 
       # - what-is-mac-env
 
