@@ -3899,7 +3899,8 @@ jobs:
       - run: brew update
       - run: brew install wget
       # this is my patched brew formula ...
-      - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210311/lrose-core.rb    
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
+      # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210311/lrose-core.rb    
       # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
       #- run: brew cask install xquartz  # for older versions of brew 
       - run: brew install --cask xquartz
