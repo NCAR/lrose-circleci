@@ -402,11 +402,11 @@ jobs:
 
   test-macos-topaz-rb-20211114:
     macos:
-      xcode: "10.15.7"  # 11.2.1"      # xcode: "10.2.1"
+      xcode: "12.4.0"  # 11.2.1"      # xcode: "10.2.1"
 
     steps:
       - run:
-          name: brew install lrose-topaz.rb Catalina 10.15.7
+          name: brew install lrose-topaz.rb Catalina Xcode 12.4.0
           command: echo "testing brew install MacOS-Topaz lrose-core.rb"
  
       - run: brew update
