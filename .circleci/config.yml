@@ -4808,23 +4808,22 @@ jobs:
       - store_artifacts:
           path: /tmp/workspace_macos/releases/lrose-elle
 
-
-docker_cli:
-  description: |
-    Interact with Singularity via a Docker container. The containers are
-    prebuilt, so this step supports any of the tags belonging to the
-    quay.io/singularity/singularity Docker repository.
-  executor: docker
-  parameters:
-    singularity-version:
-      description: The Singularity version (tag on quay.io/singularity/singularity)
-      type: string
-      default: v3.8.2-slim
-  steps:
-    - run:
-        name: Check Singularity Version
-        singularity-version: <<parameters.singularity-version>>
-        command: singularity --version
+  docker_cli:
+    description: |
+      Interact with Singularity via a Docker container. The containers are
+      prebuilt, so this step supports any of the tags belonging to the
+      quay.io/singularity/singularity Docker repository.
+    executor: docker
+    parameters:
+      singularity-version:
+        description: The Singularity version (tag on quay.io/singularity/singularity)
+        type: string
+        default: v3.8.2-slim
+    steps:
+      - run:
+          name: Check Singularity Version
+          singularity-version: <<parameters.singularity-version>>
+          command: singularity --version
 
 
 
