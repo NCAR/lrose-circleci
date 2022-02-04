@@ -4857,8 +4857,8 @@ jobs:
           command: |
             if [ -f "$BASH_ENV" ]; then source $BASH_ENV; fi
             singularity build <<parameters.image>> <<parameters.from-uri>>
-            singularity exec lrose-cidd cidd -help
-            singularity exec lrose-cidd -help
+            singularity exec lrose-cidd.sif -help
+
 
 
 
