@@ -1,6 +1,8 @@
 
 version: 2.1
 
+orbs: 
+  singularity: singularity/singularity@1.0.11
 
 executors:
   my-executor:
@@ -4807,6 +4809,25 @@ jobs:
           path: /tmp/workspace_macos/releases/lrose-elle
 
 
+docker_cli:
+  description: |
+    Interact with Singularity via a Docker container. The containers are
+    prebuilt, so this step supports any of the tags belonging to the
+    quay.io/singularity/singularity Docker repository.
+  executor: docker
+  parameters:
+    singularity-version:
+      description: The Singularity version (tag on quay.io/singularity/singularity)
+      type: string
+      default: v3.8.2-slim
+  steps:
+    - run:
+        name: Check Singularity Version
+        singularity-version: <<parameters.singularity-version>>
+        command: singularity --version
+
+
+
 
 # ---------- end Elle release ----------
 
@@ -4983,7 +5004,8 @@ workflows:
           
   now:
     jobs:
-      - test-macos-topaz-rb-20211114
+      - docker_cli
+      # - test-macos-topaz-rb-20211114
       # - test-macos-lrose-topaz-tgz
       # - test-macos-elle-rb-20210216
       # - test-macos-elle-rb
