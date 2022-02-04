@@ -4835,7 +4835,7 @@ jobs:
           singularity-version: <<parameters.singularity-version>>
           command: singularity --version
 
-  build-image-docker:
+  build-sing-image-cidd:
     description: Build a Singularity container using Docker
     parameters:
       singularity-version:
@@ -5036,7 +5036,7 @@ workflows:
           
   now:
     jobs:
-      - build-image-docker
+      - build-sing-image-cidd
       # - docker_cli  # works
 
       # - test-macos-topaz-rb-20211114
