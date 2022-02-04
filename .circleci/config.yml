@@ -4835,6 +4835,29 @@ jobs:
           singularity-version: <<parameters.singularity-version>>
           command: singularity --version
 
+  build-image-docker:
+    description: Build a Singularity container using Docker
+    parameters:
+      singularity-version:
+        type: string
+        default: v3.8.2-slim
+      from-uri:
+        description: 'The Singularity recipe path or docker:// uri to build from.'
+        type: string
+        default: docker://nsflrose/lrose-cidd:latest
+      image:
+        description: 'The image binary to build (e.g., container.sif)'
+        type: string
+        default: lrose-cidd.sif
+    steps:
+      - run:
+          name: Build Singularity Container
+          command: |
+            if [ -f "$BASH_ENV" ]; then source $BASH_ENV; fi
+            singularity build <<parameters.image>> <<parameters.from-uri>>
+            singularity exec lrose-cidd cidd -help
+            singularity exec lrose-cidd -help
+
 
 
 
@@ -5013,7 +5036,9 @@ workflows:
           
   now:
     jobs:
-      - docker_cli
+      - build-image-docker
+      # - docker_cli  # works
+
       # - test-macos-topaz-rb-20211114
       # - test-macos-lrose-topaz-tgz
       # - test-macos-elle-rb-20210216
