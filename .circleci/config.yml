@@ -4837,6 +4837,7 @@ jobs:
 
   build-sing-image-cidd:
     description: Build a Singularity container using Docker
+    executor: docker
     parameters:
       singularity-version:
         type: string
@@ -4852,6 +4853,7 @@ jobs:
     steps:
       - run:
           name: Build Singularity Container
+          singularity-version: <<parameters.singularity-version>>
           command: |
             if [ -f "$BASH_ENV" ]; then source $BASH_ENV; fi
             singularity build <<parameters.image>> <<parameters.from-uri>>
