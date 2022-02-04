@@ -34,6 +34,16 @@ executors:
       - image: leavesntwigs/lrose-build-env-ubuntu:20191004
     working_directory: /tmp
 
+  docker:
+    description: Pre-build Docker container base to interact with Singularity
+    parameters:
+      singularity-version:
+        type: string
+        default: v3.8.2-slim
+    docker:
+      - image: 'quay.io/singularity/singularity:<< parameters.singularity-version >>'
+
+
 jobs:
   one:
     executor: my-executor
