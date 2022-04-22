@@ -501,14 +501,16 @@ jobs:
 
     steps:
       - run:
-          name: brew install lrose-topaz.rb Catalina Xcode 13.3.0
+          name: brew install lrose-topaz.rb Monterey Xcode 13.3.0
           command: echo "testing brew install MacOS-Topaz lrose-core.rb"
  
       - run: brew update
       - run: brew install wget
-      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core.rb
-      # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210311/lrose-core.rb    
-      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
+      # original formulae with szip
+      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core.rb
+      # modified formulae with libaec substituted for szip
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20220422/lrose-core.rb
+
       #- run: brew cask install xquartz  # for older versions of brew 
       - run: brew install --cask xquartz
       #- run: brew install qt5
