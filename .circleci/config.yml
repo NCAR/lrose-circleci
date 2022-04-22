@@ -495,6 +495,89 @@ jobs:
 
 # -------- topaz end --------
 
+  run-brew-no-szip:
+    macos:
+      xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey
+
+    steps:
+      - run:
+          name: brew install lrose-topaz.rb Catalina Xcode 13.3.0
+          command: echo "testing brew install MacOS-Topaz lrose-core.rb"
+ 
+      - run: brew update
+      - run: brew install wget
+      - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core.rb
+      # - run: wget https://github.com/leavesntwigs/lrose-test/releases/download/20210311/lrose-core.rb    
+      # - run: wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20210216/lrose-core.rb
+      #- run: brew cask install xquartz  # for older versions of brew 
+      - run: brew install --cask xquartz
+      #- run: brew install qt5
+      # installs qt6! ACK!
+      # ==> Installing qt
+#==> Pouring qt-6.0.2.catalina.bottle.tar.gz
+#🍺  /usr/local/Cellar/qt/6.0.2: 8,233 files, 158.1MB
+#==> Upgrading 2 dependents:
+      #- run: find / -name Qt5Config.cmake
+
+      #- run: find /usr/local/ -name qt5-config.cmake
+
+      # ---- from old Samurai build ...
+      #- run: find /usr/local/ -name Qt5Config.cmake
+      # found here /usr/local//Cellar/qt@5/5.15.2/lib/cmake/Qt5/Qt5Config.cmake
+      #- run: echo "export Qt5_DIR=/usr/local//Cellar/qt@5/5.15.2/lib/cmake/Qt5" >> $BASH_ENV
+      #- run: ls /usr/local/opt/qt/lib/cmake/Qt5
+
+      # samurai needs Qt, from this error ...
+      # CMake Error at CMakeLists.txt:20 (find_package):
+      # By not providing "FindQt5.cmake" in CMAKE_MODULE_PATH this project has
+      # asked CMake to find a package configuration file provided by "Qt5", but
+      # CMake did not find one.
+      #
+      # Could not find a package configuration file provided by "Qt5" with any of
+      # the following names:
+      # 
+      # Qt5Config.cmake
+      # qt5-config.cmake
+
+      #  from https://github.com/Cockatrice/Cockatrice/issues/205   -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.3.1/
+
+      #
+      # cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.1/lib/cmake/Qt5 -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c`  -D OpenMP_C_LIB_NAMES="" -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` -D OpenMP_CXX_LIB_NAMES=""  .
+      #
+
+#            ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
+#            ln -s /usr/local/opt/llvm/bin/clang++ /usr/local/bin/clang-omp++
+
+# 
+#            cmake -DCMAKE_INSTALL_PREFIX=$LROSE_INSTALL_DIR \
+#               -DCMAKE_MODULE_PATH=/usr/local/Cellar/qt/5.13.2/lib/cmake/Qt5 \
+#               -D OpenMP_C_FLAGS=`pkg-config --cflags ompi-c` \
+#               -D OpenMP_C_LIB_NAMES="" \ 
+#               -D OpenMP_CXX_FLAGS=`pkg-config --cflags ompi-cxx` \
+#               -D OpenMP_CXX_LIB_NAMES="" /private/tmp/workarea/$SOURCE_DIR/samurai
+#
+
+#      - run:
+#          name: Set Environment Variables for samurai
+#          command: |
+#            echo "export CMAKE_QT5=/usr/local/opt/qt/lib/cmake/Qt5" >> $BASH_ENV
+# ---- end from old Samurai build
+
+
+      - run: 
+          name: installing lrose-core
+          no_output_timeout: 60m
+          command: |
+            brew install lrose-core.rb
+      # getting this warning ...
+      # ==> Installing lrose-core
+      # Warning: Calling depends_on :x11 is deprecated! Use depends_on specific X11 formula(e) instead.
+      # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
+      # ==> make install
+      - run: RadxPrint -h
+
+
+
 #  -------------  current head: begin ---------
 
 
@@ -5061,7 +5144,8 @@ workflows:
           
   now:
     jobs:
-      - run-sing-image-cidd
+      - run-brew-no-szip
+      # - run-sing-image-cidd
       # - docker_cli  # works
 
       # - test-macos-topaz-rb-20211114
