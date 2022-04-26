@@ -577,6 +577,9 @@ jobs:
       # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
       # ==> make install
       - run: RadxPrint -h
+      
+      - store_artifacts:
+          path: /Users/distiller/Library/Logs/Homebrew/lrose-core
 
 
 
