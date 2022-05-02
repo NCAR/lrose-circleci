@@ -589,6 +589,7 @@ jobs:
     working_directory: /tmp
     steps:
 
+      - run: python
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
