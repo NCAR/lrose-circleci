@@ -577,10 +577,40 @@ jobs:
       # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
       # ==> make install
       - run: RadxPrint -h
-      
+
       - store_artifacts:
           path: /Users/distiller/Library/Logs/Homebrew/lrose-core
 
+
+  run-brew-no-szip-workaround:
+    macos:
+      xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey
+
+    steps:
+      - run:
+          name: build from source release Monterey Xcode 13.3.0
+          command: |
+            echo "testing build and install MacOS-Topaz lrose-core-20220222.src.tgz"
+            wget https://github.com/NCAR/lrose-core/releases/download/20220422/lrose-core-20220222.src.tgz
+            tar -xvf lrose-core-20220222.src.tgz 
+            cd lrose-core-20220222.src
+            cd build/cmake
+            ./createCMakeLists.py 
+            ./createCMakeLists.py  --prefix /tmp/lrose 
+            cd ../..
+            cd codebase/build/libs 
+            make install 
+            cd ../apps 
+            cd tdrp/src/tdrp_gen 
+            make install 
+            cd ../../../..
+            cd apps 
+            make install 
+
+      - run: 
+          name: test the install
+          command: |
+            /tmp/lrose/bin/RadxConvert -h 
 
 
 #  -------------  current head: begin ---------
@@ -5149,7 +5179,8 @@ workflows:
           
   now:
     jobs:
-      - run-brew-no-szip
+      # - run-brew-no-szip
+      - run-brew-no-szip-workaround
       # - run-sing-image-cidd
       # - docker_cli  # works
 
