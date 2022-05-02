@@ -596,6 +596,7 @@ jobs:
           command: |
             # git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch 
             # git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch
+            brew install wget 
             brew install cmake
             brew install eigen
             brew install fftw flex
