@@ -586,31 +586,83 @@ jobs:
     macos:
       xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey
 
+    working_directory: /tmp
     steps:
+
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
-          name: build from source release Monterey Xcode 13.3.0
+          name: Install needed packages
           command: |
-            echo "testing build and install MacOS-Topaz lrose-core-20220222.src.tgz"
-            wget https://github.com/NCAR/lrose-core/releases/download/20220422/lrose-core-20220222.src.tgz
-            tar -xvf lrose-core-20220222.src.tgz 
-            cd lrose-core-20220222.src
-            cd build/cmake
-            ./createCMakeLists.py 
-            ./createCMakeLists.py  --prefix /tmp/lrose 
-            cd ../..
-            cd codebase/build/libs 
-            make install 
-            cd ../apps 
-            cd tdrp/src/tdrp_gen 
-            make install 
-            cd ../../../..
-            cd apps 
-            make install 
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+            brew install cmake
+            brew install eigen
+            brew install fftw flex
+            brew install qt5 netcdf
+            brew install pkg-config                                                            
+            brew install geographiclib                                                     
+            brew install armadillo                                                         
+            brew install libomp libzip
+            brew install rsync
+
+      - run: brew install --cask xquartz
 
       - run: 
-          name: test the install
+          name: Setup Environment Variables
           command: |
-            /tmp/lrose/bin/RadxConvert -h 
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export BASE_DIR=/private" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-topaz-$RELEASE_DATE.src" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-topaz-$RELEASE_DATE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
+            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+            echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+            # samurai needs LROSE_ROOT_DIR
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
+
+      - run:
+          name: extract lrose-topaz tgz 
+          command: |
+            mkdir $WORKAREA
+            pwd 
+            cd /tmp/workarea
+            echo "fetching tar files from release ... "
+            wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
+            echo "extracting lrose-topaz from tgz ..."
+            tar xf lrose-core-20210524.src.tgz
+            cd lrose-core-20220222.src/build/cmake
+            echo "installing in ~/lrose ... "
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            cd ../../codebase
+            mkdir build
+            cd build
+            cmake ..
+            cd libs
+            make install
+            cd ../apps/tdrp/src/tdrp_gen
+            make install
+            echo "building apps "
+            cd ../..
+            make install
+
+
+      - run: 
+          name: text the install
+          command: |
+            $LROSE_INSTALL_DIR/bin/RadxConvert -h  
+
 
 
 #  -------------  current head: begin ---------
