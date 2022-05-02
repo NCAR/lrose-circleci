@@ -592,8 +592,9 @@ jobs:
       - run: 
           name: Check for python
           command: |
+            python3 --version
             alias python=python3
-            python
+            python --version
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
