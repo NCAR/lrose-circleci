@@ -642,9 +642,9 @@ jobs:
             echo "fetching tar files from release ... "
             wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
             echo "extracting lrose-topaz from tgz ..."
-            tar xf lrose-core-20210524.src.tgz
+            tar xf lrose-core-20220222.src.tgz
             cd lrose-core-20220222.src/build/cmake
-            echo "installing in ~/lrose ... "
+            echo "installing in ~/tmp/workarea/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
             mkdir build
