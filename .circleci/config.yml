@@ -592,7 +592,7 @@ jobs:
       - run: 
           name: Check for python
           command: |
-            brew install python
+            alias python=python3
             python
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -649,6 +649,7 @@ jobs:
             echo "extracting lrose-topaz from tgz ..."
             tar xf lrose-core-20220222.src.tgz
             cd lrose-core-20220222.src/build/cmake
+            alias python=python3
             echo "installing in ~/tmp/workarea/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
