@@ -589,7 +589,11 @@ jobs:
     working_directory: /tmp
     steps:
 
-      - run: python
+      - run: 
+          name: Check for python
+          command: |
+            brew install python
+            python
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
