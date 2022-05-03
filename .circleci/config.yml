@@ -570,6 +570,8 @@ jobs:
           name: installing lrose-core
           no_output_timeout: 60m
           command: |
+            ln -s "$(brew --prefix)/bin/python"{3,}
+            python --version
             brew install lrose-core.rb
       # getting this warning ...
       # ==> Installing lrose-core
