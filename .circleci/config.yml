@@ -601,6 +601,18 @@ jobs:
       #    command: |
       #      python --version
 
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export BASE_DIR=/private" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
+
       - run:
           name: extract lrose-topaz tgz 
           command: |
