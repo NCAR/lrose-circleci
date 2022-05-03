@@ -593,7 +593,7 @@ jobs:
           name: Check for python
           command: |
             python3 --version
-            alias python="python3"
+            brew install python2
             python --version
 
       - run:
