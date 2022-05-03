@@ -593,7 +593,7 @@ jobs:
           name: Check for python
           command: |
             python3 --version
-            alias python=python3
+            brew install python@2
             python --version
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
