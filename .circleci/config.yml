@@ -593,7 +593,6 @@ jobs:
           name: Check for python
           command: |
             python3 --version
-            brew install python@2
             python --version
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -622,6 +621,7 @@ jobs:
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
             echo "export BASE_DIR=/private" >> $BASH_ENV
+            echo "alias python=python3"
 
       - run: echo $HOME
 
@@ -638,6 +638,7 @@ jobs:
             # samurai needs LROSE_ROOT_DIR
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
+            python --version
 
       - run:
           name: extract lrose-topaz tgz 
@@ -650,7 +651,6 @@ jobs:
             echo "extracting lrose-topaz from tgz ..."
             tar xf lrose-core-20220222.src.tgz
             cd lrose-core-20220222.src/build/cmake
-            alias python=python3
             echo "installing in ~/tmp/workarea/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
