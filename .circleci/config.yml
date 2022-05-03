@@ -601,6 +601,21 @@ jobs:
       #    command: |
       #      python --version
 
+      - run:
+          name: extract lrose-topaz tgz 
+          command: |
+            mkdir $WORKAREA
+            pwd 
+            cd /tmp/workarea
+            echo "fetching tar files from release ... "
+            wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
+            echo "extracting lrose-topaz from tgz ..."
+            tar xf lrose-core-20220222.src.tgz
+            cd lrose-core-20220222.src/build/scripts
+            sed -i '' 's/env python/env python3/g' install_linux_packages.py     
+            head install_linux_packages.py 
+
+
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
           name: Install needed packages
@@ -647,16 +662,7 @@ jobs:
       - run:
           name: extract lrose-topaz tgz 
           command: |
-            mkdir $WORKAREA
-            pwd 
-            cd /tmp/workarea
-            echo "fetching tar files from release ... "
-            wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
-            echo "extracting lrose-topaz from tgz ..."
-            tar xf lrose-core-20220222.src.tgz
-            cd lrose-core-20220222.src/build/scripts
-            sed -i '' 's/env python/env python3/g' install_linux_packages.py     
-            cd ../../../       
+            cd /tmp/workarea    
             cd lrose-core-20220222.src/build/cmake
             echo "installing in ~/tmp/workarea/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
