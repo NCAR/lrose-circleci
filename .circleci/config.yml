@@ -681,7 +681,7 @@ jobs:
             cd /tmp/workarea    
             cd lrose-core-20220222.src/build/cmake
             echo "installing in ~/tmp/workarea/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            ./createCMakeLists.py --prefix $LROSE_INSTALL_DIR
             cd ../../codebase
             mkdir build
             cd build
@@ -5268,8 +5268,8 @@ workflows:
           
   now:
     jobs:
-      # - run-brew-no-szip
-      - run-brew-no-szip-workaround
+      - run-brew-no-szip
+      # - run-brew-no-szip-workaround
       # - run-sing-image-cidd
       # - docker_cli  # works
 
