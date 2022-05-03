@@ -594,6 +594,7 @@ jobs:
           command: |
             python3 --version
             alias python="python3"
+            python --version
 
       - run:
           name: Test python alias
