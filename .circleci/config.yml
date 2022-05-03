@@ -593,7 +593,7 @@ jobs:
           name: Check for python
           command: |
             python3 --version
-            echo "alias python=`python3`"
+            alias python="python3"
 
       - run:
           name: Test python alias
