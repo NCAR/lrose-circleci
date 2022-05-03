@@ -589,17 +589,17 @@ jobs:
     working_directory: /tmp
     steps:
 
-      - run: 
-          name: Check for python
-          command: |
-            python3 --version
-            brew install python2
-            python --version
+      #- run: 
+      #    name: Check for python
+      #    command: |
+      #      python3 --version
+      #      brew install python2
+      #      python --version
 
-      - run:
-          name: Test python alias
-          command: |
-            python --version
+      #- run:
+      #    name: Test python alias
+      #    command: |
+      #      python --version
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
@@ -654,6 +654,9 @@ jobs:
             wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
             echo "extracting lrose-topaz from tgz ..."
             tar xf lrose-core-20220222.src.tgz
+            cd lrose-core-20220222.src/build/scripts
+            sed -i '' 's/env python/env python3/g' install_linux_packages.py     
+            cd ../../../       
             cd lrose-core-20220222.src/build/cmake
             echo "installing in ~/tmp/workarea/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
