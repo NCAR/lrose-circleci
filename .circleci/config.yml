@@ -604,7 +604,7 @@ jobs:
             python3 --version
             ln -s "$(brew --prefix)/bin/python"{3,}
             python --version
-            
+
             # alias python="python3"
             # python --version
 
@@ -693,7 +693,6 @@ jobs:
       - run:
           name: extract lrose-topaz tgz 
           command: |
-            ln -s "$(brew --prefix)/bin/python"{3,}
             python --version
             cd /tmp/workarea    
             cd lrose-core-20220222.src/build/cmake
