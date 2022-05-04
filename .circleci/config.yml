@@ -707,12 +707,13 @@ jobs:
             cd ../apps/tdrp/src/tdrp_gen
             make install
             echo "building apps "
-            cd ../..
+            cd $WORKAREA/lrose-core-20220222.src/codebase/apps  
+            pwd
             make install
 
 
       - run: 
-          name: text the install
+          name: test the install
           command: |
             $LROSE_INSTALL_DIR/bin/RadxConvert -h  
 
