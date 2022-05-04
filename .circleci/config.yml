@@ -637,9 +637,13 @@ jobs:
             wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
             echo "extracting lrose-topaz from tgz ..."
             tar xf lrose-core-20220222.src.tgz
-            cd lrose-core-20220222.src/build/scripts
-            sed -i '' 's/env python/env python3/g' install_linux_packages.py     
-            head install_linux_packages.py 
+            alias python="python3"
+            python --version
+
+
+            # cd lrose-core-20220222.src/build/scripts
+            # sed -i '' 's/env python/env python3/g' install_linux_packages.py     
+            # head install_linux_packages.py 
 
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
@@ -687,9 +691,11 @@ jobs:
       - run:
           name: extract lrose-topaz tgz 
           command: |
+            alias python="python3"
+            python --version
             cd /tmp/workarea    
             cd lrose-core-20220222.src/build/cmake
-            echo "installing in ~/tmp/workarea/lrose ... "
+            echo "installing in ${LROSE_INSTALL_DIR} ... "
             ./createCMakeLists.py --prefix $LROSE_INSTALL_DIR
             cd ../../codebase
             mkdir build
@@ -5277,8 +5283,8 @@ workflows:
           
   now:
     jobs:
-      - run-brew-no-szip
-      # - run-brew-no-szip-workaround
+      # - run-brew-no-szip
+      - run-brew-no-szip-workaround
       # - run-sing-image-cidd
       # - docker_cli  # works
 
