@@ -693,7 +693,7 @@ jobs:
       - run:
           name: extract lrose-topaz tgz 
           command: |
-            alias python="python3"
+            ln -s "$(brew --prefix)/bin/python"{3,}
             python --version
             cd /tmp/workarea    
             cd lrose-core-20220222.src/build/cmake
