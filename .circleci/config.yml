@@ -598,12 +598,14 @@ jobs:
     working_directory: /tmp
     steps:
 
-      #- run: 
-      #    name: Check for python
-      #    command: |
-      #      python3 --version
-      #      brew install python2
-      #      python --version
+      - run: 
+          name: Check for python
+          command: |
+            python3 --version
+            alias python="python3"
+            python --version
+            ln -s "$(brew --prefix)/bin/python"{3,}
+            python --version
 
       #- run:
       #    name: Test python alias
@@ -637,8 +639,7 @@ jobs:
             wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.src.tgz
             echo "extracting lrose-topaz from tgz ..."
             tar xf lrose-core-20220222.src.tgz
-            alias python="python3"
-            python --version
+
 
 
             # cd lrose-core-20220222.src/build/scripts
