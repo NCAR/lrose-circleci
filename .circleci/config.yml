@@ -5392,7 +5392,7 @@ workflows:
 
       # testing for no szip; python3  lrose-core topaz release
       - package-lrose-topaz-python3-tgz
-      - package-lrose-topaz-python3-colorscales-tgz
+      - package-lrose-topaz-python3-colorscales-tgz:
          requires:
           - package-lrose-topaz-python3-tgz
 
