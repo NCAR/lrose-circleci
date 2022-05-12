@@ -4830,7 +4830,7 @@ jobs:
         # package for macos
 # TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
 # even with --tag option, this still doesn't work
-      - run: ./workspace_macos_topaz_branch/lrose-core/build/scripts/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --osx --tag=python3
+      - run: ./workspace_macos_topaz_branch/lrose-core/build/release/create_src_release.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --osx --tag=python3
 
       - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
       - run: cd /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
@@ -5393,9 +5393,8 @@ workflows:
       # testing for no szip; python3  lrose-core topaz release
       - package-lrose-topaz-python3-tgz
       - package-lrose-topaz-python3-colorscales-tgz
-      # - package-macos-lrose-topaz-python3-tgz: // may not be needed because cmake works on both macos and linux
-      #    requires:
-      #     - package-lrose-topaz-python3-tgz
+         requires:
+          - package-lrose-topaz-python3-tgz
 
 
       # - build-macos-lrose-topaz-python3
