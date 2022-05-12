@@ -4805,7 +4805,7 @@ jobs:
 
 
 
-package-lrose-topaz-python3-tgz:
+  package-lrose-topaz-python3-tgz:
     executor: centos7-executor
     working_directory: /tmp
     steps:
@@ -4845,7 +4845,7 @@ package-lrose-topaz-python3-tgz:
           # Ah, but don't we want lrose-core.src.mac_osx.tgz?
 
 
-package-lrose-topaz-python3-colorscales-tgz:
+  package-lrose-topaz-python3-colorscales-tgz:
     executor: centos7-executor
     working_directory: /tmp
     steps:
@@ -4899,7 +4899,7 @@ package-lrose-topaz-python3-colorscales-tgz:
           path: /tmp/workspace_macos_topaz_branch/releases/lrose-topaz
 
 
-build-macos-lrose-topaz-python3:
+  build-macos-lrose-topaz-python3:
   # need MacOS Monterey
   # 
   # attach workspace
