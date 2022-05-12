@@ -4805,6 +4805,108 @@ jobs:
 
 
 
+package-lrose-topaz-python3-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - run:
+          name: build MacOS tgz
+          command: echo "build MacOS source tgz"
+      - run: echo "building lrose-core ..."
+      # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
+      - run: mkdir -p workspace_macos_topaz_branch
+      - run: cd workspace_macos_topaz_branch; git clone -b python3 https://github.com/NCAR/lrose-core
+      - run: pwd
+      - run: ls workspace_macos_topaz_branch
+      - run: alias qmake-qt5='qmake'
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "BRANCH = python3" >> $BASH_ENV
+
+      - run: echo "RELEASE_DATE = " ${RELEASE_DATE}
+        # cannot use lrose_checkout_and_build because it clones the master branch of the repo and we need a branch
+        # package for macos
+# TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
+# even with --tag option, this still doesn't work
+      - run: ./workspace_macos_topaz_branch/lrose-core/build/create_src_tar.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --osx --tag=python3
+
+      - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
+      - run: cd /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
+
+      - persist_to_workspace:
+          root: workspace_macos_topaz_branch
+          paths: 
+            - releases/lrose-core/osx
+      - store_artifacts:
+          path: /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
+          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
+          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+
+
+package-lrose-topaz-python3-colorscales-tgz:
+    executor: centos7-executor
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos_topaz_branch
+      - run:
+          name: package lrose-topaz python3 packages (.tgz)
+          command: echo "package lrose-topaz python3 software"
+      - run: ls -R
+
+      - run: pwd   # /private/tmp
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export RELEASE_DIR=/tmp/workpace_macos/releases" >> $BASH_ENV
+            echo "BRANCH = python3" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-topaz-$BRANCH-$RELEASE_DATE.src.mac_osx" >> $BASH_ENV
+
+      - run: ls -R /tmp/workspace_macos_topaz_branch
+      - run: echo "RELEASE_DATE = " $RELEASE_DATE
+      - run: echo "TARGET = " $TARGET
+      - run: echo "BRANCH = " $BRANCH
+      - run: tar zxf /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx/lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
+      - run: ls
+
+      # Grab the color scales
+      - run: git clone https://github.com/ncar/lrose-displays
+      - run: rsync -av lrose-displays/color_scales lrose-core-$BRANCH-$RELEASE_DATE.mac_osx/share 
+
+        # make the elle tar file 
+      - run: mv lrose-core-$BRANCH-$RELEASE_DATE.mac_osx lrose-topaz-$BRANCH-$RELEASE_DATE.mac_osx
+      - run: tar zcf $TARGET.tgz lrose-topaz-$BRANCH-$RELEASE_DATE.mac_osx
+      - run: ls 
+
+      - run: mkdir -p /tmp/workspace_macos_topaz_branch/releases/lrose-topaz/osx
+
+        # move the tar file into the persisted workspace 
+      - run: mv $TARGET.tgz /tmp/workspace_macos_topaz_branch/releases/lrose-topaz/osx
+
+      - persist_to_workspace:
+          root: workspace_macos_topaz_branch
+          paths: 
+            - releases/lrose-topaz/osx
+
+      - store_artifacts:
+          path: /tmp/workspace_macos_topaz_branch/releases/lrose-topaz
+
+
+build-macos-lrose-topaz-python3:
+  # need MacOS Monterey
+  # 
+  # attach workspace
+  # extract .tgz
+  # build 
+
+
   # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
   #       build it on a linux platform using automake and libtool
   #
@@ -5286,7 +5388,27 @@ workflows:
   now:
     jobs:
       # - run-brew-no-szip
-      - run-brew-no-szip-workaround
+      # - run-brew-no-szip-workaround
+
+      # testing for no szip; python3  lrose-core topaz release
+      - package-lrose-topaz-python3-tgz
+      - package-lrose-topaz-python3-colorscales-tgz
+      # - package-macos-lrose-topaz-python3-tgz: // may not be needed because cmake works on both macos and linux
+      #    requires:
+      #     - package-lrose-topaz-python3-tgz
+
+
+      # - build-macos-lrose-topaz-python3
+      #    requires:
+      #     - package-lrose-topaz-python3-colorscales-tgz
+      # - test-macos-topaz-rb-noszip-python3      
+
+        # end testing for no szip; python3  lrose-core topaz release
+
+
+
+
+
       # - run-sing-image-cidd
       # - docker_cli  # works
 
