@@ -4832,8 +4832,10 @@ jobs:
 # even with --tag option, this still doesn't work
       - run: ./workspace_macos_topaz_branch/lrose-core/build/release/create_src_release.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --osx --tag=python3
 
+      - run: ls /tmp/workspace_macos_topaz_branch/releases
+      - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core     
       - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
-      - run: cd /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
+      # - run: cd /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.src.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
 
       - persist_to_workspace:
           root: workspace_macos_topaz_branch
@@ -4841,10 +4843,13 @@ jobs:
             - releases/lrose-core/osx
       - store_artifacts:
           path: /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
-          # should store  lrose-core-YYYYMMDD.mac_osx.tgz and lrose-core.rb
-          # Ah, but don't we want lrose-core.src.mac_osx.tgz?
+          # should store  lrose-core-YYYYMMDD.src.mac_osx.tgz and lrose-core.rb
+          # Then, download artifact, edit .rb to change url to lrose-test-release
+          # then upload .rb  and .tgz to lrose-test-release site, then call
+          # build??? on macOS image
 
 
+# probably don't need this step because the new create_src_release script adds the color scales
   package-lrose-topaz-python3-colorscales-tgz:
     executor: centos7-executor
     working_directory: /tmp
@@ -4903,6 +4908,14 @@ jobs:
   # need MacOS Monterey
   # 
   # attach workspace
+    working_directory: /tmp
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace_macos_topaz_branch
+      - run:
+          name: package lrose-topaz python3 packages (.tgz)
+          command: echo "package lrose-topaz python3 software"
+      - run: ls -R
   # extract .tgz
   # build 
 
@@ -5392,9 +5405,9 @@ workflows:
 
       # testing for no szip; python3  lrose-core topaz release
       - package-lrose-topaz-python3-tgz
-      - package-lrose-topaz-python3-colorscales-tgz:
-         requires:
-          - package-lrose-topaz-python3-tgz
+      # - package-lrose-topaz-python3-colorscales-tgz:
+      #   requires:
+      #    - package-lrose-topaz-python3-tgz
 
 
       # - build-macos-lrose-topaz-python3
