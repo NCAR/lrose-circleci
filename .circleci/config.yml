@@ -4923,7 +4923,6 @@ jobs:
  
       - run: brew update
       - run: brew install wget            
-      - run: python --version 
 
       - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20220513/lrose-core.rb
 
@@ -4936,7 +4935,6 @@ jobs:
           name: installing lrose-core
           no_output_timeout: 60m
           command: |
-            python --version
             brew install lrose-core.rb
       # getting this warning ...
       # ==> Installing lrose-core
@@ -5264,7 +5262,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 10 * * *"   # for 5:30 am MST 
+          cron: "45 10 1 1 *"   # for 5:30 am MST 
           filters:
             branches:
               only:
@@ -5277,7 +5275,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 7 * * *"   # for 5:30 am MST 
+          cron: "45 7 1 1 *"   # for 5:30 am MST 
           filters:
             branches:
               only:
@@ -5386,7 +5384,7 @@ workflows:
     triggers: 
       - schedule:
           #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 4 * * *"   # for 7:30 pm MST 
+          cron: "45 4 1 1 *"   # for 7:30 pm MST 
           filters:
             branches:
               only:
