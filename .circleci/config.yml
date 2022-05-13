@@ -4905,12 +4905,9 @@ jobs:
 
 
   build-macos-lrose-topaz-python3:
-  # need MacOS Monterey
-  # 
     macos:
       xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey
 
-  # attach workspace
     working_directory: /tmp
     steps:
       - attach_workspace:
@@ -4920,7 +4917,6 @@ jobs:
           command: echo "package lrose-topaz python3 software"
       - run: ls -R
 
-    steps:
       - run:
           name: brew install lrose-topaz.rb Monterey Xcode 13.3.0
           command: echo "testing brew install MacOS-Topaz lrose-core.rb"
