@@ -4846,7 +4846,7 @@ jobs:
           # should store  lrose-core-YYYYMMDD.src.mac_osx.tgz and lrose-core.rb
           # Then, download artifact, edit .rb to change url to lrose-test-release
           # then upload .rb  and .tgz to lrose-test-release site, then call
-          # build??? on macOS image
+          #  build-macos-lrose-topaz-python3 on macOS image
 
 
 # probably don't need this step because the new create_src_release script adds the color scales
@@ -4907,6 +4907,9 @@ jobs:
   build-macos-lrose-topaz-python3:
   # need MacOS Monterey
   # 
+    macos:
+      xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey
+
   # attach workspace
     working_directory: /tmp
     steps:
@@ -4916,8 +4919,38 @@ jobs:
           name: package lrose-topaz python3 packages (.tgz)
           command: echo "package lrose-topaz python3 software"
       - run: ls -R
-  # extract .tgz
-  # build 
+
+    steps:
+      - run:
+          name: brew install lrose-topaz.rb Monterey Xcode 13.3.0
+          command: echo "testing brew install MacOS-Topaz lrose-core.rb"
+ 
+      - run: brew update
+      - run: brew install wget            
+      - run: python --version 
+
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20220513/lrose-core.rb
+
+      #- run: brew cask install xquartz  # for older versions of brew 
+      - run: brew install --cask xquartz
+      #- run: brew install qt5
+      # installs qt6! ACK!
+
+      - run: 
+          name: installing lrose-core
+          no_output_timeout: 60m
+          command: |
+            python --version
+            brew install lrose-core.rb
+      # getting this warning ...
+      # ==> Installing lrose-core
+      # Warning: Calling depends_on :x11 is deprecated! Use depends_on specific X11 formula(e) instead.
+      # ==> ./configure --prefix=/usr/local/Cellar/lrose-core/core-20200719
+      # ==> make install
+      - run: RadxPrint -h
+
+      - store_artifacts:
+          path: /Users/distiller/Library/Logs/Homebrew/lrose-core
 
 
   # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
@@ -5405,6 +5438,10 @@ workflows:
 
       # testing for no szip; python3  lrose-core topaz release
       - package-lrose-topaz-python3-tgz
+
+      # call AFTER uploading .tgz and .rb to lrose-test-release
+      # -   build-macos-lrose-topaz-python3 
+
       # - package-lrose-topaz-python3-colorscales-tgz:
       #   requires:
       #    - package-lrose-topaz-python3-tgz
