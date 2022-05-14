@@ -4924,7 +4924,7 @@ jobs:
       - run: brew update
       - run: brew install wget            
 
-      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20220513/lrose-core.rb
+      - run: wget https://github.com/NCAR/lrose-release-test/releases/download/20220514/lrose-core.rb
 
       #- run: brew cask install xquartz  # for older versions of brew 
       - run: brew install --cask xquartz
