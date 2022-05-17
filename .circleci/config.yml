@@ -4946,6 +4946,76 @@ jobs:
       - store_artifacts:
           path: /Users/distiller/Library/Logs/Homebrew/lrose-core
 
+  test-linux-lrose-topaz-tgz:
+        docker:
+      - image: cimg/base:2022.04
+
+    working_directory: /tmp
+    steps:
+
+      - run: mkdir workarea
+
+      - run: sudo apt-get update && sudo apt-get install -y https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb
+
+      - run: which RadxPrint 
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-elle-$RELEASE_DATE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
+            echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
+
+#      - run:
+#          name: extract lrose-topaz tgz 
+#          command: |
+#            echo "extracting lrose-topaz from tgz"
+#            wget 
+#            cd workarea; tar xf /tmp/workspace_linux/releases/lrose-core/$TARGET.src.tgz
+#            pwd
+#            ls
+#      - run:
+#          name: build lrose-topaz
+#          command: |
+#            echo "building lrose-topaz from tgz"
+#            cd workarea; cd $TARGET; 
+#            NO!!! ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
+#            make install
+
+         
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
+
+      - run:
+          name: Add to Environment Variables for vortrac
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV  
+
+      - run:
+          name: Install lrose-cidd
+          command: |
+            echo "installing CIDD"
+
+      - run:
+          name: Run CIDD 
+          command: |
+            echo "testing CIDD"
+
+
 
   # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
   #       build it on a linux platform using automake and libtool
@@ -5427,6 +5497,9 @@ workflows:
           
   now:
     jobs:
+
+      - test-linux-lrose-topaz-tgz:
+
       # - run-brew-no-szip
       # - run-brew-no-szip-workaround
 
@@ -5434,7 +5507,7 @@ workflows:
       # - package-lrose-topaz-python3-tgz
 
       # call AFTER uploading .tgz and EDITED .rb to lrose-test-release
-      - build-macos-lrose-topaz-python3 
+      # - build-macos-lrose-topaz-python3 
 
       # - package-lrose-topaz-python3-colorscales-tgz:
       #   requires:
