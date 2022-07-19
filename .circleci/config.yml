@@ -5498,13 +5498,13 @@ workflows:
   now:
     jobs:
 
-      - test-linux-lrose-topaz-tgz:
+      # - test-linux-lrose-topaz-tgz:
 
       # - run-brew-no-szip
       # - run-brew-no-szip-workaround
 
       # testing for no szip; python3  lrose-core topaz release
-      # - package-lrose-topaz-python3-tgz
+      - package-lrose-topaz-python3-tgz
 
       # call AFTER uploading .tgz and EDITED .rb to lrose-test-release
       # - build-macos-lrose-topaz-python3 
