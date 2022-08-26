@@ -2677,9 +2677,9 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
       - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
 
-      - persist_to_workspace:
-          root: workarea
-          paths: install $SOURCE_DIR
+      #- persist_to_workspace:
+      #    root: workarea
+      #    paths: install $SOURCE_DIR
       #- persist_to_workspace:
       #    root: workarea
       
