@@ -192,6 +192,114 @@ jobs:
 
 
 
+  test-linux-lrose-topaz-tgz:
+    docker:
+      - image: cimg/base:2022.04
+
+#      - image: debian:10
+
+    working_directory: /tmp
+    steps:
+
+      - run: mkdir workarea
+
+      - run: sudo apt-get update && sudo apt-get install -y 
+
+      # https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb
+
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-elle-$RELEASE_DATE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
+            echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
+
+        # needed for QJSEngine: qt5-qtdeclarative-devel
+      - run:
+          name: Install needed packages
+          command: |
+            apt-get install -y cmake eigen fftw flex qt5 netcdf
+            apt-get install -y szip pkg-config                                                            
+            apt-get install -y geographiclib                                                     
+            apt-get install -y armadillo                                                         
+            apt-get install -y libomp libzip
+            apt-get install -y rsync
+
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo "export RELEASE_DATE=20220222" >> $BASH_ENV
+            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export BASE_DIR=/private" >> $BASH_ENV
+
+      - run: echo $HOME
+
+      - run:
+          name: Add to Environment Variables
+          command: |
+            echo "export TARGET=lrose-core-$RELEASE_DATE.src" >> $BASH_ENV
+            echo "export SOURCE_DIR=lrose-topaz-$RELEASE_DATE" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
+            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose" >> $BASH_ENV
+            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+            echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
+            # samurai needs LROSE_ROOT_DIR
+            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
+
+      - run:
+          name: extract lrose-topaz tgz 
+          command: |
+            mkdir $WORKAREA
+            pwd 
+            cd /tmp/workarea
+            echo "fetching tar files from release ... "
+            wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-$RELEASE_DATE/lrose-core-$RELEASE_DATE.src.tgz
+            echo "extracting lrose-topaz from tgz ..."
+            tar xf lrose-core-$RELEASE_DATE.src.tgz
+            cd lrose-core-$RELEASE_DATE.src/build/cmake
+            echo "installing in ~/lrose ... "
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            cd ../../codebase
+            mkdir build
+            cd build
+            cmake -DQt5_DIR=$QT5_INSTALL_DIR ..
+            cd $SOURCE_DIR/libs
+            make install
+            cd ../apps/tdrp/src/tdrp_gen
+            make install
+            cd $SOURCE_DIR/apps
+            make install
+
+      - run: 
+          name: text the install
+          command: |
+            $LROSE_INSTALL_DIR/bin/RadxPrint -h  
+         
+
+      - run:
+          name: Add to Environment Variables for vortrac
+          command: |
+            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
+            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
+            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
+            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
+            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
+            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
+            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
+            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV  
+
 
   test-macos-lrose-topaz-tgz-remainder:
     macos:
@@ -4945,115 +5053,6 @@ jobs:
 
       - store_artifacts:
           path: /Users/distiller/Library/Logs/Homebrew/lrose-core
-
-  test-linux-lrose-topaz-tgz:
-    docker:
-      - image: cimg/base:2022.04
-
-#      - image: debian:10
-
-    working_directory: /tmp
-    steps:
-
-      - run: mkdir workarea
-
-      - run: sudo apt-get update && sudo apt-get install -y 
-
-      # https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb
-
-
-      - run: 
-          name: Setup Environment Variables
-          command: |
-            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
-            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
-
-      - run:
-          name: Add to Environment Variables
-          command: |
-            echo "export TARGET=lrose-elle-$RELEASE_DATE" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
-            echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
-
-        # needed for QJSEngine: qt5-qtdeclarative-devel
-      - run:
-          name: Install needed packages
-          command: |
-            apt-get install -y cmake eigen fftw flex qt5 netcdf
-            apt-get install -y szip pkg-config                                                            
-            apt-get install -y geographiclib                                                     
-            apt-get install -y armadillo                                                         
-            apt-get install -y libomp libzip
-            apt-get install -y rsync
-
-      - run: 
-          name: Setup Environment Variables
-          command: |
-            echo "export RELEASE_DATE=20220222" >> $BASH_ENV
-            echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
-            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-            echo "export BASE_DIR=/private" >> $BASH_ENV
-
-      - run: echo $HOME
-
-      - run:
-          name: Add to Environment Variables
-          command: |
-            echo "export TARGET=lrose-core-$RELEASE_DATE.src" >> $BASH_ENV
-            echo "export SOURCE_DIR=lrose-topaz-$RELEASE_DATE" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
-            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose" >> $BASH_ENV
-            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
-            echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
-            echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
-            # samurai needs LROSE_ROOT_DIR
-            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
-
-      - run:
-          name: extract lrose-topaz tgz 
-          command: |
-            mkdir $WORKAREA
-            pwd 
-            cd /tmp/workarea
-            echo "fetching tar files from release ... "
-            wget https://github.com/NCAR/lrose-core/releases/download/lrose-core-$RELEASE_DATE/lrose-core-$RELEASE_DATE.src.tgz
-            echo "extracting lrose-topaz from tgz ..."
-            tar xf lrose-core-$RELEASE_DATE.src.tgz
-            cd lrose-core-$RELEASE_DATE.src/build/cmake
-            echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose
-            cd ../../codebase
-            mkdir build
-            cd build
-            cmake -DQt5_DIR=$QT5_INSTALL_DIR ..
-            cd $SOURCE_DIR/libs
-            make install
-            cd ../apps/tdrp/src/tdrp_gen
-            make install
-            cd $SOURCE_DIR/apps
-            make install
-
-      - run: 
-          name: text the install
-          command: |
-            $LROSE_INSTALL_DIR/bin/RadxPrint -h  
-         
-
-      - run:
-          name: Add to Environment Variables for vortrac
-          command: |
-            echo "export RADX_INCLUDE=$LROSE_INSTALL_DIR/include" >> $BASH_ENV
-            echo "export RADX_LIB=$LROSE_INSTALL_DIR/lib" >> $BASH_ENV
-            echo "export ARMADILLO_INCLUDE=`pkg-config --variable=includedir armadillo`" >> $BASH_ENV
-            echo "export ARMADILLO_LIB=`pkg-config --variable=libdir armadillo`" >> $BASH_ENV
-            echo "export NETCDF_INCLUDE=`pkg-config --variable=includedir netcdf`" >> $BASH_ENV 
-            echo "export NETCDF_LIB=`pkg-config --variable=libdir netcdf`" >> $BASH_ENV 
-            echo "export QT5_BIN=/usr/lib64/qt5/bin" >> $BASH_ENV
-            echo "export LD_LIBRARY_PATH=/usr/local/lrose/lib" >> $BASH_ENV  
-
 
 
   # NOTE: in order to build the .src.mac_osx.tgz file, we need to 
