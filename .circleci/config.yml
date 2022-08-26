@@ -4947,9 +4947,10 @@ jobs:
           path: /Users/distiller/Library/Logs/Homebrew/lrose-core
 
   test-linux-lrose-topaz-tgz:
-        docker:
-      - image: debian:10
-      # - image: cimg/base:2022.04
+    docker:
+      - image: cimg/base:2022.04
+
+#      - image: debian:10
 
     working_directory: /tmp
     steps:
