@@ -2560,14 +2560,7 @@ jobs:
       - run: cd workarea/$SOURCE_DIR; ./configure --disable-dependency-tracking --prefix=$LROSE_INSTALL_DIR
       - run: cd workarea/$SOURCE_DIR; make install
       - run: cd workarea/$SOURCE_DIR; rsync -av share $LROSE_INSTALL_DIR                                                                               
-      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h
-
-      # - persist_to_workspace:
-      #    root: workarea
-      #    paths: install $SOURCE_DIR
-      #- persist_to_workspace:
-      #    root: workarea
-      
+      - run: $LROSE_INSTALL_DIR/bin/RadxPrint -h      
 
   test-macos-cyclone-tgz-build-samurai-latest:
     macos:
