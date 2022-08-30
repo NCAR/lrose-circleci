@@ -143,11 +143,13 @@ jobs:
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             # samurai needs LROSE_ROOT_DIR
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export WORKAREA=$BASE_DIR/tmp/workarea" >> $BASH_ENV
+            echo "export WORKAREA=/tmp/workarea" >> $BASH_ENV
 
       - run:
           name: extract lrose-topaz tgz 
           command: |
+            pwd
+            ls
             mkdir $WORKAREA
             pwd 
             cd /tmp/workarea
