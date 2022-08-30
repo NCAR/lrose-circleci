@@ -4839,9 +4839,9 @@ jobs:
       - persist_to_workspace:
           root: workspace_macos_topaz_branch
           paths: 
-            - releases/lrose-core/osx
+            - releases/lrose-core
       - store_artifacts:
-          path: /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
+          path: /tmp/workspace_macos_topaz_branch/releases/lrose-core
           # should store  lrose-core-YYYYMMDD.src.mac_osx.tgz and lrose-core.rb
           # Then, download artifact, edit .rb to change url to lrose-test-release
           # then upload .rb  and .tgz to lrose-test-release site, then call
