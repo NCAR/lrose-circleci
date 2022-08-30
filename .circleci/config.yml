@@ -88,7 +88,9 @@ jobs:
 
       - run: mkdir workarea
 
-      - run: sudo apt-get update && sudo apt-get install -y 
+      - run: sudo apt-get update
+
+      #  && sudo apt-get install -y 
 
       # https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb
 
@@ -112,12 +114,12 @@ jobs:
       - run:
           name: Install needed packages
           command: |
-            apt-get install -y cmake eigen fftw flex qt5 netcdf
-            apt-get install -y szip pkg-config                                                            
-            apt-get install -y geographiclib                                                     
-            apt-get install -y armadillo                                                         
-            apt-get install -y libomp libzip
-            apt-get install -y rsync
+            sudo apt-get install -y cmake eigen fftw flex qt5 netcdf
+            sudo apt-get install -y szip pkg-config                                                            
+            sudo apt-get install -y geographiclib                                                     
+            sudo apt-get install -y armadillo                                                         
+            sudo apt-get install -y libomp libzip
+            sudo apt-get install -y rsync
 
       - run: 
           name: Setup Environment Variables
