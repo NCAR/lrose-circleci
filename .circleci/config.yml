@@ -145,6 +145,14 @@ jobs:
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export WORKAREA=/tmp/workarea" >> $BASH_ENV
 
+# getting error ...
+# installing in ~/lrose ... 
+# /usr/bin/env: ‘python’: No such file or directory
+# Use the python3 version of lrose-topaz
+# https://github.com/NCAR/lrose-release-test/releases/download/20220720/lrose-core-20220720.src.mac_osx.tgz
+# need to build python3 branch of lrose-core and generate a linux tgz (make a target);  
+# then upload it to the release-test repo for download 
+#
       - run:
           name: extract lrose-topaz tgz 
           command: |
@@ -4822,7 +4830,7 @@ jobs:
 # TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
 # even with --tag option, this still doesn't work
       - run: ./workspace_macos_topaz_branch/lrose-core/build/release/create_src_release.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --osx --tag=python3
-
+      - run: ./workspace_macos_topaz_branch/lrose-core/build/release/create_src_release.py --force --releaseDir=/tmp/workspace_macos_topaz_branch/releases --package=lrose-core --tag=python3
       - run: ls /tmp/workspace_macos_topaz_branch/releases
       - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core     
       - run: ls /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx
@@ -5418,13 +5426,13 @@ workflows:
           
   now:
     jobs:
-      - test-linux-lrose-topaz-tgz
+      #- test-linux-lrose-topaz-tgz
 
       # - run-brew-no-szip
       # - run-brew-no-szip-workaround
 
       # testing for no szip; python3  lrose-core topaz release
-      # - package-lrose-topaz-python3-tgz
+      - package-lrose-topaz-python3-tgz
 
       # call AFTER uploading .tgz and EDITED .rb to lrose-test-release
       # - build-macos-lrose-topaz-python3 
