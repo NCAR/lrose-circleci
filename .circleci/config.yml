@@ -114,11 +114,11 @@ jobs:
       - run:
           name: Install needed packages
           command: |
-            sudo apt-get install -y cmake eigen fftw flex qt5 netcdf
-            sudo apt-get install -y szip pkg-config                                                            
-            sudo apt-get install -y geographiclib                                                     
-            sudo apt-get install -y armadillo                                                         
-            sudo apt-get install -y libomp libzip
+            sudo apt-get install -y cmake libeigen3-dev libfftw3-dev qtdeclarative5-dev libnetcdf-dev
+            sudo apt-get install -y libzip-dev pkg-config                                                            
+            sudo apt-get install -y libgeographic-dev                                                     
+            sudo apt-get install -y libarmadillo-dev                                                         
+            sudo apt-get install -y libomp-dev
             sudo apt-get install -y rsync
 
       - run: 
