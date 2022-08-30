@@ -150,7 +150,7 @@ jobs:
           command: |
             pwd
             ls
-            mkdir $WORKAREA
+            mkdir -p $WORKAREA
             pwd 
             cd /tmp/workarea
             echo "fetching tar files from release ... "
@@ -161,7 +161,7 @@ jobs:
             echo "installing in ~/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
-            mkdir build
+            mkdir -p build
             cd build
             cmake -DQt5_DIR=$QT5_INSTALL_DIR ..
             cd $SOURCE_DIR/libs
