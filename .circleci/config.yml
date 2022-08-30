@@ -165,8 +165,10 @@ jobs:
             wget https://github.com/NCAR/lrose-release-test/releases/download/20220720/lrose-core-20220830.src.tgz
             echo "extracting lrose-topaz from tgz ..."
             ls
-            tar -xf lrose-core-*.src.tgz
-            cd lrose-core-*.src/build/cmake
+            tar -xf lrose-core-20220830.src.tgz
+            echo "done extracting ..."
+            ls lrose-core-20220830.src
+            cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
             ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
