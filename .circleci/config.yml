@@ -178,12 +178,19 @@ jobs:
             mkdir -p build
             cd build
             cmake ..
+            echo " 111 ... "
             cd $SOURCE_DIR/libs
+            echo " 222 ... "
             make install
+            echo " 333 ... "
             cd ../apps/tdrp/src/tdrp_gen
+            echo " 444 ... "
             make install
+            echo "555 ..."
             cd $SOURCE_DIR/apps
+            echo "666 ..."
             make install
+            echo "all done."
 
       - run: 
           name: text the install
