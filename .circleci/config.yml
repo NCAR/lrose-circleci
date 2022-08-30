@@ -153,6 +153,8 @@ jobs:
 # need to build python3 branch of lrose-core and generate a linux tgz (make a target);  
 # then upload it to the release-test repo for download 
 #
+# cmake -DQt5_DIR=$QT5_INSTALL_DIR ..
+#
       - run:
           name: extract lrose-topaz tgz 
           command: |
@@ -170,11 +172,11 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose > /tmp/workarea/junk
             cd ../../codebase
             mkdir -p build
             cd build
-            cmake -DQt5_DIR=$QT5_INSTALL_DIR ..
+            cmake ..
             cd $SOURCE_DIR/libs
             make install
             cd ../apps/tdrp/src/tdrp_gen
