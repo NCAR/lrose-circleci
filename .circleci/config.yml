@@ -124,10 +124,11 @@ jobs:
       - run: 
           name: Setup Environment Variables
           command: |
-            echo "export RELEASE_DATE=20220222" >> $BASH_ENV
+            echo "export RELEASE_DATE=20220830" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
             echo "export BASE_DIR=/private" >> $BASH_ENV
+            echo "export WORKAREA=/tmp/workarea" >> $BASH_ENV              
 
       - run: echo $HOME
 
@@ -135,7 +136,7 @@ jobs:
           name: Add to Environment Variables
           command: |
             echo "export TARGET=lrose-core-$RELEASE_DATE.src" >> $BASH_ENV
-            echo "export SOURCE_DIR=lrose-topaz-$RELEASE_DATE" >> $BASH_ENV
+            echo "export SOURCE_DIR=$WORKAREA/lrose-core-20220830.src/codebase" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
             echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
@@ -143,7 +144,7 @@ jobs:
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             # samurai needs LROSE_ROOT_DIR
             #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export WORKAREA=/tmp/workarea" >> $BASH_ENV
+
 
 # getting error ...
 # installing in ~/lrose ... 
@@ -172,7 +173,7 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose > /tmp/workarea/junk
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
             mkdir -p build
             cd build
