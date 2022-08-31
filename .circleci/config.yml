@@ -181,6 +181,7 @@ jobs:
             echo " 111 ... "
             cd $SOURCE_DIR/libs
             echo " 222 ... "
+            cat Makefile
             make install
             echo " 333 ... "
             cd ../apps/tdrp/src/tdrp_gen
