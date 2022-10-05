@@ -86,6 +86,9 @@ jobs:
     working_directory: /tmp
     steps:
 
+      - setup_remote_docker:
+          docker_layer_caching: true # DLC will explicitly cache layers here and try to avoid rebuilding.
+    
       - run: mkdir workarea
 
       - run: sudo apt-get update
@@ -143,7 +146,11 @@ jobs:
             echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             # samurai needs LROSE_ROOT_DIR
-            #echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_CORE_DIR=$WORKAREA/lrose-core-20220830.src" >> $BASH_ENV
+
+      - setup_remote_docker:
+          docker_layer_caching: true # DLC will explicitly cache layers here and try to avoid rebuilding.
+    
 
 
 # getting error ...
@@ -180,7 +187,8 @@ jobs:
             cmake ..
             echo " 111 ... "
             cd $SOURCE_DIR/libs
-            echo " 222 ... "
+            echo " 222 ...  $LROSE_CORE_DIR = "
+            echo $LROSE_CORE_DIR
             cat Makefile
             make install
             echo " 333 ... "
