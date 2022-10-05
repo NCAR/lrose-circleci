@@ -183,6 +183,10 @@ jobs:
             mkdir -p build
             cd build
             cmake ..
+            echo " 333 ... "
+            cd $SOURCE_DIR/apps/tdrp/src/tdrp_gen
+            echo " 444 ... "
+            make install            
             echo " 111 ... "
             cd $SOURCE_DIR/libs
             echo " 222 ...  LROSE_CORE_DIR = $LROSE_CORE_DIR"
@@ -190,10 +194,6 @@ jobs:
             ls -R $LROSE_CORE_DIR/build
             echo " ------ "
             cat Makefile
-            make install
-            echo " 333 ... "
-            cd ../apps/tdrp/src/tdrp_gen
-            echo " 444 ... "
             make install
             echo "555 ..."
             cd $SOURCE_DIR/apps
