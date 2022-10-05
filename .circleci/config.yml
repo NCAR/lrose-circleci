@@ -109,6 +109,7 @@ jobs:
             echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
             echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
             echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
+            echo "export HOST_OS=LINUX_LROSE" >> $BASH_ENV
 
         # needed for QJSEngine: qt5-qtdeclarative-devel
       - run:
