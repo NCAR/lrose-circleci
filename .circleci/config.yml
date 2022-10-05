@@ -184,8 +184,10 @@ jobs:
             cmake ..
             echo " 111 ... "
             cd $SOURCE_DIR/libs
-            echo " 222 ...  $LROSE_CORE_DIR = "
-            echo $LROSE_CORE_DIR
+            echo " 222 ...  LROSE_CORE_DIR = $LROSE_CORE_DIR"
+            echo "contents of LROSE_CORE_DIR ..."
+            ls $LROSE_CORE_DIR
+            echo " ------ "
             cat Makefile
             make install
             echo " 333 ... "
