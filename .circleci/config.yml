@@ -139,7 +139,7 @@ jobs:
             echo "export TARGET=lrose-core-$RELEASE_DATE.src" >> $BASH_ENV
             echo "export SOURCE_DIR=$WORKAREA/lrose-core-20220830.src/codebase" >> $BASH_ENV
             echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
-            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose" >> $BASH_ENV
+            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose-core-20220830.src" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
             echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
@@ -178,7 +178,7 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose-core-20220830.src
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose
             cd ../../codebase
             mkdir -p build
             cd build
