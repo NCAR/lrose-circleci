@@ -178,7 +178,7 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose-core-20220830.src
             cd ../../codebase
             mkdir -p build
             cd build
