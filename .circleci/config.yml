@@ -98,15 +98,13 @@ jobs:
       - run: 
           name: Setup Environment Variables
           command: |
-            echo "export RELEASE_DATE=$(date '+%Y%m%d')" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
 
       - run:
           name: Add to Environment Variables
           command: |
-            echo "export TARGET=lrose-elle-$RELEASE_DATE" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/usr/local/lrose" >> $BASH_ENV
-            echo "export LROSE_ROOT_DIR=/usr/local/lrose" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/usr/local/lrose1" >> $BASH_ENV
+            echo "export LROSE_ROOT_DIR=/usr/local/lrose2" >> $BASH_ENV
             echo "export NETCDF_INCLUDES=/usr/include" >> $BASH_ENV 
             echo "export NETCDF_LIBRARIES=/usr/lib" >> $BASH_ENV 
             echo "export HOST_OS=LINUX_LROSE" >> $BASH_ENV
@@ -125,7 +123,6 @@ jobs:
       - run: 
           name: Setup Environment Variables
           command: |
-            echo "export RELEASE_DATE=20220830" >> $BASH_ENV
             echo "export PKG_CONFIG_PATH=/usr/local/opt/qt/lib/pkgconfig" >> $BASH_ENV
             echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
             echo "export BASE_DIR=/private" >> $BASH_ENV
@@ -136,15 +133,13 @@ jobs:
       - run:
           name: Add to Environment Variables
           command: |
-            echo "export TARGET=lrose-core-$RELEASE_DATE.src" >> $BASH_ENV
             echo "export SOURCE_DIR=$WORKAREA/lrose-core-20220830.src/codebase" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
-            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose-core-20220830.src" >> $BASH_ENV
-            echo "export PATH=/usr/local/opt/qt/bin:$PATH" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose3" >> $BASH_ENV
+            echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose-core-20220830.src4" >> $BASH_ENV
             echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             # samurai needs LROSE_ROOT_DIR
-            echo "export LROSE_CORE_DIR=$WORKAREA/lrose-core-20220830.src" >> $BASH_ENV
+            echo "export LROSE_CORE_DIR=$WORKAREA/lrose-core-20220830.src5" >> $BASH_ENV
 
       - setup_remote_docker:
           docker_layer_caching: true # DLC will explicitly cache layers here and try to avoid rebuilding.
@@ -178,7 +173,7 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose
+            ./createCMakeLists.py --prefix /tmp/workarea/lrose6
             cd ../../codebase
             mkdir -p build
             cd build
@@ -187,7 +182,7 @@ jobs:
             cd $SOURCE_DIR/libs
             echo " 222 ...  LROSE_CORE_DIR = $LROSE_CORE_DIR"
             echo "contents of LROSE_CORE_DIR/build ..."
-            ls -R $LROSE_CORE_DIR/build
+            ls $LROSE_CORE_DIR/build
             echo " ------ "
             cat Makefile
             make install
