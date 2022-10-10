@@ -183,6 +183,7 @@ jobs:
             echo " 222 ...  LROSE_CORE_DIR = $LROSE_CORE_DIR"
             echo " ------ "
             cat Makefile
+            make install_include
             echo " contents of LROSE_INSTALL_DIR/include ..."
             ls $LROSE_INSTALL_DIR/include
             make install
