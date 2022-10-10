@@ -134,7 +134,7 @@ jobs:
           name: Add to Environment Variables
           command: |
             echo "export SOURCE_DIR=$WORKAREA/lrose-core-20220830.src/codebase" >> $BASH_ENV
-            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose3" >> $BASH_ENV
+            echo "export LROSE_INSTALL_DIR=/tmp/workarea/lrose" >> $BASH_ENV
             echo "export    LROSE_ROOT_DIR=/tmp/workarea/lrose-core-20220830.src4" >> $BASH_ENV
             echo "export FCFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
             echo "export FFLAGS='-w -fallow-argument-mismatch -O2'" >> $BASH_ENV
@@ -173,7 +173,7 @@ jobs:
             ls lrose-core-20220830.src
             cd lrose-core-20220830.src/build/cmake
             echo "installing in ~/lrose ... "
-            ./createCMakeLists.py --prefix /tmp/workarea/lrose6
+            ./createCMakeLists.py --prefix $LROSE_INSTALL_DIR
             cd ../../codebase
             mkdir -p build
             cd build
@@ -183,6 +183,8 @@ jobs:
             echo " 222 ...  LROSE_CORE_DIR = $LROSE_CORE_DIR"
             echo " ------ "
             cat Makefile
+            echo " contents of LROSE_INSTALL_DIR/include ..."
+            ls $LROSE_INSTALL_DIR/include
             make install
             echo " 333 ... "
             cd $SOURCE_DIR/apps/tdrp/src/tdrp_gen
