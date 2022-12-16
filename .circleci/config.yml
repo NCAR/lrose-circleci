@@ -4829,10 +4829,12 @@ jobs:
 
     working_directory: /tmp
     steps:
+      - run: which python3
       - run: 
           name: Setup Environment Variables
           command: |
             echo "export WORKAREA=workspace_macos_topaz" >> $BASH_ENV    
+            alias python=/usr/local/bin/python3
       - run:
           name: build from head of lrose-core on MacOS 
           command: echo "build from source on MacOS source"
