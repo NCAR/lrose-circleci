@@ -4836,7 +4836,7 @@ jobs:
       - run: echo "building lrose-core ..."
       # - run: yum install -y qt5-qtdeclarative-devel  ---> done in centos7-executor container
       - run: mkdir -p $WORKAREA
-      - run: cd $WORKAREA; git clone https://github.com/NCAR/lrose-core
+      - run: cd $WORKAREA; git clone https://github.com/ncar/lrose-bootstrap
       - run: pwd
       - run: ls $WORKAREA
       - run: alias qmake-qt5='qmake'
@@ -4845,10 +4845,11 @@ jobs:
         # package for macos
 # TODO: need to do something different here ... create_src_tar has a "git clone ..." embedded
 # even with --tag option, this still doesn't work
-      - run: ./$WORKAREA/lrose-core/build/release/lrose_checkout_and_build.py --force --installDir=/tmp/lrose --package=lrose-core --osx
-      - run: ls /tmp/$WORKAREA/releases
-      - run: ls /tmp/$WORKAREA/releases/lrose-core     
-      - run: ls /tmp/$WORKAREA/releases/lrose-core/osx
+      - run: ./$WORKAREA/lrose-bootstrap/scripts/do_build_all_cmake.py --prefix=/tmp/lrose
+      # - run: ./$WORKAREA/lrose-core/build/release/lrose_checkout_and_build.py --force --installDir=/tmp/lrose --package=lrose-core --osx
+      #- run: ls /tmp/$WORKAREA/releases
+      #- run: ls /tmp/$WORKAREA/releases/lrose-core     
+      #- run: ls /tmp/$WORKAREA/releases/lrose-core/osx
       - run: ls /tmp/lrose/bin
       - run: /tmp/lrose/bin/RadxPrint -h
       # - run: cd /tmp/workspace_macos_topaz_branch/releases/lrose-core/osx; mv lrose-core-$RELEASE_DATE.src.mac_osx.tgz lrose-core-$BRANCH-$RELEASE_DATE.src.mac_osx.tgz
