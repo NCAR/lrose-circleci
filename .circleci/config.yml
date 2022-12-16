@@ -4822,7 +4822,7 @@ jobs:
 # WORKING HERE ... 
   build-lrose-head-macos:
     macos:
-      xcode: "11.2.1"
+      xcode: "12.4.0"
 
 
       # xcode: "13.3"  # corresponds to MacOS 12.3.1 Monterey; needs python3; env: python: No such file or directory error
