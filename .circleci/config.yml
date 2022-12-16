@@ -4842,6 +4842,7 @@ jobs:
       - run: pwd
       - run: ls $WORKAREA
       - run: alias qmake-qt5='qmake'
+      - run: python --version
 
         # cannot use lrose_checkout_and_build because it clones the master branch of the repo and we need a branch
         # package for macos
