@@ -4827,11 +4827,14 @@ jobs:
     working_directory: /tmp
     steps:
       - run: which python3
+      #             alias python=/usr/local/bin/python3
       - run: 
           name: Setup Environment Variables
           command: |
             echo "export WORKAREA=workspace_macos_topaz" >> $BASH_ENV    
-            alias python=/usr/local/bin/python3
+            ln -s /usr/local/bin/python3 ~/bin/python
+            echo "export PATH=~/bin/python:$PATH" >> $BASH_ENV              
+
       - run:
           name: build from head of lrose-core on MacOS 
           command: echo "build from source on MacOS source"
@@ -4841,8 +4844,9 @@ jobs:
       - run: cd $WORKAREA; git clone https://github.com/ncar/lrose-bootstrap
       - run: pwd
       - run: ls $WORKAREA
-      - run: alias qmake-qt5='qmake'
+      - run: echo $PATH
       - run: python --version
+      - run: alias qmake-qt5='qmake'
 
         # cannot use lrose_checkout_and_build because it clones the master branch of the repo and we need a branch
         # package for macos
