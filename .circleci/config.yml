@@ -4832,8 +4832,8 @@ jobs:
           name: Setup Environment Variables
           command: |
             echo "export WORKAREA=workspace_macos_topaz" >> $BASH_ENV    
-            cd /usr/bin
-            ln -s python3 python
+#            cd /usr/bin
+#            ln -s python3 python
 
 #            ln -s /usr/local/bin/python3 ~/bin/python
 #            echo "export PATH=~/bin/python:$PATH" >> $BASH_ENV              
