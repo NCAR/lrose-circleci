@@ -4924,7 +4924,7 @@ jobs:
           else
               echo "something went wrong"
           fi
-
+      - run: cat /tmp/lrose-build/logs/run-cmake.log
       # - run: ./$WORKAREA/lrose-bootstrap/scripts/do_build_all_cmake.py --prefix=/tmp/lrose --clean
       # - run: ./$WORKAREA/lrose-core/build/release/lrose_checkout_and_build.py --force --installDir=/tmp/lrose --package=lrose-core --osx
       #- run: ls /tmp/$WORKAREA/releases
