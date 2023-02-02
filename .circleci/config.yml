@@ -4915,11 +4915,12 @@ jobs:
               libarmadillo-dev libopenmpi-dev \
               libnetcdf-dev libhdf5-dev hdf5-tools \
               libcurl4-openssl-dev
-              echo "create link for qmake ..."
-              cd /usr/bin; \
-              /bin/rm -f qmake qmake-qt5; \
-              ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/qmake qmake; \
-              ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/qmake qmake-qt5
+
+#              echo "create link for qmake ..."
+#              cd /usr/bin; \
+#              /bin/rm -f qmake qmake-qt5; \
+#              ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/qmake qmake; \
+#              ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/qmake qmake-qt5
       - run:
           name: build from head of lrose-core on Linux
           command: echo "build from source on Linux source"
