@@ -4888,9 +4888,9 @@ jobs:
       - image: cimg/base:2023.02
     working_directory: /tmp
     steps:
-      - run: which python
+#      - run: which python
       - run: which python3
-      #             alias python=/usr/local/bin/python3
+      - run: alias python=/usr/local/bin/python3
       - run:
           name: Setup Environment Variables
           command: |
