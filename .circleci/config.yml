@@ -4953,7 +4953,8 @@ jobs:
       #- run: ls /tmp/$WORKAREA/releases/lrose-core/osx
       - run: ls /tmp/lrose/bin
       - run: /tmp/lrose/bin/RadxPrint -h
-
+      - store_artifacts:
+          path: /tmp/lrose-build/logs
 
 
   package-lrose-topaz-python3-tgz:
