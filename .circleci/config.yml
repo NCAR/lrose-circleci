@@ -4940,7 +4940,7 @@ jobs:
 # even with --tag option, this still doesn't work
       - run: rm -rf /tmp/lrose-build
       - run: |
-          if [[ `echo "y" | ./$WORKAREA/lrose-bootstrap/scripts/do_build_all_cmake.py --prefix=/tmp/lrose` == 0 ]]; then
+          if [[ `echo "y" | ./$WORKAREA/lrose-bootstrap/scripts/do_build_all_cmake.py --prefix=/tmp/lrose --package=lrose-radx` == 0 ]]; then
               echo "It worked"
           else
               echo "something went wrong"
@@ -4953,6 +4953,12 @@ jobs:
       #- run: ls /tmp/$WORKAREA/releases/lrose-core/osx
       - run: ls /tmp/lrose/bin
       - run: /tmp/lrose/bin/RadxPrint -h
+      - run:
+          name: build HawkEye-Edit
+          command: |
+              cd /tmp/lrose-build/lrose-core/codebase/apps/radar/src/HawkEdit
+              ls
+              make install
       - store_artifacts:
           path: /tmp/lrose-build/logs
 
