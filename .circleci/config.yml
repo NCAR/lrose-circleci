@@ -4890,7 +4890,7 @@ jobs:
            name: install packages
            command: |
              sudo apt-get update
-             sudo apt-get install -y gcc gfortran libnetcdf-dev
+             sudo apt-get install -y gcc gfortran libnetcdf-dev libnetcdf-fortran-dev
              
              # libnetcdf-dev 
              
