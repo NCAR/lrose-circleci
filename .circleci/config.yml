@@ -4886,7 +4886,9 @@ jobs:
     docker:
       - image: cimg/base:2023.07
     steps:
-      - command: |
+      - run:
+           name: install packages
+           command: |
              sudo apt-get update &&  \
              sudo apt-get install -y \ 
              gcc gfortran \
