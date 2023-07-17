@@ -4900,14 +4900,14 @@ jobs:
              # libhdf5_hl
              
       - run: git clone https://github.com/mmbell/Airborne-Radar-QC.git
+      #             find / -name netcdf.inc
       - run: 
           name: build the code
           command: |
             pwd
             ls 
-            find / -name netcdf.inc
             cd Airborne-Radar-QC/navigation
-            gfortran -g  -o readnetcdf_DBZ_VR readnetcdf_DBZ_VR.f90 -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -lhdf5 -lhdf5_hl -I/usr/local/include
+            gfortran -g  -o readnetcdf_DBZ_VR readnetcdf_DBZ_VR.f90 -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -lhdf5 -lhdf5_hl -I/usr/local/include
 
 
   build-lrose-head-linux:
