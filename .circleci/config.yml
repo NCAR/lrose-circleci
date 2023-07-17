@@ -4886,8 +4886,12 @@ jobs:
     docker:
       - image: cimg/base:2023.07
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y gcc gfortran \
-             libnetcdf-dev libnetcdff-dev libhdf5-dev libhdf5_hl-dev
+      - run: sudo apt-get update &&  \
+             sudo apt-get install -y \ 
+             gcc gfortran \
+             libnetcdf-dev libhdf5-dev hdf5-tools \
+             libnetcdff-dev libhdf5_hl
+             
       - run: git clone https://github.com/mmbell/Airborne-Radar-QC.git
       - run: 
           name: build the code
