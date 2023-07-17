@@ -4908,8 +4908,8 @@ jobs:
             ls 
             find / -name libhdf5*
             cd Airborne-Radar-QC/navigation
-            gfortran -g  -o readnetcdf_DBZ_VR  -fallow-argument-mismatch -fallow-invalid-boz readnetcdf_DBZ_VR.f90 -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -lhdf5 -lhdf5_hl -I/usr/local/include
-            gfortran -g  -o cns_eldo_cai cns_eldo.cai.f chol_inv.f -fallow-argument-mismatch -fallow-invalid-boz -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -lhdf5 -lhdf5_hl -I/usr/local/include
+            gfortran -g  -o readnetcdf_DBZ_VR  -fallow-argument-mismatch -fallow-invalid-boz readnetcdf_DBZ_VR.f90 -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5 -lhdf5_hl -I/usr/local/include
+            gfortran -g  -o cns_eldo_cai cns_eldo.cai.f chol_inv.f -fallow-argument-mismatch -fallow-invalid-boz -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5 -lhdf5_hl -I/usr/local/include
 
 
   build-lrose-head-linux:
