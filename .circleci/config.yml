@@ -4905,8 +4905,10 @@ jobs:
           command: |
             pwd
             ls 
+            find /usr/local -name netcdf.inc
             cd Airborne-Radar-QC/navigation
-            make
+            gfortran -g  -o readnetcdf_DBZ_VR readnetcdf_DBZ_VR.f90 -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -lhdf5 -lhdf5_hl -I/usr/local/include
+
 
   build-lrose-head-linux:
     docker:
