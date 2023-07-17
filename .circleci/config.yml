@@ -4893,7 +4893,7 @@ jobs:
           command: |
             pwd
             ls 
-            cd git/Airborne-Radar-QC/navigation
+            cd Airborne-Radar-QC/navigation
             make
 
   build-lrose-head-linux:
