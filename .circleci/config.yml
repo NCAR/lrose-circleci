@@ -4882,6 +4882,21 @@ jobs:
           # then upload .rb  and .tgz to lrose-test-release site, then call
           #  build-macos-lrose-topaz-python3 on macOS image
 
+  cai-et-al:
+    docker:
+      - image: cimg/base:2023.07
+    steps:
+      - run: sudo apt-get update && sudo apt-get install -y gcc gfortran
+      - run: git clone mmbell/Airborne-Radar-QC
+      - run: 
+          name: build the code
+          command: |
+            pwd
+            ls 
+            cd git/Airborne-Radar-QC/navigation
+            make
+
+
 
   build-lrose-head-linux:
     docker:
@@ -5585,7 +5600,9 @@ workflows:
           
   now:
     jobs:
-      - build-lrose-head-linux
+      - cai-et-al
+
+      # - build-lrose-head-linux
 
       # - build-lrose-head-macos
       # - test-linux-lrose-topaz-tgz
