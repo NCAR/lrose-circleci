@@ -4893,7 +4893,9 @@ jobs:
              sudo apt-get install -y \ 
              gcc gfortran \
              libnetcdf-dev libhdf5-dev hdf5-tools \
-             libnetcdff-dev libhdf5_hl
+             libnetcdff-dev 
+             
+             # libhdf5_hl
              
       - run: git clone https://github.com/mmbell/Airborne-Radar-QC.git
       - run: 
