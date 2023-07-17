@@ -4887,7 +4887,7 @@ jobs:
       - image: cimg/base:2023.07
     steps:
       - run: sudo apt-get update && sudo apt-get install -y gcc gfortran
-      - run: gh repo clone mmbell/Airborne-Radar-QC
+      - run: git clone https://github.com/mmbell/Airborne-Radar-QC.git
       - run: 
           name: build the code
           command: |
