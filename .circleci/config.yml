@@ -3,6 +3,7 @@ version: 2.1
 
 orbs: 
   singularity: singularity/singularity@1.0.11
+  psyplot-ci-orb: psyplot/psyplot-ci-orb@1.5.33
 
 executors:
   my-executor:
@@ -5614,7 +5615,8 @@ workflows:
           
   now:
     jobs:
-      - cai-et-al
+      # - <orb-name>/<job-name- orb command>conda-forge-lrose
+      # - cai-et-al
       
       # - build-lrose-head-linux
 
