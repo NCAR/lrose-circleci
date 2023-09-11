@@ -3,6 +3,7 @@ version: 2.1
 
 orbs: 
   singularity: singularity/singularity@1.0.11
+  psyplot-ci-orb: psyplot/psyplot-ci-orb@1.5.33
 
 executors:
   my-executor:
@@ -4886,16 +4887,31 @@ jobs:
     docker:
       - image: cimg/base:2023.07
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y gcc gfortran
-      - run: git clone mmbell/Airborne-Radar-QC
+      - run:
+           name: install packages
+           command: |
+             sudo apt-get update
+             sudo apt-get install -y gcc gfortran libnetcdf-dev libnetcdff-dev libhdf5-dev hdf5-tools
+             
+             # libnetcdf-dev 
+             
+             # libhdf5-dev hdf5-tools \
+             # libnetcdff-dev 
+             
+             # libhdf5_hl
+             
+      - run: git clone https://github.com/mmbell/Airborne-Radar-QC.git
+      #             find / -name netcdf.inc
+      #             find / -name libhdf5*
       - run: 
           name: build the code
           command: |
             pwd
             ls 
-            cd git/Airborne-Radar-QC/navigation
-            make
-
+            cd Airborne-Radar-QC/navigation
+            gfortran -g  -o readnetcdf_DBZ_VR  -fallow-argument-mismatch -fallow-invalid-boz readnetcdf_DBZ_VR.f90 -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5 -lhdf5_hl -I/usr/local/include
+            gfortran -g  -o cns_eldo_cai cns_eldo_cai.f chol_inv.f -fallow-argument-mismatch -fallow-invalid-boz -I/usr/include -L/usr/local/lib -lnetcdf -lnetcdff -lcurl -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5 -lhdf5_hl -I/usr/local/include
+>>>>>>> 126c64c1f238c09f07d485579c639143e0427001
 
 
   build-lrose-head-linux:
@@ -5600,8 +5616,9 @@ workflows:
           
   now:
     jobs:
-      - cai-et-al
-
+      # - <orb-name>/<job-name- orb command>conda-forge-lrose
+      # - cai-et-al
+      
       # - build-lrose-head-linux
 
       # - build-lrose-head-macos
