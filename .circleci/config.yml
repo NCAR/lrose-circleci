@@ -5436,6 +5436,65 @@ jobs:
             if [ -f "$BASH_ENV" ]; then source $BASH_ENV; fi
             singularity exec library://leavesntwigs/lrose-gateway/lrose_cidd:latest xvfb-run -help
 
+# --------- Jupyter images ----
+
+# We want to build this a docker image from this dockerfile.  
+# save the image, download it, then push it to dockerhub.
+# The only changes are the ubuntu version (20 --> 22) and lrose-core-20230812.ubuntu_22...
+# So, in circleci, grab any default ubuntu base image with docker installed
+#   wget the dockerfile
+#  docker build -name xxx -tag xxx .
+#
+# save the image as an artifact for later download and upload to dockerhub
+#
+ARG BASE_CONTAINER=jupyter/minimal-notebook:ubuntu-20.04
+FROM $BASE_CONTAINER
+
+LABEL maintainer="Unidata <support-gateway@unidata.ucar.edu>"
+
+USER root
+
+      - run:
+          name: Install needed packages
+          command: |
+    apt-get update --yes && \
+    apt-get install --yes --no-install-recommends \
+    build-essential \
+    vim \
+    emacs \
+    curl && \
+    wget \
+    https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb -P /tmp && \
+    apt-get install -y /tmp/lrose-core-20220222.ubuntu_20.04.amd64.deb && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+USER ${NB_UID}
+
+ADD environment.yml /tmp
+
+      - run:
+          name: Install needed packages
+          command: |
+    conda update conda && \
+    conda install --quiet --yes \
+    'conda-forge::nb_conda_kernels' && \
+    conda env update --name lrose-ams-2023 -f /tmp/environment.yml && \
+    pip install --no-cache-dir nbgitpuller && \
+    conda clean --all -f -y && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+
+COPY update_workshop_material.ipynb /
+COPY Acknowledgements.ipynb /
+COPY .condarc /
+COPY .bashrc /
+COPY .profile /
+
+USER ${NB_UID}
+
+WORKDIR "${HOME}"
+
+# --------- end Jupyter images -----
 
 
 
@@ -5446,30 +5505,30 @@ jobs:
 
 workflows:
   version: 2.1
-  nightly:
-    triggers: 
-      - schedule:
-          #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 10 1 1 *"   # for 5:30 am MST 
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - build-lrose-manual      
-       # - one
+  #nightly:
+    #triggers: 
+      #- schedule:
+          ##     "mm hh day month dow"  Note: 22 is about 3pm MST
+          #cron: "45 10 1 1 *"   # for 5:30 am MST 
+          #filters:
+            #branches:
+              #only:
+                #- master
+    #jobs:
+      #- build-lrose-manual      
+       ## - one
       
-  nightly_full:
-    triggers: 
-      - schedule:
-          #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 7 1 1 *"   # for 5:30 am MST 
-          filters:
-            branches:
-              only:
-                - master
-    jobs:      
-      - current-head
+  #nightly_full:
+    #triggers: 
+      #- schedule:
+          ##     "mm hh day month dow"  Note: 22 is about 3pm MST
+          #cron: "45 7 1 1 *"   # for 5:30 am MST 
+          #filters:
+            #branches:
+              #only:
+                #- master
+    #jobs:      
+      #- current-head
       
      # - two:
      #    requires:
@@ -5482,136 +5541,136 @@ workflows:
 
 # --------
 
-  nightly_lrose_cyclone:
-    triggers: 
-      - schedule:
-          #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 2 * 3 *"   # for 7:30 pm MST 
-          filters:
-            branches:
-              only:
-                - master
-    jobs:      
-      - package-lrose-core-tgz
-      - package-linux-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-      - test-linux-lrose-cyclone-tgz:
-          requires:
-           - package-linux-lrose-cyclone-tgz
-
-      - package-macos-lrose-cyclone-tgz: 
-          requires:
-           - package-lrose-core-tgz
-
-#      - test-macos-lrose-cyclone-tgz-latest:
-#          requires:
-#           - package-macos-lrose-cyclone-tgz
-
-      - package-brew-formula-workspace:
-          requires:
-           - package-macos-lrose-cyclone-tgz
-        # upload lrose-cyclone.rb after this runs
-        # then run
-#      - test-macos-lrose-cyclone-rb
-
-      # no dependencies for docker image; uses checkout_and_build_script to 
-      # pull the top of master branch
-      - package-cyclone-docker
-      - test-cyclone-docker:
-          requires:
-           - package-cyclone-docker
-          
-
-# --------
-  yearly_lrose_elle:
-    triggers: 
-      - schedule:
-          #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          # cron: "45 4 * * *"   # for 7:30 pm MST 
-          cron: "45 4 * 2 *"   # only in February
-          filters:
-            branches:
-              only:
-                - master
-    jobs:   
-      # TODO: need a tag here?
-      - test-macos-elle-checkout-and-build-cmake  
-      - test-macos-elle-rb
-
-# TODO: can we get rid of these and replace with test-linux-elle-checkout-and-build-cmake???
-      #- package-lrose-core-tag-tgz
-      #- package-linux-lrose-elle-tgz: 
-      #    requires:
-      #     - package-lrose-core-tag-tgz
-      #- test-linux-lrose-elle-tgz:
-      #    requires:
-      #     - package-linux-lrose-elle-tgz
-
-      #- package-macos-lrose-elle-tgz: 
-      #    requires:
-      #     - package-lrose-core-tag-tgz
-
-      #- test-macos-lrose-elle-tgz-latest:
-      #    requires:
-      #     - package-macos-lrose-elle-tgz
-
-      #- package-brew-formula-elle-workspace:
-      #    requires:
-      #     - package-macos-lrose-elle-tgz
-
-      # no dependencies for docker image; uses checkout_and_build_script to 
-      # pull the top of master branch
-      - package-elle-docker
-      - test-elle-docker:
-          requires:
-           - package-elle-docker
-          
-
-  nightly_lrose_head:
-    triggers: 
-      - schedule:
-          #     "mm hh day month dow"  Note: 22 is about 3pm MST
-          cron: "45 4 1 1 *"   # for 7:30 pm MST 
-          filters:
-            branches:
-              only:
-                - master
-    jobs:  
-      # testing from current head
-      - package-lrose-core-head-tgz
-      - package-linux-lrose-head-tgz: 
-          requires:
-           - package-lrose-core-head-tgz
-      - test-linux-lrose-head-tgz:
-          requires:
-           - package-linux-lrose-head-tgz
-
-      - package-macos-lrose-head-tgz: 
-          requires:
-           - package-lrose-core-head-tgz
-
-      - test-macos-lrose-head-tgz-latest:
-          requires:
-           - package-macos-lrose-head-tgz
-
-# TODO: need to fix up these to use the head
-#      - package-brew-formula-elle-workspace:
-#          requires:
-#           - package-macos-lrose-elle-tgz
-#        # upload lrose-cyclone.rb after this runs
-#        # then run
+  #nightly_lrose_cyclone:
+    #triggers: 
+      #- schedule:
+          ##     "mm hh day month dow"  Note: 22 is about 3pm MST
+          #cron: "45 2 * 3 *"   # for 7:30 pm MST 
+          #filters:
+            #branches:
+              #only:
+                #- master
+    #jobs:      
+      #- package-lrose-core-tgz
+      #- package-linux-lrose-cyclone-tgz: 
+          #requires:
+           #- package-lrose-core-tgz
+      #- test-linux-lrose-cyclone-tgz:
+          #requires:
+           #- package-linux-lrose-cyclone-tgz
+#
+      #- package-macos-lrose-cyclone-tgz: 
+          #requires:
+           #- package-lrose-core-tgz
+#
+##      - test-macos-lrose-cyclone-tgz-latest:
+##          requires:
+##           - package-macos-lrose-cyclone-tgz
+#
+      #- package-brew-formula-workspace:
+          #requires:
+           #- package-macos-lrose-cyclone-tgz
+        ## upload lrose-cyclone.rb after this runs
+        ## then run
 ##      - test-macos-lrose-cyclone-rb
 #
-#      # no dependencies for docker image; uses checkout_and_build_script to 
-#      # pull the top of master branch
-#      - package-elle-docker
-#      - test-elle-docker:
-#          requires:
-#           - package-elle-docker
-
-
-# --------
+      ## no dependencies for docker image; uses checkout_and_build_script to 
+      ## pull the top of master branch
+      #- package-cyclone-docker
+      #- test-cyclone-docker:
+          #requires:
+           #- package-cyclone-docker
+          #
+#
+## --------
+  #yearly_lrose_elle:
+    #triggers: 
+      #- schedule:
+          ##     "mm hh day month dow"  Note: 22 is about 3pm MST
+          ## cron: "45 4 * * *"   # for 7:30 pm MST 
+          #cron: "45 4 * 2 *"   # only in February
+          #filters:
+            #branches:
+              #only:
+                #- master
+    #jobs:   
+      ## TODO: need a tag here?
+      #- test-macos-elle-checkout-and-build-cmake  
+      #- test-macos-elle-rb
+#
+## TODO: can we get rid of these and replace with test-linux-elle-checkout-and-build-cmake???
+      ##- package-lrose-core-tag-tgz
+      ##- package-linux-lrose-elle-tgz: 
+      ##    requires:
+      ##     - package-lrose-core-tag-tgz
+      ##- test-linux-lrose-elle-tgz:
+      ##    requires:
+      ##     - package-linux-lrose-elle-tgz
+#
+      ##- package-macos-lrose-elle-tgz: 
+      ##    requires:
+      ##     - package-lrose-core-tag-tgz
+#
+      ##- test-macos-lrose-elle-tgz-latest:
+      ##    requires:
+      ##     - package-macos-lrose-elle-tgz
+#
+      ##- package-brew-formula-elle-workspace:
+      ##    requires:
+      ##     - package-macos-lrose-elle-tgz
+#
+      ## no dependencies for docker image; uses checkout_and_build_script to 
+      ## pull the top of master branch
+      #- package-elle-docker
+      #- test-elle-docker:
+          #requires:
+           #- package-elle-docker
+          #
+#
+  #nightly_lrose_head:
+    #triggers: 
+      #- schedule:
+          ##     "mm hh day month dow"  Note: 22 is about 3pm MST
+          #cron: "45 4 1 1 *"   # for 7:30 pm MST 
+          #filters:
+            #branches:
+              #only:
+                #- master
+    #jobs:  
+      ## testing from current head
+      #- package-lrose-core-head-tgz
+      #- package-linux-lrose-head-tgz: 
+          #requires:
+           #- package-lrose-core-head-tgz
+      #- test-linux-lrose-head-tgz:
+          #requires:
+           #- package-linux-lrose-head-tgz
+#
+      #- package-macos-lrose-head-tgz: 
+          #requires:
+           #- package-lrose-core-head-tgz
+#
+      #- test-macos-lrose-head-tgz-latest:
+          #requires:
+           #- package-macos-lrose-head-tgz
+#
+## TODO: need to fix up these to use the head
+##      - package-brew-formula-elle-workspace:
+##          requires:
+##           - package-macos-lrose-elle-tgz
+##        # upload lrose-cyclone.rb after this runs
+##        # then run
+###      - test-macos-lrose-cyclone-rb
+##
+##      # no dependencies for docker image; uses checkout_and_build_script to 
+##      # pull the top of master branch
+##      - package-elle-docker
+##      - test-elle-docker:
+##          requires:
+##           - package-elle-docker
+#
+#
+## --------
           
   now:
     jobs:
@@ -5927,57 +5986,3 @@ workflows:
 #
 #
 #
-#############
-
-# Note that the following stanza uses CircleCI 2.1 to make use of a Reusable Executor
-# This allows defining a docker image to reuse across jobs.
-# visit https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors to learn more.
-#
-#version: 2.1
-#
-#executors:
-  #my-executor:
-    #docker:
-      #- image: centos  # buildpack-deps:jessie
-    #working_directory: /tmp
-#
-#jobs:
-  #flow:
-    #executor: my-executor
-    #steps:
-      #- run: yum -y install ca-certificates
-      #- run: mkdir -p workspace
-      #- run: echo "Hello, world!" > workspace/echo-output
-      #
-      ### Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job. 
-      #- persist_to_workspace:
-          ### Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
-          ### taken to be the root directory of the workspace.
-          #root: workspace
-          ### Must be relative path from root
-          #paths:
-            #- echo-output
-#
-  #downstream:
-    #executor: my-executor
-    #steps:
-      #- attach_workspace:
-          ### Must be absolute path or relative path from working_directory
-          #at: /tmp/workspace
-#
-      #- run: |
-          #if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
-            #echo "It worked!";
-          #else
-            ##echo "Nope!"; exit 1
-          #fi
-#
-#workflows:
-  #version: 2.1
-#
-  #btd:
-    #jobs:
-      #- flow
-      #- downstream:
-          #requires:
-            #- flow
