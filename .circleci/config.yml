@@ -304,7 +304,7 @@ jobs:
           name: Set release date
           command: |
             echo "export RELEASE_DATE=20230814" >> $BASH_ENV
-      - run: $RELEASE_DATE
+      - run: echo $RELEASE_DATE
 
       - run:
           name: Set Docker Image Name
