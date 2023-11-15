@@ -312,12 +312,29 @@ jobs:
             echo "export IMAGE_NAME=nsflrose/lrose-ams-2023:$RELEASE_DATE" >> $BASH_ENV
 
       - run: echo $IMAGE_NAME
+
+     
+      - run:
+          name: Set base url for auxillary files for docker image 
+          command: |
+            echo "export AUX_BASE_URL=https://github.com/Unidata/science-gateway/raw/master/jupyter-images/spring-2023/lrose-ams-2023" >> $BASH_ENV
+            echo "export AUX_BASE_URL_SHARED=https://github.com/Unidata/science-gateway/raw/932409b3ae7d32de8b6845a52ebf2d9968881f22/jupyter-images/shared" >> $BASH_ENV
+
+      - run: echo $AUX_BASE_URL
+      - run: echo $AUX_BASE_URL_SHARED
+
       - run: 
           name: build image
           command: |
             echo "fetching docker file"
             cd workspace
             wget https://github.com/NCAR/lrose-circleci/raw/master/.circleci/images/build/lrose-ams-2023.Dockerfile
+            wget $AUX_BASE_URL/environment.yml
+            wget $AUX_BASE_URL/update_workshop_material.ipynb
+            wget $AUX_BASE_URL_SHARED/Acknowledgements.ipynb
+            wget $AUX_BASE_URL/.condarc
+            wget $AUX_BASE_URL/.bashrc
+            wget $AUX_BASE_URL/.profile
             pwd
             ls
             docker build -t $IMAGE_NAME  -f lrose-ams-2023.Dockerfile .
