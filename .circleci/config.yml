@@ -317,7 +317,7 @@ jobs:
           command: |
             echo "fetching docker file"
             cd workspace
-            wget https://github.com/NCAR/lrose-circleci/blob/master/.circleci/images/build/lrose-ams-2023.Dockerfile
+            wget https://github.com/NCAR/lrose-circleci/raw/master/.circleci/images/build/lrose-ams-2023.Dockerfile
             pwd
             ls
             docker build -t $IMAGE_NAME  -f lrose-ams-2023.Dockerfile .
