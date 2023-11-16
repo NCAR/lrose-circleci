@@ -35,7 +35,7 @@ ADD environment.yml /tmp
 RUN conda update conda && \
     conda install --quiet --yes \
     'conda-forge::nb_conda_kernels' && \
-    pip install --no-cache-dir nbgitpuller && \
+    conda install --no-cache-dir nbgitpuller && \
     conda clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
