@@ -325,6 +325,7 @@ jobs:
 
       - run: 
           name: build image
+          no_output_timeout: 60m
           command: |
             echo "fetching docker file"
             cd workspace
