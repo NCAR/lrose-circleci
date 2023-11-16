@@ -1,7 +1,7 @@
 # Heavily borrowed from docker-stacks/scipy-notebook/
 # https://github.com/jupyter/docker-stacks/blob/master/scipy-notebook/Dockerfile
 
-ARG BASE_CONTAINER=jupyter/minimal-notebook:ubuntu-20.04
+ARG BASE_CONTAINER=jupyter/minimal-notebook:ubuntu-22.04
 FROM $BASE_CONTAINER
 
 LABEL maintainer="Unidata <support-gateway@unidata.ucar.edu>"
@@ -15,8 +15,8 @@ RUN apt-get update --yes && \
     emacs \
     curl && \
     wget \
-    https://github.com/NCAR/lrose-core/releases/download/lrose-core-20220222/lrose-core-20220222.ubuntu_20.04.amd64.deb -P /tmp && \
-    apt-get install -y /tmp/lrose-core-20220222.ubuntu_20.04.amd64.deb && \
+    https://github.com/NCAR/lrose-core/releases/download/lrose-core-20230814/lrose-core-20230814.ubuntu_22.04.amd64.deb -P /tmp && \
+    apt-get install -y /tmp/lrose-core-20230814.ubuntu_22.04.amd64.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER ${NB_UID}
