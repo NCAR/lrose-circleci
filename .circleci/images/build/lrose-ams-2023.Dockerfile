@@ -41,7 +41,7 @@ RUN conda create --name lrose-ams-2023
 
 # Activate the conda environment
 SHELL ["conda", "run", "-n", "lrose-ams-2023", "/bin/bash", "-c"]
-RUN conda update --name lrose-ams-2023 -c conda-forge numpy cartopy arm_pyart metpy xarray jupyter jupyterlab
+RUN conda install --name lrose-ams-2023 -c conda-forge numpy cartopy arm_pyart metpy xarray jupyter jupyterlab
 
 # Deactivate the conda environment
 SHELL ["conda", "run", "--no-capture-output", "-n", "base", "/bin/bash", "-c"]
