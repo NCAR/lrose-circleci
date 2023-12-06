@@ -40,6 +40,7 @@ RUN conda update conda && \
     conda install --quiet --yes \
     'conda-forge::nb_conda_kernels' && \
     conda create --name lrose-ams-2023 && \
+    conda init && \
     conda activate lrose-ams-2023  && \
     conda env update --name lrose-ams-2023 --file /tmp/environment.yml --prune  && \ 
     conda install nbgitpuller && \
