@@ -38,15 +38,16 @@ ADD environment.yml /tmp
 #
 RUN conda update conda && \
     conda install --quiet --yes \
-    'conda-forge::nb_conda_kernels' && \
-    conda create --name lrose-ams-2023 && \
-    conda init && \
-    conda activate lrose-ams-2023  && \
-    conda env update --name lrose-ams-2023 --file /tmp/environment.yml --prune  && \ 
-    conda install nbgitpuller && \
-    conda clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
+    'conda-forge::nb_conda_kernels'
+
+RUN    conda create --name lrose-ams-2023
+RUN    conda init 
+RUN    conda activate lrose-ams-2023  
+RUN    conda env update --name lrose-ams-2023 --file /tmp/environment.yml --prune   
+RUN    conda install nbgitpuller 
+RUN    conda clean --all -f -y 
+RUN    fix-permissions "${CONDA_DIR}" 
+RUN    fix-permissions "/home/${NB_USER}"
 
 # Create the conda environment
 #RUN conda create --name lrose-ams-2023
