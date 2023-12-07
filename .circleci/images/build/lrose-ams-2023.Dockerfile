@@ -39,8 +39,8 @@ ADD environment.yml /tmp
 RUN conda update conda && \
     conda install --quiet --yes \
     'conda-forge::nb_conda_kernels' && \
-    conda create --name lrose-ams-2023 numpy cartopy arm_pyart metpy xarray jupyter jupyterlab
-RUN conda install nbgitpuller && \
+    conda create --name lrose-ams-2023 numpy cartopy arm_pyart metpy xarray jupyter jupyterlab && \
+    conda install nbgitpuller && \
     conda clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
