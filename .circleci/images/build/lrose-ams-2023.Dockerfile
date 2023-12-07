@@ -23,18 +23,7 @@ USER ${NB_UID}
 
 ADD environment.yml /tmp
 
-# RUN conda update conda && \
-    # conda install --quiet --yes \
-    # 'conda-forge::nb_conda_kernels' && \
-    # conda env update --name lrose-ams-2023 -f /tmp/environment.yml && \
-    # pip install --no-cache-dir nbgitpuller && \
-    # conda clean --all -f -y && \
-    # fix-permissions "${CONDA_DIR}" && \
-    # fix-permissions "/home/${NB_USER}"
-
 # combine the RUN commands, to prevent intermediate docker images;
-# but how to integrate the SHELL commands to active and deactivate
-# the environment? Is this needed?
 #
 RUN conda update conda && \
     conda install --quiet --yes \
@@ -44,21 +33,6 @@ RUN conda update conda && \
     conda clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
-
-# Create the conda environment
-#RUN conda create --name lrose-ams-2023
-
-# Activate the conda environment
-#SHELL ["conda", "run", "-n", "lrose-ams-2023", "/bin/bash", "-c"]
-#RUN conda install --name lrose-ams-2023 -c conda-forge numpy cartopy arm_pyart metpy xarray jupyter jupyterlab
-
-# Deactivate the conda environment
-#SHELL ["conda", "run", "--no-capture-output", "-n", "base", "/bin/bash", "-c"]
-
-#RUN conda install nbgitpuller && \
-    #conda clean --all -f -y && \
-    #fix-permissions "${CONDA_DIR}" && \
-    #fix-permissions "/home/${NB_USER}"
 
 COPY update_workshop_material.ipynb /
 COPY Acknowledgements.ipynb /
