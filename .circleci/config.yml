@@ -364,6 +364,72 @@ jobs:
 # save the image as an artifact for later download and upload to dockerhub
 #
 
+  build-docker-image-jupyter-2024:
+    description: build a docker image that contains LROSE for use in Jupyter
+    machine:
+      docker_layer_caching: true
+
+    steps:
+      - run: date
+      - run: mkdir -p workspace     
+      - run:
+          name: Set release date
+          command: |
+            echo "export RELEASE_DATE=20230814" >> $BASH_ENV
+            echo "export HUB_NAME=lrose-hub-2024" >> $BASH_ENV
+      - run: echo $RELEASE_DATE
+
+      - run:
+          name: Set Docker Image Name
+          command: |
+            echo "export IMAGE_NAME=nsflrose/$HUB_NAME:$RELEASE_DATE" >> $BASH_ENV
+
+      - run: echo $IMAGE_NAME
+
+
+      - run:
+          name: Set base url for auxillary files for docker image
+          command: |
+            echo "export AUX_BASE_URL=https://github.com/Unidata/science-gateway/raw/master/jupyter-images/spring-2023/lrose-ams-2023" >> $BASH_ENV
+            echo "export AUX_BASE_URL_SHARED=https://github.com/Unidata/science-gateway/raw/932409b3ae7d32de8b6845a52ebf2d9968881f22/jupyter-images/shared" >> $BASH_ENV
+            echo "export LROSE_BASE_URL=https://github.com/NCAR/lrose-circleci/blob/master/.circleci/gateway" >> $BASH_ENV
+
+      - run: echo $AUX_BASE_URL
+      - run: echo $AUX_BASE_URL_SHARED
+      - run: echo $LROSE_BASE_URL
+
+      - run:
+          name: build image
+          command: |
+            echo "fetching docker file"
+            cd workspace
+            wget https://github.com/NCAR/lrose-circleci/raw/master/.circleci/images/build/$HUB_NAME.Dockerfile
+            wget $AUX_BASE_URL/environment.yml
+            wget $LROSE_BASE_URL/update_workshop_material.ipynb
+            wget $AUX_BASE_URL_SHARED/Acknowledgements.ipynb
+            wget $AUX_BASE_URL/.condarc
+            wget $AUX_BASE_URL/.bashrc
+            wget $AUX_BASE_URL/.profile
+            pwd
+            ls
+            docker build -t $IMAGE_NAME  -f $HUB_NAME.Dockerfile .
+#
+# from line 3531 of config.yml.complete
+#
+      - run: docker images
+      - run: mkdir -p workspace/deploy/docker-images
+
+      - run: docker save -o workspace/deploy/docker-images/nsflrose.tar $IMAGE_NAME
+
+
+      - persist_to_workspace:
+          root: workspace
+          paths: deploy/docker-images
+      - store_artifacts:
+          path: workspace/deploy/docker-images
+
+
+
 #test-docker-jupyter:
 #  - attach_worspace:
 #       at:
@@ -377,7 +443,8 @@ jobs:
 workflows:
   now:
     jobs:
-      - build-docker-image-jupyter
+      - build-docker-image-jupyter-2024
+      # - build-docker-image-jupyter
 
       # - <orb-name>/<job-name- orb command>conda-forge-lrose
       # - cai-et-al
