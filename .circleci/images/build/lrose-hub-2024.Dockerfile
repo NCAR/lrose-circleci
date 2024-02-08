@@ -35,10 +35,10 @@ RUN conda update conda && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
-COPY update_workshop_material.ipynb "${HOME}"
-COPY Acknowledgements.ipynb "${HOME}"
-COPY .condarc "${HOME}"
-COPY .bashrc "${HOME}"
-COPY .profile "${HOME}"
+COPY update_workshop_material.ipynb /
+COPY Acknowledgements.ipynb /
+COPY .condarc /
+COPY .bashrc /
+COPY .profile /
 
 WORKDIR "${HOME}"
