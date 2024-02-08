@@ -392,7 +392,7 @@ jobs:
           command: |
             echo "export AUX_BASE_URL=https://github.com/Unidata/science-gateway/raw/master/jupyter-images/spring-2023/lrose-ams-2023" >> $BASH_ENV
             echo "export AUX_BASE_URL_SHARED=https://github.com/Unidata/science-gateway/raw/932409b3ae7d32de8b6845a52ebf2d9968881f22/jupyter-images/shared" >> $BASH_ENV
-            echo "export LROSE_BASE_URL=https://raw.githubusercontent.com/NCAR/lrose-circleci/master/.circleci/gateway" >> $BASH_ENV
+            echo "export LROSE_BASE_URL=https://github.com/NCAR/lrose-circleci/raw/master/.circleci/gateway" >> $BASH_ENV
 
       - run: echo $AUX_BASE_URL
       - run: echo $AUX_BASE_URL_SHARED
