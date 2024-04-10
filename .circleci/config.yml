@@ -375,7 +375,7 @@ jobs:
       - run:
           name: Set release date
           command: |
-            echo "export RELEASE_DATE=20230814" >> $BASH_ENV
+            echo "export RELEASE_DATE=20240410" >> $BASH_ENV
             echo "export HUB_NAME=lrose-hub-2024" >> $BASH_ENV
       - run: echo $RELEASE_DATE
 

@@ -16,8 +16,8 @@ RUN apt-get update --yes && \
     emacs \
     curl && \
     wget \
-    https://github.com/NCAR/lrose-core/releases/download/lrose-core-20230814/lrose-core-20230814.ubuntu_22.04.amd64.deb -P /tmp && \
-    apt-get install -y /tmp/lrose-core-20230814.ubuntu_22.04.amd64.deb && \
+    https://github.com/NCAR/lrose-core/releases/download/lrose-core-20240410/lrose-core-20240410.ubuntu_22.04.amd64.deb -P /tmp && \
+    apt-get install -y /tmp/lrose-core-20240410.ubuntu_22.04.amd64.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER ${NB_UID}
