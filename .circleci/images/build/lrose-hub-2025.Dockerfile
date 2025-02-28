@@ -9,10 +9,11 @@ LABEL maintainer="LROSE <lrose-help@lists.colostate.edu>"
 # See https://github.com/NCAR/lrose-core/releases
 # LROSE parameters
 ENV LROSE_RELEASE="lrose-core-20250105" \
-    LROSE_TARGET_OS="ubuntu-24.04" \
+    LROSE_TARGET_OS="ubuntu_24.04" \
     LROSE_TARGET_ARCH="amd64" \
-    LROSE_RELEASE_URL="https://github.com/NCAR/lrose-core/releases/download/${LROSE_RELEASE}/${LROSE_RELEASE}.${LROSE_TARGET_OS}.${LROSE_TARGET_ARCH}.deb" \
-    PATH="/usr/local/lrose/bin:$PATH" \
+    PATH="/usr/local/lrose/bin:$PATH"
+# Has to be on a different instruction to use the previously defined parameters
+ENV LROSE_RELEASE_URL="https://github.com/NCAR/lrose-core/releases/download/${LROSE_RELEASE}/${LROSE_RELEASE}.${LROSE_TARGET_OS}.${LROSE_TARGET_ARCH}.deb" \
     # Jupyter with VNC parameters \
     JVNC_URL=https://raw.githubusercontent.com/ana-v-espinoza/jupyter-with-vnc/refs/heads/main \
     DISPLAY=:1 \
@@ -31,7 +32,7 @@ RUN apt-get update --yes && \
       thunar xfdesktop4 xfwm4 xfce4-panel xfce4-session \
       xfce4-appfinder mousepad xfce4-terminal dbus-x11 && \
     # LROSE
-    wget ${LROSE_RELEASE_URL} -P /tmp -O lrose.deb && \
+    wget ${LROSE_RELEASE_URL} -O /tmp/lrose.deb && \
     apt-get install -y /tmp/lrose.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     # Used to run the novnc websockets proxy server:
@@ -41,7 +42,7 @@ RUN apt-get update --yes && \
 
 USER ${NB_UID}
 
-ADD environment.yml /tmp
+ADD gateway/environment.yml /tmp
 
 # combine the RUN commands, to prevent intermediate docker images;
 #
@@ -62,10 +63,13 @@ COPY --chown=1000:100 \
      gateway/.profile \
      /
 
+# Jupyter with VNC auxiliary files
+USER root
 RUN wget ${JVNC_URL}/jupyter_server_proxy_config.py \
        -O /etc/jupyter/jupyter_server_proxy_config.py && \
-    cat /etc/jupyter_server_proxy_config.py >> /etc/jupyter/jupyter_server_config.py && \
+    cat /etc/jupyter/jupyter_server_proxy_config.py >> /etc/jupyter/jupyter_server_config.py && \
     wget ${JVNC_URL}/start_virtual_desktop.sh -O /usr/local/bin/before-notebook.d/start_virtual_desktop.sh && \
-    wget ${JVNC_URL}/xinitrc -O /etc/X11/xinitrc
+    wget ${JVNC_URL}/xinitrc -O /etc/X11/xinit/xinitrc
+USER ${NB_USER}
 
 WORKDIR "${HOME}"
