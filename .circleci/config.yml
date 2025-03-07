@@ -428,7 +428,48 @@ jobs:
       - store_artifacts:
           path: workspace/deploy/docker-images
 
+  build-docker-image-jupyter-2025:
+    description: build a docker image that contains LROSE for use in Jupyter
+    machine:
+      docker_layer_caching: true
 
+    steps:
+      - run: date
+      - run: mkdir -p workspace
+      - run:
+          name: Set release date
+          command: |
+            echo "export RELEASE_DATE=20250105" >> $BASH_ENV
+            echo "export HUB_NAME=lrose-hub-2025" >> $BASH_ENV
+      - run: echo $RELEASE_DATE
+
+      - run:
+          name: Set Docker Image Name
+          command: |
+            echo "export IMAGE_NAME=nsflrose/$HUB_NAME:$RELEASE_DATE" >> $BASH_ENV
+
+      - run: echo $IMAGE_NAME
+
+      - run:
+          name: build image
+          command: |
+            echo "fetching lrose-circleci repo"
+            cd workspace
+            git clone https://github.com/nsf-lrose/lrose-hub --depth=1
+            cd lrose-hub/.cirlcleci
+            pwd
+            ls
+            docker build -t $IMAGE_NAME  -f images/build/$HUB_NAME.Dockerfile .
+
+      - run: docker images
+      - run: mkdir -p workspace/deploy/docker-images
+      - run: docker save -o workspace/deploy/docker-images/nsflrose.tar $IMAGE_NAME
+
+      - persist_to_workspace:
+          root: workspace
+          paths: deploy/docker-images
+      - store_artifacts:
+          path: workspace/deploy/docker-images
 
 #test-docker-jupyter:
 #  - attach_worspace:
@@ -443,7 +484,8 @@ jobs:
 workflows:
   now:
     jobs:
-      - build-docker-image-jupyter-2024
+      - build-docker-image-jupyter-2025
+      # - build-docker-image-jupyter-2024
       # - build-docker-image-jupyter
 
       # - <orb-name>/<job-name- orb command>conda-forge-lrose
